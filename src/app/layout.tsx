@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import StoreProvider from "@/app/StoreProvider";
 import { Toaster } from "@/components/ui/toaster";
 import { Poppins } from "next/font/google";
 import "./globals.css";
@@ -22,7 +23,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${poppins.className} bg-white`}>
         <Toaster />
-        {children}
+        <StoreProvider>{children}</StoreProvider>
       </body>
     </html>
   );
