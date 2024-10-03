@@ -8,7 +8,7 @@ export default function Navbar() {
     <div className="w-full px-5 sm:px-10 py-5 flex items-center justify-between">
       <nav className="flex items-center justify-between w-full">
         <Image
-          src={"/images/iTribe-logo.png"}
+          src={"/assets/images/iTribe-logo.png"}
           width={64}
           height={64}
           className="cursor-pointer w-12 h-12 sm:h-16 sm:w-16"
