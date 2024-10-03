@@ -21,7 +21,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${poppins.className} bg-white`}>
+      <body className={`${poppins.className} bg-black`}>
         <Toaster />
         <StoreProvider>{children}</StoreProvider>
       </body>
