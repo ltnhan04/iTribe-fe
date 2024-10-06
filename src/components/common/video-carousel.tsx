@@ -6,6 +6,7 @@ gsap.registerPlugin(ScrollTrigger);
 
 import { hightLightsSlides } from "@/constants/page";
 import { Pause, Play, RotateCcw } from "lucide-react";
+import { Typewriter } from "react-simple-typewriter";
 
 const VideoCarousel = () => {
   const videoRef = useRef<(HTMLVideoElement | null)[]>([]);
@@ -157,13 +158,19 @@ const VideoCarousel = () => {
         });
         break;
       case "pause":
+        videoRef.current[videoId]?.pause();
         setVideo((prev) => ({ ...prev, isPlaying: false }));
         break;
       case "play":
+        videoRef.current[videoId]?.play();
         setVideo((prev) => ({ ...prev, isPlaying: true }));
         break;
       default:
-        return;
+        if (videoRef.current[videoId]) {
+          videoRef.current[videoId]?.pause();
+        }
+        setVideo((prev) => ({ ...prev, videoId: i, startPlay: true }));
+        break;
     }
   };
 
@@ -207,7 +214,16 @@ const VideoCarousel = () => {
                     key={idx}
                     className="md:text-2xl text-white text-xl font-medium"
                   >
-                    {text}
+                    <Typewriter
+                      key={videoId}
+                      words={[text]}
+                      loop={false}
+                      cursor
+                      cursorStyle="|"
+                      typeSpeed={90}
+                      deleteSpeed={55}
+                      delaySpeed={3000}
+                    />
                   </p>
                 ))}
               </div>
@@ -225,7 +241,12 @@ const VideoCarousel = () => {
               ref={(el) => {
                 videoDivRef.current[i] = el;
               }}
-              onClick={() => setVideo((prev) => ({ ...prev, videoId: i }))}
+              onClick={() => {
+                if (videoRef.current[videoId]) {
+                  videoRef.current[videoId]?.pause();
+                }
+                setVideo((prev) => ({ ...prev, videoId: i, startPlay: true }));
+              }}
             >
               <span
                 className="absolute h-full w-full rounded-full"

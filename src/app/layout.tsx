@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import StoreProvider from "@/app/StoreProvider";
 import { Toaster } from "@/components/ui/toaster";
-import { Poppins } from "next/font/google";
+import { Roboto } from "next/font/google";
 import "./globals.css";
 
-const poppins = Poppins({
-  subsets: ["latin"],
+const roboto = Roboto({
+  subsets: ["vietnamese"],
   weight: ["100", "300", "400", "500", "700", "900"],
 });
 
@@ -21,7 +21,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${poppins.className} bg-black`}>
+      <body className={`${roboto.className} bg-black`}>
         <Toaster />
         <StoreProvider>{children}</StoreProvider>
       </body>
