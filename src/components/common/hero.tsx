@@ -4,6 +4,7 @@ import Link from "next/link";
 import React from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
+import { hero } from "../../../public/assets/videos/page";
 
 export default function Hero() {
   useGSAP(() => {
@@ -29,7 +30,7 @@ export default function Hero() {
               muted
               playsInline={true}
             >
-              <source src="/assets/videos/hero-section.mp4" type="video/mp4" />
+              <source src={hero} type="video/mp4" />
             </video>
           </div>
         </div>

@@ -2,6 +2,7 @@ import blackImage from "../../public/assets/images/black.jpg";
 import whiteImage from "../../public/assets/images/white.jpg";
 import sandImage from "../../public/assets/images/blue.jpg";
 import yellowImage from "../../public/assets/images/yellow.jpg";
+import { videos } from "../../public/assets/videos/page";
 
 export const footerLinks = ["About", "Github", "Contact"];
 
@@ -12,7 +13,7 @@ export const hightLightsSlides = [
       "Thật nhanh. Thật mượt. Cảm nhận",
       "Điều Khiển Camera hoàn toàn mới.",
     ],
-    video: "/assets/videos/1_camera.mp4",
+    video: videos[0],
     videoDuration: 5,
   },
   {
@@ -21,7 +22,7 @@ export const hightLightsSlides = [
       "Ống kính camera sáng bóng, thu hút mọi ánh nhìn",
       "Thiết kế camera iPhone 16 Pro tinh tế và hiện đại",
     ],
-    video: "/assets/videos/2_camera.mp4",
+    video: videos[1],
     videoDuration: 5,
   },
   {
@@ -30,23 +31,22 @@ export const hightLightsSlides = [
       "Chip A18 Pro hoàn toàn mới. Hiệu",
       "năng vô đối. Tiết kiệm điện vô song.",
     ],
-    video: "/assets/videos/3_chip.mp4",
+    video: videos[2],
     videoDuration: 5,
   },
   {
     id: 4,
     textLists: ["Bước nhảy vọt về thời lượng pin.", "Vui bất tận."],
-    video: "/assets/videos/4_game.mp4",
+    video: videos[3],
     videoDuration: 2,
   },
   {
     id: 5,
     textLists: [
-      "iPhone đầu tiên được thiết kế cho",
-      "Apple Intelligence. Riêng tư, bảo mật,",
-      "mạnh mẽ.",
+      "iPhone đầu tiên được thiết kế cho Apple Intelligence.",
+      "Riêng tư, bảo mật, mạnh mẽ.",
     ],
-    video: "/assets/videos/5_ai.mp4",
+    video: videos[4],
     videoDuration: 6,
   },
 ];
