@@ -5,11 +5,11 @@ import React from "react";
 
 export default function Navbar() {
   return (
-    <div  className="container max-w-7xl mx-auto sm:px-5">
+    <div className="container max-w-7xl mx-auto sm:px-5">
       <div className="w-full px-5 sm:px-10 py-5 flex items-center justify-between">
         <nav className="flex items-center justify-between w-full">
           <Image
-            src={"/assets/images/iTribe-logo.png"}
+            src={"/assets/images/i-Tribe-logo.png"}
             width={64}
             height={64}
             className="cursor-pointer w-12 h-12 sm:h-16 sm:w-16"
