@@ -1,3 +1,4 @@
+"use client";
 import React, { useEffect } from "react";
 import * as THREE from "three";
 import { useGLTF, useTexture } from "@react-three/drei";
@@ -23,23 +24,30 @@ function Model(props: ModelProps) {
   const { nodes, materials } = useGLTF(
     "/assets/models/scene.glb"
   ) as unknown as GLTFResult;
-  const texture = useTexture(props.item.img);
-  useEffect(() => {
-    if (!materials) return;
 
-    Object.values(materials).forEach((material) => {
-      if (material instanceof THREE.MeshStandardMaterial) {
-        if (props.item?.color?.[0]) {
-          material.color = new THREE.Color(props.item.color[0]);
+  const texture = useTexture(props.item.img);
+
+  useEffect(() => {
+    const colors = props.item.color ?? ["#ffe7b9"];
+    Object.entries(materials).forEach(([key, material]) => {
+      if (
+        key !== "zFdeDaGNRwzccye" &&
+        key !== "ujsvqBWRMnqdwPx" &&
+        key !== "hUlRcbieVuIiOXG" &&
+        key !== "jlzuBkUzuJqgiAK" &&
+        key !== "xNrofRCqOXXHVZt"
+      ) {
+        const mat = material as THREE.MeshStandardMaterial;
+        if (mat.color) {
+          mat.color = new THREE.Color(colors[0]);
+          mat.needsUpdate = true;
         }
-        material.map = texture;
-        material.needsUpdate = true;
       }
     });
-  }, [materials, props.item?.color, texture]);
+  }, [materials, props.item]);
 
   return (
-    <group {...props} dispose={null} scale={0.01}>
+    <group {...props} dispose={null}>
       <mesh
         castShadow
         receiveShadow
@@ -151,7 +159,9 @@ function Model(props: ModelProps) {
         geometry={nodes.xXDHkMplTIDAXLN.geometry}
         material={materials.pIJKfZsazmcpEiU}
         scale={0.01}
-      />
+      >
+        <meshStandardMaterial roughness={1} map={texture} />
+      </mesh>
       <mesh
         castShadow
         receiveShadow

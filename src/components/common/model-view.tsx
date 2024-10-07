@@ -1,3 +1,4 @@
+"use client";
 import { OrbitControls, PerspectiveCamera, View } from "@react-three/drei";
 import * as THREE from "three";
 import Lights from "@/components/common/lights";
@@ -38,7 +39,6 @@ const ModelView = ({
       <PerspectiveCamera makeDefault position={[0, 0, 4]} />
 
       <Lights />
-
       <OrbitControls
         makeDefault
         ref={controlRef}
@@ -46,11 +46,7 @@ const ModelView = ({
         enablePan={false}
         rotateSpeed={0.4}
         target={new THREE.Vector3(0, 0, 0)}
-        onEnd={() => {
-          if (controlRef.current) {
-            setRotationState(controlRef.current.getAzimuthalAngle());
-          }
-        }}
+        onEnd={() => setRotationState(controlRef.current.getAzimuthalAngle())}
       />
 
       <group
