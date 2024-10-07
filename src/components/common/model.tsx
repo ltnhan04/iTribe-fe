@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
@@ -9,22 +10,30 @@ import { View } from "@react-three/drei";
 import { models, sizes } from "@/constants/page";
 import { animateWithGsapTimeline } from "@/utils/animations";
 
+type ModelType = {
+  title: string;
+  color: string[];
+  img: string;
+};
+
+type SizeType = "small" | "large";
+
 const Model = () => {
-  const [size, setSize] = useState("small");
-  const [model, setModel] = useState({
-    title: "iPhone 16 Pro Max Titan Tự Nhiên",
+  const [size, setSize] = useState<SizeType>("small");
+  const [model, setModel] = useState<ModelType>({
+    title: "iPhone 16 Pro Titan Tự Nhiên",
     color: ["#8F8A81", "#ffe7b9", "#6f6c64"],
     img: "/assets/images/yellow.jpg",
   });
 
-  const cameraControlSmall = useRef();
-  const cameraControlLarge = useRef();
+  const cameraControlSmall = useRef<any>(null);
+  const cameraControlLarge = useRef<any>(null);
 
-  const small = useRef(new THREE.Group());
-  const large = useRef(new THREE.Group());
+  const small = useRef<THREE.Group>(new THREE.Group());
+  const large = useRef<THREE.Group>(new THREE.Group());
 
-  const [smallRotation, setSmallRotation] = useState(0);
-  const [largeRotation, setLargeRotation] = useState(0);
+  const [smallRotation, setSmallRotation] = useState<number>(0);
+  const [largeRotation, setLargeRotation] = useState<number>(0);
 
   const tl = gsap.timeline();
 
@@ -56,6 +65,9 @@ const Model = () => {
           className="text-gray lg:text-6xl md:text-5xl text-3xl lg:mb-0 mb-5 font-medium opacity-0 translate-y-20"
         >
           Ngắm nhìn cận cảnh.
+          <p id="heading" className="font-normal text-xl mt-3">
+            Drag left and right for a 360&deg; view.
+          </p>
         </h1>
 
         <div className="flex flex-col items-center mt-5">
@@ -90,16 +102,19 @@ const Model = () => {
                 right: 0,
                 overflow: "hidden",
               }}
+              eventSource={document.getElementById("root") as HTMLElement}
             >
               <View.Port />
             </Canvas>
           </div>
 
           <div className="mx-auto w-full">
-            <p className="text-sm font-light text-center mb-5">{model.title}</p>
+            <p className="text-sm font-light text-white text-center mb-5">
+              {model.title}
+            </p>
 
             <div className="flex items-center justify-center">
-              <ul className=" flex items-center justify-center px-4 py-4 rounded-full bg-gray-300 backdrop-blur">
+              <ul className="flex items-center justify-center px-4 py-4 rounded-full bg-gray-300 backdrop-blur">
                 {models.map((item, i) => (
                   <li
                     key={i}
@@ -110,7 +125,7 @@ const Model = () => {
                 ))}
               </ul>
 
-              <button className="size-btn-container">
+              <button className="flex items-center justify-center p-1 rounded-full bg-gray-300 backdrop-blur ml-3 gap-1">
                 {sizes.map(({ label, value }) => (
                   <span
                     key={label}
@@ -119,7 +134,7 @@ const Model = () => {
                       backgroundColor: size === value ? "white" : "transparent",
                       color: size === value ? "black" : "white",
                     }}
-                    onClick={() => setSize(value)}
+                    onClick={() => setSize(value as SizeType)}
                   >
                     {label}
                   </span>
