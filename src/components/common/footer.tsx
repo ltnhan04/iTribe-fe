@@ -9,7 +9,7 @@ export default function Footer() {
       <div className="w-full py-5 px-5 sm:px-10">
         <div className="flex items-center justify-between">
           <Image
-            src={"/assets/images/iTribe-logo.png"}
+            src={"/assets/images/i-Tribe-logo.png"}
             width={64}
             height={64}
             className="cursor-pointer w-12 h-12 sm:h-16 sm:w-16"
