@@ -143,7 +143,7 @@ export default function Design() {
               Titan Cấp 5 cao cấp cực kỳ bền bỉ.
             </h2>
 
-            <div className="flex items-center justify-center flex-col py-10">
+            <div className="flex items-center justify-center flex-col pb-10">
               <div className="w-full flex flex-col sm:flex-row items-center justify-between gap-x-10">
                 <div
                   className="flex-1 scale-100 overflow-hidden"
