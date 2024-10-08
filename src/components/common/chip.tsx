@@ -61,6 +61,7 @@ export default function Chip() {
             className="object-cover"
             priority={true}
             quality={100}
+            style={{ width: "auto", height: "100%" }}
           />
         </div>
 
@@ -107,10 +108,10 @@ export default function Chip() {
                 <video
                   className="w-full h-full object-cover"
                   playsInline
-                  loop
-                  preload="auto"
+                  preload="none"
                   autoPlay
                   ref={videoRef}
+                  muted
                   controls
                 >
                   <source src={jokerBenTre} type="video/mp4" />
