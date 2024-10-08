@@ -1,3 +1,4 @@
+"use client";
 import React, { useRef, useEffect } from "react";
 import { animateWithGsap } from "@/utils/animations";
 import frame from "../../../public/assets/images/frame.png";
@@ -36,9 +37,18 @@ export default function Chip() {
     }
   }, []);
 
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.muted = false;
+      videoRef.current
+        .play()
+        .catch((error) => console.error("Error playing video:", error));
+    }
+  }, []);
+
   return (
     <div className="sm:py-16 py-10 sm:px-10 px-5">
-      <div className="mx-auto max-w-7xl ">
+      <div className="mx-auto max-w-7xl">
         <div
           ref={chipRef}
           className="flex items-center justify-center w-full my-20 opacity-0 translate-y-20"
@@ -95,13 +105,13 @@ export default function Chip() {
 
               <div className="absolute inset-0 w-[95%] h-[90%] rounded-[56px] overflow-hidden top-[6.5%] left-[2.5%]">
                 <video
-                  className="pointer-events-none w-full h-full object-cover"
+                  className="w-full h-full object-cover"
                   playsInline
                   loop
                   preload="auto"
                   autoPlay
-                  controls
                   ref={videoRef}
+                  controls
                 >
                   <source src={jokerBenTre} type="video/mp4" />
                 </video>
