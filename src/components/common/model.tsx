@@ -8,7 +8,7 @@ import * as THREE from "three";
 import { Canvas } from "@react-three/fiber";
 import { View } from "@react-three/drei";
 import { models, sizes } from "@/constants/page";
-import { animateWithGsapTimeline } from "@/utils/animations";
+import { animateWithGsapTimeline, animateWithGsap } from "@/utils/animations";
 
 type ModelType = {
   title: string;
@@ -23,7 +23,7 @@ const Model = () => {
   const [model, setModel] = useState<ModelType>({
     title: "iPhone 16 Pro Max Titan Tự Nhiên",
     color: ["#8F8A81", "#ffe7b9", "#6f6c64"],
-    img: "/assets/images/dom-dom.jpg",
+    img: "/assets/images/rick-roll.jpg",
   });
 
   const cameraControlSmall = useRef<any>(null);
@@ -37,7 +37,6 @@ const Model = () => {
 
   const tl = gsap.timeline();
 
-  // Event source state to handle root element reference
   const [eventSource, setEventSource] = useState<HTMLElement | null>(null);
 
   useEffect(() => {
@@ -61,12 +60,12 @@ const Model = () => {
   }, []);
 
   useGSAP(() => {
-    gsap.to("#heading", { y: 0, opacity: 1 });
+    animateWithGsap("#heading", { y: 0, opacity: 1 });
   }, []);
 
   return (
     <section className="sm:py-32 py-20 sm:px-10 px-5">
-      <div className="mx-auto relative max-w-6xl">
+      <div className="mx-auto relative max-w-7xl">
         <h1
           id="heading"
           className="text-gray lg:text-6xl md:text-5xl text-3xl lg:mb-0 mb-5 font-medium opacity-0 translate-y-20"
@@ -134,11 +133,11 @@ const Model = () => {
                 ))}
               </ul>
 
-              <button className="flex items-center justify-center p-1 rounded-full bg-gray-300 backdrop-blur ml-3 gap-1">
+              <button className="flex items-center justify-center p-1 w-fit rounded-full bg-gray-300 backdrop-blur ml-3 gap-1">
                 {sizes.map(({ label, value }) => (
                   <span
                     key={label}
-                    className="flex items-center justify-center p-1 rounded-full bg-gray-300 backdrop-blur ml-3 gap-1"
+                    className="flex items-center justify-center p-1 rounded-full bg-gray-300 backdrop-blur gap-1"
                     style={{
                       backgroundColor: size === value ? "white" : "transparent",
                       color: size === value ? "black" : "white",
