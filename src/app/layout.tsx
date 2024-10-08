@@ -21,7 +21,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${roboto.className} bg-black`}>
+      <body id="root" className={`${roboto.className} bg-black`}>
         <Toaster />
         <StoreProvider>{children}</StoreProvider>
       </body>

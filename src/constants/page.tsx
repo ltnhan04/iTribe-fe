@@ -73,7 +73,7 @@ export const models = [
   {
     id: 4,
     title: "iPhone 16 Pro Max Titan Sa Mạc",
-    color: ["#8F8A81", "#ffe7b9", "#6f6c64"],
+    color: ["#6f6c64", "#ffe7b9", "#424245b3"],
     img: sandImage,
   },
 ];
