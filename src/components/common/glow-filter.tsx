@@ -4,7 +4,7 @@ const GlowFilter = () => {
       <defs>
         <filter
           id="glow-1"
-          color-interpolation-filters="sRGB"
+          colorInterpolationFilters="sRGB"
           x="-50%"
           y="-50%"
           width="200%"
