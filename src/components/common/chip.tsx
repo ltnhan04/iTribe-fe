@@ -1,5 +1,5 @@
 "use client";
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { animateWithGsap } from "@/utils/animations";
 import frame from "../../../public/assets/images/frame.png";
 import chip from "../../../public/assets/images/highlights_chip_endframe.jpg";
@@ -12,6 +12,7 @@ export default function Chip() {
   const chipRef = useRef<HTMLImageElement>(null);
   const paragraphRef = useRef<HTMLParagraphElement>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
+  const [isMuted, setIsMuted] = useState(true);
 
   useEffect(() => {
     if (headingRef.current) {
@@ -39,12 +40,44 @@ export default function Chip() {
 
   useEffect(() => {
     if (videoRef.current) {
-      videoRef.current.muted = false;
-      videoRef.current
-        .play()
-        .catch((error) => console.error("Error playing video:", error));
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              videoRef.current!.muted = false;
+              videoRef
+                .current!.play()
+                .then(() => {
+                  setIsMuted(false);
+                })
+                .catch((error) => console.error("Error playing video:", error));
+            } else {
+              videoRef.current!.pause();
+              videoRef.current!.muted = true;
+              setIsMuted(true);
+            }
+          });
+        },
+        { threshold: 0.5 }
+      );
+
+      observer.observe(videoRef.current);
+
+      return () => {
+        if (videoRef.current) {
+          // eslint-disable-next-line react-hooks/exhaustive-deps
+          observer.unobserve(videoRef.current);
+        }
+      };
     }
   }, []);
+
+  const toggleMute = () => {
+    if (videoRef.current) {
+      videoRef.current.muted = !isMuted;
+      setIsMuted(!isMuted);
+    }
+  };
 
   return (
     <div className="sm:py-16 py-10 sm:px-10 px-5">
@@ -109,13 +142,19 @@ export default function Chip() {
                   className="w-full h-full object-cover"
                   playsInline
                   preload="none"
-                  autoPlay
+                  loop
                   ref={videoRef}
-                  muted
+                  muted={isMuted}
                   controls
                 >
                   <source src={jokerBenTre} type="video/mp4" />
                 </video>
+                <button
+                  onClick={toggleMute}
+                  className="absolute top-4 right-4 bg-black bg-opacity-50 text-white p-2 rounded-md"
+                >
+                  {isMuted ? "Unmute" : "Mute"}
+                </button>
               </div>
             </div>
           </div>
