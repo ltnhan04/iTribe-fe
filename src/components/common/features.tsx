@@ -73,23 +73,25 @@ export default function Design() {
       <div className="sm:pt-32 pt-20 sm:px-10 px-5">
         <div className="mx-auto relative max-w-7xl">
           <GlowFilter />
-          <h1
-            ref={headingRef}
-            className="text-[#c8c2bd] text-center lg:text-6xl md:text-7xl text-3xl lg:mb-0 mb-5 font-semibold opacity-0 translate-y-20 py-3"
-          >
-            Mạnh. Đẹp. <br />
-            <span style={{ filter: "url(#glow-1)" }}>
-              <Typewriter
-                words={["Bằng Titan."]}
-                loop={false}
-                cursor
-                cursorStyle="|"
-                typeSpeed={90}
-                deleteSpeed={70}
-                delaySpeed={2000}
-              />
-            </span>
-          </h1>
+          <div>
+            <h1
+              ref={headingRef}
+              className="text-[#c8c2bd] text-center lg:text-6xl md:text-7xl text-3xl lg:mb-0 mb-5 font-semibold opacity-0 translate-y-20 py-3 "
+            >
+              Mạnh. Đẹp. <br />{" "}
+              <span style={{ filter: "url(#glow-1)" }} className="ml-4">
+                <Typewriter
+                  words={["Bằng Titan."]}
+                  loop={false}
+                  cursor
+                  cursorStyle="|"
+                  typeSpeed={90}
+                  deleteSpeed={70}
+                  delaySpeed={2000}
+                />
+              </span>
+            </h1>
+          </div>
         </div>
       </div>
 
