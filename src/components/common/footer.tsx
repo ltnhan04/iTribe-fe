@@ -8,15 +8,18 @@ export default function Footer() {
     <div className="container max-w-7xl mx-auto sm:px-5">
       <div className="w-full py-5 px-5 sm:px-10">
         <div className="flex items-center justify-between">
-          <Image
-            src={"/assets/images/i-Tribe-logo.png"}
-            width={64}
-            height={64}
-            className="cursor-pointer w-12 h-12 sm:h-16 sm:w-16"
-            priority={true}
-            alt="iTribe logo"
-            quality={100}
-          />
+          <Link href={"/"}>
+            <Image
+              src={"/assets/images/i-Tribe-logo.png"}
+              width={64}
+              height={64}
+              className="cursor-pointer w-12 h-12 "
+              priority={true}
+              alt="iTribe logo"
+              quality={100}
+            />
+          </Link>
+
           <div>
             <div className="flex items-center justify-center">
               {footerLinks.map((link, index) => (

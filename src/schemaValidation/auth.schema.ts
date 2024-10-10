@@ -4,13 +4,18 @@ export const RegisterBody = z
   .object({
     name: z
       .string()
-      .min(1, "Tên đăng ký phải có ít nhất 1 kí tự!")
+      .min(2, "Tên đăng ký phải có ít nhất 2 kí tự!")
       .max(30, "Tên đăng ký không được vượt quá 30 kí tự!")
       .regex(
         /^[a-zA-Z0-9_]+$/,
         "Tên đăng ký chỉ được chứa chữ cái, số và dấu gạch dưới!"
       ),
-    email: z.string().email("Email không hợp lệ!"),
+    email: z
+      .string()
+      .email("Email không hợp lệ!")
+      .refine((val) => val.endsWith(".com"), {
+        message: "Email không đúng định dạng!",
+      }),
     password: z
       .string()
       .min(8, "Mật khẩu phải có ít nhất 8 kí tự!")
@@ -38,7 +43,12 @@ export const RegisterBody = z
 
 export const LoginBody = z
   .object({
-    email: z.string().email("Email không hợp lệ!"),
+    email: z
+      .string()
+      .email("Email không hợp lệ!")
+      .refine((val) => val.endsWith(".com"), {
+        message: "Email không đúng định dạng!",
+      }),
     password: z
       .string()
       .min(8, "Mật khẩu phải có ít nhất 8 ký tự")
