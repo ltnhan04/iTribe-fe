@@ -1,5 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { User, ShoppingCart } from "lucide-react";
 
 import React from "react";
@@ -26,7 +33,25 @@ export default function Navbar() {
           </p>
           <div className="flex items-center gap-5 text-white">
             <ShoppingCart className="w-5 h-5 sm:h-6 sm:w-6" />
-            <User className="w-5 h-5 sm:h-6 sm:w-6" />
+            <DropdownMenu>
+              <DropdownMenuTrigger>
+                <User className="w-5 h-5 sm:h-6 sm:w-6" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-36">
+                <DropdownMenuGroup>
+                  <Link href={"/login"}>
+                    <DropdownMenuItem className="cursor-pointer">
+                      Đăng nhập
+                    </DropdownMenuItem>
+                  </Link>
+                  <Link href={"/register"}>
+                    <DropdownMenuItem className="cursor-pointer">
+                      Đăng ký
+                    </DropdownMenuItem>
+                  </Link>
+                </DropdownMenuGroup>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </nav>
       </div>

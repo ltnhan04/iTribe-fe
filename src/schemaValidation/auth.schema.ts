@@ -7,7 +7,7 @@ export const RegisterBody = z
       .min(2, "Tên đăng ký phải có ít nhất 2 kí tự!")
       .max(30, "Tên đăng ký không được vượt quá 30 kí tự!")
       .regex(
-        /^[a-zA-Z0-9_]+$/,
+        /^[a-zA-Z0-9]/,
         "Tên đăng ký chỉ được chứa chữ cái, số và dấu gạch dưới!"
       ),
     email: z
