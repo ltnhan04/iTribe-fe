@@ -8,6 +8,12 @@ const nextConfig = {
         port: "",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "www.allen.ac.in",
+        port: "",
+        pathname: "/**",
+      },
     ],
   },
 };

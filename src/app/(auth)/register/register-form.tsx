@@ -1,10 +1,9 @@
 "use client";
-// import { useState } from "react";
+import React from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-// import { ReloadIcon } from "@radix-ui/react-icons";
 import {
   Form,
   FormControl,
@@ -13,22 +12,19 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { LoginBody, LoginBodyType } from "@/schemaValidation/auth.schema";
-import Link from "next/link";
-// import { useToast } from "@/hooks/use-toast";
-// import { ToastAction } from "@radix-ui/react-toast";
-// import { ErrorResponse } from "@/app/(auth)/type";
+import { RegisterBody, RegisterBodyType } from "@/schemaValidation/auth.schema";
 
-export default function LoginForm() {
-  const form = useForm<LoginBodyType>({
-    resolver: zodResolver(LoginBody),
+export default function RegisterForm() {
+  const form = useForm<RegisterBodyType>({
+    resolver: zodResolver(RegisterBody),
     defaultValues: {
       email: "",
       password: "",
+      confirmPassword: "",
     },
   });
 
-  const onSubmit = async (values: LoginBodyType) => {
+  const onSubmit = async (values: RegisterBodyType) => {
     console.log(values);
   };
   return (
@@ -37,6 +33,25 @@ export default function LoginForm() {
         onSubmit={form.handleSubmit(onSubmit)}
         className="space-y-2 max-w-[600px] flex-shrink-0 w-full"
       >
+        <FormField
+          control={form.control}
+          name="name"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="text-gray-500">Name</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="Your Name"
+                  type="text"
+                  {...field}
+                  {...form.register("name")}
+                  className=" text-gray-600"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         <FormField
           control={form.control}
           name="email"
@@ -76,22 +91,38 @@ export default function LoginForm() {
             </FormItem>
           )}
         />
-        <div className="text-sm text-right py-2 text-primary hover:underline transition-colors duration-300 ease-in-out font-normal">
-          <Link href={"/forgot-password"}>Quên mật khẩu?</Link>
-        </div>
+        <FormField
+          control={form.control}
+          name="confirmPassword"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="text-gray-500">Nhập lại mật khẩu</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="8+ characters"
+                  type="password"
+                  {...field}
+                  {...form.register("confirmPassword")}
+                  className=" text-gray-600"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         <Button
           type="submit"
-          className="!mt-3 w-full transition-colors duration-300 ease-in-out hover:bg-[#333]"
+          className="!mt-8 w-full transition-colors duration-300 ease-in-out hover:bg-[#333]"
         >
-          Đăng nhập
+          Đăng ký
           {/* {!isLoading ? (
-            "Đăng nhập"
-          ) : (
-            <>
-              <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
-              Please wait...
-            </>
-          )} */}
+        "Đăng nhập"
+      ) : (
+        <>
+          <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+          Please wait...
+        </>
+      )} */}
         </Button>
       </form>
     </Form>
