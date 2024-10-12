@@ -5,8 +5,8 @@ import Image from "next/image";
 
 export default function Register() {
   return (
-    <div className="h-screen flex items-center justify-center bg-[#33333355]">
-      <div className="max-w-4xl w-full mx-auto p-8 md:p-12 bg-white border-gray-300 rounded-xl shadow-xl">
+    <div className="h-screen flex items-center justify-center bg-[#f3f4f6]">
+      <div className="max-w-4xl w-full mx-auto p-8 md:p-12 bg-white border-[#d1d5db] rounded-xl shadow-xl">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
           <div className="flex items-center justify-center">
             <Image
@@ -16,6 +16,7 @@ export default function Register() {
               alt="Image"
               quality={100}
               priority={true}
+              className="w-1/2 md:w-full"
             />
           </div>
           <div>
