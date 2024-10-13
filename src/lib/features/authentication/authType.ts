@@ -1,6 +1,15 @@
-export interface User {
+export interface SignUpState {
   email: string;
-  otp: string;
+  message: string;
+}
+
+export interface LoginState {
+  accessToken: string;
+  message: string;
+}
+
+export interface VerifySignUpState {
+  accessToken: string;
   message: string;
 }
 
