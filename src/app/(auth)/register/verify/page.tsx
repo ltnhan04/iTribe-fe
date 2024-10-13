@@ -1,18 +1,20 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState, AppDispatch } from "@/lib/store";
+import { verifySignUpThunk } from "@/lib/features/authentication/authThunk";
 import InputOTPPattern from "@/components/common/input-otp";
+import { useRouter } from "next/navigation";
 
 export default function VerifyRegister() {
-  const [email, setEmail] = useState<string>("");
+  const router = useRouter();
+  const { email } = useSelector(
+    (state: RootState) => state.auth.signUp.signUpState
+  );
+  const dispatch = useDispatch<AppDispatch>();
   const [otp, setOtp] = useState<string>("");
   const [counter, setCounter] = useState<number>(60);
-  useEffect(() => {
-    const email = localStorage.getItem("email");
-    if (email) {
-      setEmail(email);
-    }
-  }, []);
   useEffect(() => {
     let timer: NodeJS.Timeout | undefined;
     if (otp.length === 6) {
@@ -29,14 +31,17 @@ export default function VerifyRegister() {
     return () => clearInterval(timer);
   }, [otp]);
 
-  const handleChangeOTP = (otp: string) => {
+  const handleChangeOTP = async (otp: string) => {
     setOtp(otp);
+    if (otp.length === 6) {
+      const verify = { email, otp };
+      await dispatch(verifySignUpThunk({ verify, router }));
+    }
   };
 
   const handleResendOTP = () => {
     setCounter(60);
     setOtp("");
-    //Call API
   };
   return (
     <div className="h-screen flex items-center justify-center bg-[#f3f4f6]">
@@ -63,7 +68,7 @@ export default function VerifyRegister() {
             <InputOTPPattern getOTP={handleChangeOTP} />
 
             {otp.length === 6 && (
-              <p className="text-center text-gray-600 mt-4">
+              <p className="text-right text-gray-600 mt-4 w-full max-w-60">
                 Mã OTP sẽ hết hạn sau{" "}
                 <span className="text-[#0D99FF] font-bold">{counter}s</span>
               </p>
@@ -71,7 +76,7 @@ export default function VerifyRegister() {
             {counter === 0 && (
               <div
                 onClick={handleResendOTP}
-                className="text-sm w-full max-w-60 cursor-pointer text-right py-2 text-primary hover:underline transition-colors duration-300 ease-in-out font-normal"
+                className="text-sm w-full max-w-60 cursor-pointer text-right py-2 text-[#0D99FF] font-bold hover:text-[#0d9aff92]  transition-colors duration-300 ease-in-out "
               >
                 Gửi lại mã OTP
               </div>

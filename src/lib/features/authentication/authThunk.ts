@@ -10,13 +10,16 @@ import { ErrorResponse } from "@/app/(auth)/type";
 export const loginThunk = createAsyncThunk(
   "auth/login",
   async (
-    { user, navigate }: { user: LoginType; navigate: (path: string) => void },
+    {
+      user,
+      router,
+    }: { user: LoginType; router: { push: (path: string) => void } },
     { rejectWithValue }
   ) => {
     try {
       const response = await login(user);
       if (response.status === 200) {
-        navigate("/");
+        router.push("/");
         return response.data;
       } else {
         return rejectWithValue(response.data.message);
@@ -35,17 +38,17 @@ export const signUpThunk = createAsyncThunk(
   async (
     {
       user,
-      navigate,
+      router,
     }: {
       user: SignUpType;
-      navigate: (path: string) => void;
+      router: { push: (path: string) => void };
     },
     { rejectWithValue }
   ) => {
     try {
       const response = await signUp(user);
       if (response.status === 200) {
-        navigate("/register/verify");
+        router.push("/register/verify");
         const { email } = user;
         return { email, ...response.data };
       } else {
@@ -65,14 +68,14 @@ export const verifySignUpThunk = createAsyncThunk(
   async (
     {
       verify,
-      navigate,
-    }: { verify: VerifySignUpType; navigate: (path: string) => void },
+      router,
+    }: { verify: VerifySignUpType; router: { push: (path: string) => void } },
     { rejectWithValue }
   ) => {
     try {
       const response = await verifySignUp(verify);
       if (response.status === 200) {
-        navigate("/");
+        router.push("/");
         return response.data;
       } else {
         return rejectWithValue(response.data.message);
