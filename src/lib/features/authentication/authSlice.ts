@@ -53,7 +53,32 @@ const initialState: AuthState = {
 const authSlice = createSlice({
   name: "auth",
   initialState,
-  reducers: {},
+  reducers: {
+    clearMessage: (
+      state,
+      action: PayloadAction<"login" | "signUp" | "verifySignUp">
+    ) => {
+      if (action.payload === "login") {
+        state.login.loginState.message = "";
+      } else if (action.payload === "signUp") {
+        state.signUp.signUpState.message = "";
+      } else if (action.payload === "verifySignUp") {
+        state.verifySignUp.verifySignUpState.message = "";
+      }
+    },
+    clearError: (
+      state,
+      action: PayloadAction<"login" | "signUp" | "verifySignUp">
+    ) => {
+      if (action.payload === "login") {
+        state.login.error = "";
+      } else if (action.payload === "signUp") {
+        state.signUp.error = "";
+      } else if (action.payload === "verifySignUp") {
+        state.verifySignUp.error = "";
+      }
+    },
+  },
   extraReducers: (builder) => {
     builder.addCase(loginThunk.pending, (state) => {
       state.login.isLoading = true;
@@ -112,5 +137,5 @@ const authSlice = createSlice({
     });
   },
 });
-
+export const { clearMessage, clearError } = authSlice.actions;
 export default authSlice.reducer;

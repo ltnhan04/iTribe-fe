@@ -21,6 +21,10 @@ import { useToast } from "@/hooks/use-toast";
 import { ToastAction } from "@radix-ui/react-toast";
 import { useSelector, useDispatch } from "react-redux";
 import { AppDispatch, RootState } from "@/lib/store";
+import {
+  clearMessage,
+  clearError,
+} from "@/lib/features/authentication/authSlice";
 
 export default function LoginForm() {
   const { toast } = useToast();
@@ -41,6 +45,7 @@ export default function LoginForm() {
         description: error,
         action: <ToastAction altText="Try again">Try Again!</ToastAction>,
       });
+      dispatch(clearError("login"));
     }
     if (message) {
       toast({
@@ -52,8 +57,9 @@ export default function LoginForm() {
           </span>
         ),
       });
+      dispatch(clearMessage("login"));
     }
-  }, [error, toast, message]);
+  }, [error, toast, message, dispatch]);
 
   const form = useForm<LoginBodyType>({
     resolver: zodResolver(LoginBody),
