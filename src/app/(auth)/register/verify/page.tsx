@@ -4,6 +4,10 @@ import Image from "next/image";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState, AppDispatch } from "@/lib/store";
 import { verifySignUpThunk } from "@/lib/features/authentication/authThunk";
+import {
+  clearMessage,
+  clearError,
+} from "@/lib/features/authentication/authSlice";
 import InputOTPPattern from "@/components/common/input-otp";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
@@ -30,13 +34,11 @@ export default function VerifyRegister() {
 
   useEffect(() => {
     let timer: NodeJS.Timeout | undefined;
-
     if (otp.length === 6) {
       timer = setInterval(() => {
         setCounter((prev) => (prev > 1 ? prev - 1 : 0));
       }, 1000);
     }
-
     return () => clearInterval(timer);
   }, [otp]);
 
@@ -53,6 +55,7 @@ export default function VerifyRegister() {
         description: error,
         action: <ToastAction altText="Try again">Try Again!</ToastAction>,
       });
+      dispatch(clearError("verifySignUp"));
     }
     if (message) {
       toast({
@@ -75,8 +78,9 @@ export default function VerifyRegister() {
           </span>
         ),
       });
+      dispatch(clearMessage("verifySignUp"));
     }
-  }, [error, toast, message]);
+  }, [error, toast, message, dispatch]);
 
   const handleChangeOTP = useCallback(
     async (otp: string) => {

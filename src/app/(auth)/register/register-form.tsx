@@ -17,6 +17,10 @@ import { useRouter } from "next/navigation";
 import { signUpThunk } from "@/lib/features/authentication/authThunk";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/lib/store";
+import {
+  clearMessage,
+  clearError,
+} from "@/lib/features/authentication/authSlice";
 import { ReloadIcon, EyeOpenIcon, EyeNoneIcon } from "@radix-ui/react-icons";
 import { useToast } from "@/hooks/use-toast";
 import { ToastAction } from "@radix-ui/react-toast";
@@ -58,6 +62,7 @@ export default function RegisterForm() {
         description: error,
         action: <ToastAction altText="Try again">Try Again!</ToastAction>,
       });
+      dispatch(clearError("signUp"));
     }
     if (message) {
       toast({
@@ -69,8 +74,9 @@ export default function RegisterForm() {
           </span>
         ),
       });
+      dispatch(clearMessage("signUp"));
     }
-  }, [error, toast, message]);
+  }, [error, toast, message, dispatch]);
 
   return (
     <Form {...form}>
