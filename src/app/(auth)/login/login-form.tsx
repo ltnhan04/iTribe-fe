@@ -19,8 +19,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { ToastAction } from "@radix-ui/react-toast";
-import { useSelector, useDispatch } from "react-redux";
-import { AppDispatch, RootState } from "@/lib/store";
+import { useAppSelector, useAppDispatch } from "@/lib/hooks";
 import {
   clearMessage,
   clearError,
@@ -29,9 +28,9 @@ import {
 export default function LoginForm() {
   const { toast } = useToast();
   const router = useRouter();
-  const dispatch = useDispatch<AppDispatch>();
-  const { isLoading, error, loginState } = useSelector(
-    (state: RootState) => state.auth.login
+  const dispatch = useAppDispatch();
+  const { isLoading, error, loginState } = useAppSelector(
+    (state) => state.auth.login
   );
   const { message } = loginState;
 

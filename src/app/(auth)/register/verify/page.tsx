@@ -1,8 +1,7 @@
 "use client";
 import React, { useEffect, useState, useCallback } from "react";
 import Image from "next/image";
-import { useSelector, useDispatch } from "react-redux";
-import { RootState, AppDispatch } from "@/lib/store";
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { verifySignUpThunk } from "@/lib/features/authentication/authThunk";
 import {
   clearMessage,
@@ -18,12 +17,10 @@ import { Spinner } from "@/components/ui/spinner";
 export default function VerifyRegister() {
   const { toast } = useToast();
   const router = useRouter();
-  const dispatch = useDispatch<AppDispatch>();
-  const { email } = useSelector(
-    (state: RootState) => state.auth.signUp.signUpState
-  );
-  const { isLoading, error, verifySignUpState } = useSelector(
-    (state: RootState) => state.auth.verifySignUp
+  const dispatch = useAppDispatch();
+  const { email } = useAppSelector((state) => state.auth.signUp.signUpState);
+  const { isLoading, error, verifySignUpState } = useAppSelector(
+    (state) => state.auth.verifySignUp
   );
   const { message } = verifySignUpState;
 
