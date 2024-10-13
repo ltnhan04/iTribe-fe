@@ -1,21 +1,33 @@
 "use client";
-import React from "react";
+import React, { useState, memo, useEffect } from "react";
 import {
   InputOTP,
   InputOTPGroup,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
 import { REGEXP_ONLY_DIGITS } from "input-otp";
+
 interface InputOTPProps {
   getOTP: (otp: string) => void;
+  isLoading: boolean;
+  resetTrigger: boolean;
 }
-export default function InputOTPPattern({ getOTP }: InputOTPProps) {
+
+function InputOTPPattern({ getOTP, isLoading, resetTrigger }: InputOTPProps) {
+  const [value, setValue] = useState<string>("");
+
+  useEffect(() => {
+    setValue("");
+  }, [resetTrigger]);
   const handleChangeOTP = (otp: string) => {
+    setValue(otp);
     getOTP(otp);
-    console.log(otp);
   };
+
   return (
     <InputOTP
+      disabled={isLoading}
+      value={value}
       maxLength={6}
       onChange={handleChangeOTP}
       pattern={REGEXP_ONLY_DIGITS}
@@ -32,3 +44,5 @@ export default function InputOTPPattern({ getOTP }: InputOTPProps) {
     </InputOTP>
   );
 }
+
+export default memo(InputOTPPattern);

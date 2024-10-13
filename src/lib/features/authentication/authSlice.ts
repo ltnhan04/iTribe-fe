@@ -3,6 +3,7 @@ import { SignUpState, LoginState, VerifySignUpState } from "./authType";
 import {
   loginThunk,
   signUpThunk,
+  verifySignUpThunk,
 } from "@/lib/features/authentication/authThunk";
 
 export interface AuthState {
@@ -88,6 +89,24 @@ const authSlice = createSlice({
     builder.addCase(signUpThunk.rejected, (state, action) => {
       state.signUp.isLoading = false;
       state.signUp.error = action.payload
+        ? (action.payload as string)
+        : action.error.message || "Có lỗi xảy ra!";
+    });
+    builder.addCase(verifySignUpThunk.pending, (state) => {
+      state.verifySignUp.isLoading = true;
+      state.verifySignUp.error = "";
+    });
+    builder.addCase(
+      verifySignUpThunk.fulfilled,
+      (state, action: PayloadAction<VerifySignUpState>) => {
+        state.verifySignUp.isLoading = false;
+        state.verifySignUp.verifySignUpState = action.payload;
+        state.verifySignUp.error = "";
+      }
+    );
+    builder.addCase(verifySignUpThunk.rejected, (state, action) => {
+      state.verifySignUp.isLoading = false;
+      state.verifySignUp.error = action.payload
         ? (action.payload as string)
         : action.error.message || "Có lỗi xảy ra!";
     });
