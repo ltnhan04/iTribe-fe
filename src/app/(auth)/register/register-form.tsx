@@ -172,6 +172,7 @@ export default function RegisterForm() {
           )}
         />
         <Button
+          disabled={isLoading}
           type="submit"
           className="!mt-8 w-full transition-colors duration-300 ease-in-out hover:bg-[#333]"
         >
