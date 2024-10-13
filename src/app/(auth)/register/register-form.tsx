@@ -15,8 +15,7 @@ import {
 import { RegisterBody, RegisterBodyType } from "@/schemaValidation/auth.schema";
 import { useRouter } from "next/navigation";
 import { signUpThunk } from "@/lib/features/authentication/authThunk";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "@/lib/store";
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import {
   clearMessage,
   clearError,
@@ -27,10 +26,10 @@ import { ToastAction } from "@radix-ui/react-toast";
 
 export default function RegisterForm() {
   const router = useRouter();
-  const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useAppDispatch();
   const { toast } = useToast();
-  const { isLoading, error, signUpState } = useSelector(
-    (state: RootState) => state.auth.signUp
+  const { isLoading, error, signUpState } = useAppSelector(
+    (state) => state.auth.signUp
   );
   const { message } = signUpState;
 

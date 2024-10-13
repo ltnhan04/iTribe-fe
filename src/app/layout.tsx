@@ -20,12 +20,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        id="root"
-        className={`${roboto.className} bg-black`}
-        suppressHydrationWarning={true}
-      >
+    <html lang="en" suppressHydrationWarning>
+      <body id="root" className={`${roboto.className} bg-black`}>
         <Toaster />
         <StoreProvider>{children}</StoreProvider>
       </body>
