@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
@@ -13,8 +13,22 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { RegisterBody, RegisterBodyType } from "@/schemaValidation/auth.schema";
+import { useRouter } from "next/navigation";
+import { signUpThunk } from "@/lib/features/authentication/authThunk";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/lib/store";
+import { ReloadIcon } from "@radix-ui/react-icons";
+import { useToast } from "@/hooks/use-toast";
+import { ToastAction } from "@radix-ui/react-toast";
 
 export default function RegisterForm() {
+  const router = useRouter();
+  const dispatch = useDispatch<AppDispatch>();
+  const { toast } = useToast();
+  const { isLoading, error, signUpState } = useSelector(
+    (state: RootState) => state.auth.signUp
+  );
+  const { message } = signUpState;
   const form = useForm<RegisterBodyType>({
     resolver: zodResolver(RegisterBody),
     defaultValues: {
@@ -25,8 +39,43 @@ export default function RegisterForm() {
   });
 
   const onSubmit = async (values: RegisterBodyType) => {
-    console.log(values);
+    const { name, email, password } = values;
+    const user = { name, email, password };
+    await dispatch(signUpThunk({ user, router }));
   };
+
+  useEffect(() => {
+    if (error) {
+      toast({
+        variant: "destructive",
+        title: "Oops! Something went wrong.",
+        description: error,
+        action: <ToastAction altText="Try again">Try Again!</ToastAction>,
+      });
+    }
+    if (message) {
+      toast({
+        className: `
+          bg-[#0D99FF] 
+          text-white    
+          border border-[#0B85DC] 
+          rounded-lg 
+          shadow-lg 
+          p-4 
+          flex items-center
+          transition-all 
+          duration-300 
+          ease-in-out
+        `,
+        description: (
+          <span className="flex items-center gap-2">
+            <ReloadIcon className="w-4 h-4 text-white" />
+            {message}
+          </span>
+        ),
+      });
+    }
+  }, [error, toast, message]);
   return (
     <Form {...form}>
       <form
@@ -45,7 +94,10 @@ export default function RegisterForm() {
                   type="text"
                   {...field}
                   {...form.register("name")}
-                  className=" text-gray-600"
+                  disabled={isLoading}
+                  className={`text-gray-600 ${
+                    isLoading && "cursor-not-allowed"
+                  }`}
                 />
               </FormControl>
               <FormMessage />
@@ -64,7 +116,10 @@ export default function RegisterForm() {
                   type="email"
                   {...field}
                   {...form.register("email")}
-                  className=" text-gray-600"
+                  disabled={isLoading}
+                  className={`text-gray-600 ${
+                    isLoading && "cursor-not-allowed"
+                  }`}
                 />
               </FormControl>
               <FormMessage />
@@ -84,7 +139,10 @@ export default function RegisterForm() {
                   type="password"
                   {...field}
                   {...form.register("password")}
-                  className=" text-gray-600"
+                  disabled={isLoading}
+                  className={`text-gray-600 ${
+                    isLoading && "cursor-not-allowed"
+                  }`}
                 />
               </FormControl>
               <FormMessage />
@@ -103,7 +161,10 @@ export default function RegisterForm() {
                   type="password"
                   {...field}
                   {...form.register("confirmPassword")}
-                  className=" text-gray-600"
+                  disabled={isLoading}
+                  className={`text-gray-600 ${
+                    isLoading && "cursor-not-allowed"
+                  }`}
                 />
               </FormControl>
               <FormMessage />
@@ -114,15 +175,14 @@ export default function RegisterForm() {
           type="submit"
           className="!mt-8 w-full transition-colors duration-300 ease-in-out hover:bg-[#333]"
         >
-          Đăng ký
-          {/* {!isLoading ? (
-        "Đăng nhập"
-      ) : (
-        <>
-          <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
-          Please wait...
-        </>
-      )} */}
+          {!isLoading ? (
+            "Đăng ký"
+          ) : (
+            <>
+              <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+              Please wait...
+            </>
+          )}
         </Button>
       </form>
     </Form>
