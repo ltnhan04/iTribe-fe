@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
@@ -17,7 +17,7 @@ import { useRouter } from "next/navigation";
 import { signUpThunk } from "@/lib/features/authentication/authThunk";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/lib/store";
-import { ReloadIcon } from "@radix-ui/react-icons";
+import { ReloadIcon, EyeOpenIcon, EyeNoneIcon } from "@radix-ui/react-icons";
 import { useToast } from "@/hooks/use-toast";
 import { ToastAction } from "@radix-ui/react-toast";
 
@@ -29,9 +29,11 @@ export default function RegisterForm() {
     (state: RootState) => state.auth.signUp
   );
   const { message } = signUpState;
+
   const form = useForm<RegisterBodyType>({
     resolver: zodResolver(RegisterBody),
     defaultValues: {
+      name: "",
       email: "",
       password: "",
       confirmPassword: "",
@@ -44,6 +46,10 @@ export default function RegisterForm() {
     await dispatch(signUpThunk({ user, router }));
   };
 
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [showConfirmPassword, setShowConfirmPassword] =
+    useState<boolean>(false);
+
   useEffect(() => {
     if (error) {
       toast({
@@ -55,18 +61,7 @@ export default function RegisterForm() {
     }
     if (message) {
       toast({
-        className: `
-          bg-[#0D99FF] 
-          text-white    
-          border border-[#0B85DC] 
-          rounded-lg 
-          shadow-lg 
-          p-4 
-          flex items-center
-          transition-all 
-          duration-300 
-          ease-in-out
-        `,
+        className: `bg-[#0D99FF] text-white border border-[#0B85DC] rounded-lg shadow-lg p-4 flex items-center transition-all duration-300 ease-in-out`,
         description: (
           <span className="flex items-center gap-2">
             <ReloadIcon className="w-4 h-4 text-white" />
@@ -76,6 +71,7 @@ export default function RegisterForm() {
       });
     }
   }, [error, toast, message]);
+
   return (
     <Form {...form}>
       <form
@@ -93,10 +89,9 @@ export default function RegisterForm() {
                   placeholder="Your Name"
                   type="text"
                   {...field}
-                  {...form.register("name")}
                   disabled={isLoading}
-                  className={`text-gray-600 ${
-                    isLoading && "cursor-not-allowed"
+                  className={`text-gray-600 transition duration-200 ease-in-out ${
+                    isLoading ? "cursor-not-allowed opacity-50" : "opacity-100"
                   }`}
                 />
               </FormControl>
@@ -104,6 +99,7 @@ export default function RegisterForm() {
             </FormItem>
           )}
         />
+
         <FormField
           control={form.control}
           name="email"
@@ -115,10 +111,9 @@ export default function RegisterForm() {
                   placeholder="example@gmail.com"
                   type="email"
                   {...field}
-                  {...form.register("email")}
                   disabled={isLoading}
-                  className={`text-gray-600 ${
-                    isLoading && "cursor-not-allowed"
+                  className={`text-gray-600 transition duration-200 ease-in-out ${
+                    isLoading ? "cursor-not-allowed opacity-50" : "opacity-100"
                   }`}
                 />
               </FormControl>
@@ -134,21 +129,36 @@ export default function RegisterForm() {
             <FormItem>
               <FormLabel className="text-gray-500">Mật khẩu</FormLabel>
               <FormControl>
-                <Input
-                  placeholder="8+ characters"
-                  type="password"
-                  {...field}
-                  {...form.register("password")}
-                  disabled={isLoading}
-                  className={`text-gray-600 ${
-                    isLoading && "cursor-not-allowed"
-                  }`}
-                />
+                <div className="relative">
+                  <Input
+                    placeholder="8+ characters"
+                    type={showPassword ? "text" : "password"}
+                    {...field}
+                    disabled={isLoading}
+                    className={`text-gray-600 transition duration-200 ease-in-out ${
+                      isLoading
+                        ? "cursor-not-allowed opacity-50"
+                        : "opacity-100"
+                    }`}
+                  />
+                  <button
+                    type="button"
+                    className="absolute inset-y-0 right-0 flex items-center pr-3 transition duration-200 ease-in-out hover:scale-110"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? (
+                      <EyeNoneIcon className="w-5 h-5 text-primary" />
+                    ) : (
+                      <EyeOpenIcon className="w-5 h-5 text-primary" />
+                    )}
+                  </button>
+                </div>
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
+
         <FormField
           control={form.control}
           name="confirmPassword"
@@ -156,21 +166,36 @@ export default function RegisterForm() {
             <FormItem>
               <FormLabel className="text-gray-500">Nhập lại mật khẩu</FormLabel>
               <FormControl>
-                <Input
-                  placeholder="8+ characters"
-                  type="password"
-                  {...field}
-                  {...form.register("confirmPassword")}
-                  disabled={isLoading}
-                  className={`text-gray-600 ${
-                    isLoading && "cursor-not-allowed"
-                  }`}
-                />
+                <div className="relative">
+                  <Input
+                    placeholder="8+ characters"
+                    type={showConfirmPassword ? "text" : "password"}
+                    {...field}
+                    disabled={isLoading}
+                    className={`text-gray-600 transition duration-200 ease-in-out ${
+                      isLoading
+                        ? "cursor-not-allowed opacity-50"
+                        : "opacity-100"
+                    }`}
+                  />
+                  <button
+                    type="button"
+                    className="absolute inset-y-0 right-0 flex items-center pr-3 transition duration-200 ease-in-out hover:scale-110"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  >
+                    {showConfirmPassword ? (
+                      <EyeNoneIcon className="w-5 h-5 text-primary" />
+                    ) : (
+                      <EyeOpenIcon className="w-5 h-5 text-primary" />
+                    )}
+                  </button>
+                </div>
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
+
         <Button
           disabled={isLoading}
           type="submit"
