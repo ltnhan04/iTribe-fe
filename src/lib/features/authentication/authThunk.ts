@@ -19,7 +19,7 @@ export const loginThunk = createAsyncThunk(
     try {
       const response = await login(user);
       if (response.status === 200) {
-        router.push("/");
+        router.push("/iphone");
         return response.data;
       } else {
         return rejectWithValue(response.data.message);
@@ -75,7 +75,7 @@ export const verifySignUpThunk = createAsyncThunk(
     try {
       const response = await verifySignUp(verify);
       if (response.status === 200) {
-        router.push("/");
+        router.push("/iphone");
         return response.data;
       } else {
         return rejectWithValue(response.data.message);
