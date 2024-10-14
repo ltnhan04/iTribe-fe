@@ -27,10 +27,12 @@ export default function Navbar() {
               quality={100}
             />
           </Link>
+          <Link href={"/iphone"}>
+            <p className="px-5 text-sm cursor-pointer text-gray font-semibold hover:text-white transition-all">
+              iPhone
+            </p>
+          </Link>
 
-          <p className="px-5 text-sm cursor-pointer text-gray font-semibold hover:text-white transition-all">
-            iPhone
-          </p>
           <div className="flex items-center gap-5 text-white">
             <ShoppingCart className="w-5 h-5 sm:h-6 sm:w-6" />
             <DropdownMenu>
