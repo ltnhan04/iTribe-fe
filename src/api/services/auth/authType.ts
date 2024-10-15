@@ -13,3 +13,5 @@ export interface VerifySignUpType {
   email: string;
   otp: string;
 }
+
+

@@ -8,7 +8,7 @@ import {
 
 export interface AuthState {
   login: {
-    loginState: LoginState;
+    loginState: { message: string };
     isLoading: boolean;
     error: string;
   };
@@ -18,15 +18,15 @@ export interface AuthState {
     error: string;
   };
   verifySignUp: {
-    verifySignUpState: VerifySignUpState;
+    verifySignUpState: { message: string };
     isLoading: boolean;
     error: string;
   };
+  accessToken: string;
 }
 const initialState: AuthState = {
   login: {
     loginState: {
-      accessToken: "",
       message: "",
     },
     isLoading: false,
@@ -42,12 +42,12 @@ const initialState: AuthState = {
   },
   verifySignUp: {
     verifySignUpState: {
-      accessToken: "",
       message: "",
     },
     isLoading: false,
     error: "",
   },
+  accessToken: "",
 };
 
 const authSlice = createSlice({
@@ -78,6 +78,10 @@ const authSlice = createSlice({
         state.verifySignUp.error = "";
       }
     },
+    updateAccessToken: (state, action: PayloadAction<string>) => {
+      const newAccessToken = action.payload;
+      state.accessToken = newAccessToken;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(loginThunk.pending, (state) => {
@@ -88,7 +92,9 @@ const authSlice = createSlice({
       loginThunk.fulfilled,
       (state, action: PayloadAction<LoginState>) => {
         state.login.isLoading = false;
-        state.login.loginState = action.payload;
+        const { accessToken, message } = action.payload;
+        state.login.loginState.message = message;
+        state.accessToken = accessToken;
         state.login.error = "";
       }
     );
@@ -125,7 +131,9 @@ const authSlice = createSlice({
       verifySignUpThunk.fulfilled,
       (state, action: PayloadAction<VerifySignUpState>) => {
         state.verifySignUp.isLoading = false;
-        state.verifySignUp.verifySignUpState = action.payload;
+        const { message, accessToken } = action.payload;
+        state.verifySignUp.verifySignUpState.message = message;
+        state.accessToken = accessToken;
         state.verifySignUp.error = "";
       }
     );
@@ -137,5 +145,6 @@ const authSlice = createSlice({
     });
   },
 });
-export const { clearMessage, clearError } = authSlice.actions;
+export const { clearMessage, clearError, updateAccessToken } =
+  authSlice.actions;
 export default authSlice.reducer;
