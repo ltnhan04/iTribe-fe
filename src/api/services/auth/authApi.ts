@@ -1,5 +1,5 @@
 import axios from "axios";
-import { axiosInstance } from "@/api/services/auth/axiosInstance";
+import { axiosInstance } from "@/api/axiosInstance";
 
 import {
   SignUpType,
