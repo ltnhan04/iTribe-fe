@@ -1,4 +1,6 @@
 import axios from "axios";
+import { axiosInstance } from "@/api/services/auth/axiosInstance";
+
 import {
   SignUpType,
   LoginType,
@@ -35,6 +37,21 @@ export const verifySignUp = async ({ email, otp }: VerifySignUpType) => {
       email,
       otp,
     }
+  );
+  return response;
+};
+
+export const getProfile = async () => {
+  const response = await axiosInstance.get(
+    `${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/auth/profile`
+  );
+  return response;
+};
+
+export const refreshToken = async () => {
+  const response = await axios.post(
+    `${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/auth/refresh-token`,
+    { withCredentials: true }
   );
   return response;
 };

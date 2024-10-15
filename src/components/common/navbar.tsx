@@ -7,7 +7,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { User, ShoppingCart } from "lucide-react";
+import { User, ShoppingCart, Heart } from "lucide-react";
 
 import React from "react";
 
@@ -35,6 +35,7 @@ export default function Navbar() {
 
           <div className="flex items-center gap-5 text-white">
             <ShoppingCart className="w-5 h-5 sm:h-6 sm:w-6" />
+            <Heart className="w-5 h-5 sm:h-6 sm:w-6" />
             <DropdownMenu>
               <DropdownMenuTrigger>
                 <User className="w-5 h-5 sm:h-6 sm:w-6" />
