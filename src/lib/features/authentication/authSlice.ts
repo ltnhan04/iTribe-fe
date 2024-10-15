@@ -23,6 +23,7 @@ export interface AuthState {
     error: string;
   };
   accessToken: string;
+  name: string;
 }
 const initialState: AuthState = {
   login: {
@@ -48,6 +49,7 @@ const initialState: AuthState = {
     error: "",
   },
   accessToken: "",
+  name: "",
 };
 
 const authSlice = createSlice({
@@ -92,9 +94,10 @@ const authSlice = createSlice({
       loginThunk.fulfilled,
       (state, action: PayloadAction<LoginState>) => {
         state.login.isLoading = false;
-        const { accessToken, message } = action.payload;
+        const { accessToken, message, name } = action.payload;
         state.login.loginState.message = message;
         state.accessToken = accessToken;
+        state.name = name;
         state.login.error = "";
       }
     );
@@ -131,8 +134,9 @@ const authSlice = createSlice({
       verifySignUpThunk.fulfilled,
       (state, action: PayloadAction<VerifySignUpState>) => {
         state.verifySignUp.isLoading = false;
-        const { message, accessToken } = action.payload;
+        const { message, accessToken, name } = action.payload;
         state.verifySignUp.verifySignUpState.message = message;
+        state.name = name;
         state.accessToken = accessToken;
         state.verifySignUp.error = "";
       }

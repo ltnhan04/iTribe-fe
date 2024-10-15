@@ -5,11 +5,13 @@ export interface SignUpState {
 
 export interface LoginState {
   accessToken: string;
+  name: string;
   message: string;
 }
 
 export interface VerifySignUpState {
   accessToken: string;
+  name: string;
   message: string;
 }
 
