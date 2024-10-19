@@ -23,7 +23,7 @@ const Model = () => {
   const [model, setModel] = useState<ModelType>({
     title: "iPhone 16 Pro Max Titan Tự Nhiên",
     color: ["#8F8A81", "#ffe7b9", "#6f6c64"],
-    img: "/assets/images/rick-roll.jpg",
+    img: "/assets/images/dom-dom.jpg",
   });
 
   const cameraControlSmall = useRef<any>(null);

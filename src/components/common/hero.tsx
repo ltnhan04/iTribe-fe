@@ -40,7 +40,7 @@ export default function Hero() {
           className="flex flex-col items-center opacity-0 translate-y-20"
         >
           <Link
-            href={"#"}
+            href={"/iphone"}
             className="px-4 py-2 md:px-5 md:py-2 rounded-3xl text-sm md:text-lg text-white bg-blue my-5 transition-colors duration-200 ease-in-out hover:bg-transparent border border-transparent hover:border-blue hover:text-blue"
           >
             Mua

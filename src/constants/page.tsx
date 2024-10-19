@@ -82,3 +82,19 @@ export const sizes = [
   { label: '6.3"', value: "small" },
   { label: '6.9"', value: "large" },
 ];
+
+export const carousel = [
+  "/assets/images/img1.png",
+  "/assets/images/img2.png",
+  "/assets/images/img3.png",
+];
+
+export const categories = [
+  "Tất cả",
+  "iPhone 16",
+  "iPhone 15",
+  "iPhone 14",
+  "iPhone 13",
+  "iPhone 12",
+  "iPhone 11",
+];
