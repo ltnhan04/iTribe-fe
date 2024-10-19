@@ -5,8 +5,8 @@ import { footerLinks } from "@/constants/page";
 
 export default function Footer() {
   return (
-    <div className="container max-w-7xl mx-auto sm:px-5">
-      <div className="w-full py-5 px-5 sm:px-10">
+    <div className="container max-w-7xl mx-auto sm:px-10">
+      <div className="w-full py-5 px-5">
         <div className="flex items-center justify-between">
           <Link href={"/"}>
             <Image
