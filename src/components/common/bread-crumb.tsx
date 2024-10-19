@@ -9,7 +9,7 @@ import {
 export default function BreadCrumb() {
   return (
     <Breadcrumb>
-      <BreadcrumbList className="font-semibold">
+      <BreadcrumbList className="font-semibold text-[10px] sm:text-base">
         <BreadcrumbItem>
           <BreadcrumbLink href="/">Home</BreadcrumbLink>
         </BreadcrumbItem>
