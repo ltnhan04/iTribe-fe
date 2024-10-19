@@ -10,7 +10,7 @@ export default function Layout({
   return (
     <>
       <Navbar />
-      {children}
+      <div className="bg-[#f3f4f6]">{children}</div>
       <Footer />
     </>
   );

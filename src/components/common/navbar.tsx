@@ -9,17 +9,15 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAccessTokenExpired } from "@/utils/expired-token";
-import { useAppSelector } from "@/lib/hooks";
-import { User, ShoppingCart, Heart } from "lucide-react";
+import { User, ShoppingCart, Heart, UserCheck } from "lucide-react";
 import React from "react";
 
 export default function Navbar() {
-  const { name } = useAppSelector((state) => state.auth);
   const isTokenExpired = useAccessTokenExpired();
 
   return (
-    <div className="container max-w-7xl mx-auto sm:px-5">
-      <div className="w-full px-5 sm:px-10 py-5 flex items-center justify-between">
+    <div className="container max-w-7xl mx-auto sm:px-10">
+      <div className="w-full px-5 py-5 flex items-center justify-between">
         <nav className="flex items-center justify-between w-full">
           <Link href={"/"}>
             <Image
@@ -32,6 +30,7 @@ export default function Navbar() {
               quality={100}
             />
           </Link>
+
           <Link href={"/iphone"}>
             <p className="px-5 text-sm cursor-pointer text-gray font-semibold hover:text-white transition-all">
               iPhone
@@ -44,7 +43,11 @@ export default function Navbar() {
 
             <DropdownMenu>
               <DropdownMenuTrigger>
-                <User className="w-5 h-5 sm:h-6 sm:w-6" />
+                {isTokenExpired ? (
+                  <User className="w-5 h-5 sm:h-6 sm:w-6" />
+                ) : (
+                  <UserCheck className="w-5 h-5 sm:h-6 sm:w-6" />
+                )}
               </DropdownMenuTrigger>
 
               <DropdownMenuContent className="w-36">
@@ -84,7 +87,6 @@ export default function Navbar() {
                 </DropdownMenuGroup>
               </DropdownMenuContent>
             </DropdownMenu>
-            {!isTokenExpired && <div>Hi, {name}</div>}
           </div>
         </nav>
       </div>
