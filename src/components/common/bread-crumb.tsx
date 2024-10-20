@@ -9,15 +9,25 @@ import {
 export default function BreadCrumb() {
   return (
     <Breadcrumb>
-      <BreadcrumbList className="font-semibold text-[10px] sm:text-base">
+      <BreadcrumbList className="font-medium  text-[10px] sm:text-sm">
         <BreadcrumbItem>
-          <BreadcrumbLink href="/">Home</BreadcrumbLink>
+          <BreadcrumbLink
+            className="text-black transition-colors duration-300 ease-out hover:text-blue"
+            href="/"
+          >
+            Home
+          </BreadcrumbLink>
         </BreadcrumbItem>
         <BreadcrumbSeparator>
           <SlashIcon />
         </BreadcrumbSeparator>
         <BreadcrumbItem>
-          <BreadcrumbLink href="/iphone">iPhone</BreadcrumbLink>
+          <BreadcrumbLink
+            className="text-black transition-colors duration-300 ease-out hover:text-blue"
+            href="/iphone"
+          >
+            iPhone
+          </BreadcrumbLink>
         </BreadcrumbItem>
       </BreadcrumbList>
     </Breadcrumb>

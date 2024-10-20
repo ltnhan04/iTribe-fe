@@ -90,11 +90,32 @@ export const carousel = [
 ];
 
 export const categories = [
-  "Tất cả",
-  "iPhone 16",
-  "iPhone 15",
-  "iPhone 14",
-  "iPhone 13",
-  "iPhone 12",
-  "iPhone 11",
+  {
+    category: "Tất cả",
+    url: "",
+  },
+  {
+    category: "iPhone 16",
+    url: "iphone-16",
+  },
+  {
+    category: "iPhone 15",
+    url: "iphone-15",
+  },
+  {
+    category: "iPhone 14",
+    url: "iphone-14",
+  },
+  {
+    category: "iPhone 13",
+    url: "iphone-13",
+  },
+  {
+    category: "iPhone 12",
+    url: "iphone-12",
+  },
+  {
+    category: "iPhone 11",
+    url: "iphone-11",
+  },
 ];

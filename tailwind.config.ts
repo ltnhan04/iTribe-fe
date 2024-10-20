@@ -32,6 +32,7 @@ const config: Config = {
         white: "#FFFFFF",
         gray: {
           DEFAULT: "#86868b",
+          primary: "#f3f4f6",
           100: "#94928d",
           200: "#afafaf",
           300: "#42424570",

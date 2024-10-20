@@ -18,26 +18,27 @@ export default function Navbar() {
   return (
     <div className="container max-w-7xl mx-auto sm:px-10">
       <div className="w-full px-5 py-5 flex items-center justify-between">
-        <nav className="flex items-center justify-between w-full">
-          <Link href={"/"}>
+        <nav className="flex items-center w-full">
+          <Link className="w-fit" href={"/"}>
             <Image
               src={"/assets/images/i-Tribe-logo.png"}
-              width={64}
-              height={64}
-              className="cursor-pointer w-12 h-12"
+              width={48}
+              height={48}
+              layout="intrinsic"
+              className="cursor-pointer w-12 h-12 object-contain"
               priority={true}
               alt="iTribe logo"
               quality={100}
             />
           </Link>
 
-          <Link href={"/iphone"}>
-            <p className="px-5 text-sm cursor-pointer text-gray font-semibold hover:text-white transition-all">
+          <Link className=" flex flex-1 justify-center" href={"/iphone"}>
+            <p className=" text-sm cursor-pointer text-gray font-semibold hover:text-white transition-all">
               iPhone
             </p>
           </Link>
 
-          <div className="flex items-center gap-5 text-white">
+          <div className="flex items-center w-fit gap-2 sm:gap-4 text-white">
             <ShoppingCart className="w-5 h-5 sm:h-6 sm:w-6" />
             <Heart className="w-5 h-5 sm:h-6 sm:w-6" />
 
