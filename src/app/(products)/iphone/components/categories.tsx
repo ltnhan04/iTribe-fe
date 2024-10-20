@@ -1,12 +1,25 @@
 "use client";
 import React, { useRef, useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { categories } from "@/constants/page";
 
 const Categories = () => {
   const router = useRouter();
+  const pathName = usePathname();
   const bottomRef = useRef<HTMLSpanElement | null>(null);
   const [selectedIndex, setSelectedIndex] = useState(0);
+
+  useEffect(() => {
+    if (pathName) {
+      const currentSlug = pathName.split("/").pop();
+      const findIndex = categories.findIndex(
+        (value) => value.url === currentSlug
+      );
+      if (findIndex !== -1) {
+        setSelectedIndex(findIndex);
+      }
+    }
+  }, [pathName]);
 
   useEffect(() => {
     if (bottomRef.current) {
