@@ -32,6 +32,7 @@ const config: Config = {
         white: "#FFFFFF",
         gray: {
           DEFAULT: "#86868b",
+          border: "#d1d5db",
           primary: "#f3f4f6",
           100: "#94928d",
           200: "#afafaf",
