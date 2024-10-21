@@ -18,7 +18,7 @@ const ProductPage: React.FC<ProductProps> = ({
   colors,
 }) => {
   return (
-    <div className="px-5 py-3 bg-gray-primary w-full cursor-pointer max-w-60 border border-gray-border rounded-xl transition-shadow duration-200 ease-out hover:shadow-lg shadow-md">
+    <div className="px-5 py-3 bg-gray-primary w-full cursor-pointer max-w-60  border-gray-border rounded-xl transition-shadow duration-200 ease-out hover:shadow-lg shadow-md">
       <div className="w-full flex flex-col items-center">
         <div className="relative w-[200px] h-[250px]">
           <Image
@@ -35,7 +35,7 @@ const ProductPage: React.FC<ProductProps> = ({
             colors.map((value, index) => (
               <span
                 key={index}
-                className="w-5 h-5 rounded-full border-2 outline outline-2 outline-offset-2 transition-all duration-300"
+                className="w-3 h-3 rounded-full border-2 outline outline-2 outline-offset-2 transition-all duration-300"
                 style={{
                   backgroundColor: value,
                   borderColor: value,
