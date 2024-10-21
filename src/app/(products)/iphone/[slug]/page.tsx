@@ -9,7 +9,7 @@ const SlugPage: React.FC<SlugProps> = ({ params }) => {
   return (
     <div className="container mx-auto px-4">
       <h1 className="text-2xl font-bold text-center py-6">{params.slug}</h1>
-      <div className="py-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="py-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 place-items-center">
         {data.map((value, index) => (
           <ProductPage
             key={index}
