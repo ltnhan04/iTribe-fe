@@ -6,10 +6,16 @@ import {
   BreadcrumbList,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-export default function BreadCrumb() {
+import React from "react";
+
+interface BreadCrumbProps {
+  slug?: string;
+}
+
+const BreadCrumb: React.FC<BreadCrumbProps> = ({ slug }) => {
   return (
     <Breadcrumb>
-      <BreadcrumbList className="font-medium  text-[10px] sm:text-sm">
+      <BreadcrumbList className="font-medium text-[10px] sm:text-sm">
         <BreadcrumbItem>
           <BreadcrumbLink
             className="text-black transition-colors duration-300 ease-out hover:text-blue"
@@ -18,9 +24,11 @@ export default function BreadCrumb() {
             Home
           </BreadcrumbLink>
         </BreadcrumbItem>
+
         <BreadcrumbSeparator>
           <SlashIcon />
         </BreadcrumbSeparator>
+
         <BreadcrumbItem>
           <BreadcrumbLink
             className="text-black transition-colors duration-300 ease-out hover:text-blue"
@@ -29,7 +37,25 @@ export default function BreadCrumb() {
             iPhone
           </BreadcrumbLink>
         </BreadcrumbItem>
+
+        {slug && (
+          <>
+            <BreadcrumbSeparator>
+              <SlashIcon />
+            </BreadcrumbSeparator>
+            <BreadcrumbItem>
+              <BreadcrumbLink
+                className="text-black transition-colors duration-300 ease-out hover:text-blue"
+                href={`/${slug}`} // Sử dụng template literal đúng cách
+              >
+                {slug}
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+          </>
+        )}
       </BreadcrumbList>
     </Breadcrumb>
   );
-}
+};
+
+export default BreadCrumb;
