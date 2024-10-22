@@ -1,5 +1,5 @@
 "use client";
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useLayoutEffect, useState } from "react";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { useRouter, usePathname } from "next/navigation";
 import { categories } from "@/constants/page";
@@ -7,11 +7,23 @@ import { categories } from "@/constants/page";
 const Categories = () => {
   const router = useRouter();
   const pathName = usePathname();
-  const bottomRef = useRef<HTMLButtonElement | null>(null);
-  const [selectedIndex, setSelectedIndex] = useState(0);
+  const bottomRef = useRef<HTMLSpanElement | null>(null);
+
+  const initialSelectedIndex = () => {
+    if (pathName) {
+      const currentPath = pathName.split("/").pop();
+      const findIndex = categories.findIndex(
+        (value) => value.url === currentPath
+      );
+      return findIndex !== -1 ? findIndex : 0;
+    }
+    return 0;
+  };
+
+  const [selectedIndex, setSelectedIndex] = useState(initialSelectedIndex);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const handleResizeWindow = () => {
       setIsMobile(window.innerWidth < 1024);
     };
@@ -20,19 +32,7 @@ const Categories = () => {
     return () => window.removeEventListener("resize", handleResizeWindow);
   }, []);
 
-  useEffect(() => {
-    if (pathName) {
-      const currentSlug = pathName.split("/").pop();
-      const findIndex = categories.findIndex(
-        (value) => value.url === currentSlug
-      );
-      if (findIndex !== -1) {
-        setSelectedIndex(findIndex);
-      }
-    }
-  }, [pathName]);
-
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (bottomRef.current) {
       bottomRef.current.classList.add(
         "border-b-2",
@@ -56,10 +56,9 @@ const Categories = () => {
               <span
                 key={index}
                 onClick={() => handleSlugChange(value.url, index)}
-                ref={index === 0 ? bottomRef : null}
                 className={`${
                   index === selectedIndex
-                    ? "text-blue border-b-2 border-blue"
+                    ? "text-blue border-b-2 border-b-blue"
                     : ""
                 } text-sm text-black py-1 px-2 font-medium transition-colors duration-300 ease-out hover:text-blue cursor-pointer border-b-2 border-transparent hover:border-blue whitespace-nowrap`}
               >
@@ -73,10 +72,9 @@ const Categories = () => {
             <span
               key={index}
               onClick={() => handleSlugChange(value.url, index)}
-              ref={index === 0 ? bottomRef : null}
               className={`${
                 index === selectedIndex
-                  ? "text-blue border-b-2 border-blue"
+                  ? "text-blue border-b-2 border-b-blue"
                   : ""
               } text-sm border text-black py-1 px-2 font-medium transition-colors duration-300 ease-out hover:text-blue cursor-pointer border-b-2 border-transparent hover:border-b-blue`}
             >

@@ -24,7 +24,6 @@ export default function Navbar() {
               src={"/assets/images/i-Tribe-logo.png"}
               width={48}
               height={48}
-              layout="intrinsic"
               className="cursor-pointer w-12 h-12 object-contain"
               priority={true}
               alt="iTribe logo"
