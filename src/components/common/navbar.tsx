@@ -12,84 +12,96 @@ import { useAccessTokenExpired } from "@/utils/expired-token";
 import { User, ShoppingCart, Heart, UserCheck } from "lucide-react";
 import React from "react";
 
-export default function Navbar() {
+interface NavbarProps {
+  isFixed?: boolean;
+}
+
+const Navbar: React.FC<NavbarProps> = ({ isFixed }) => {
   const isTokenExpired = useAccessTokenExpired();
 
   return (
-    <div className="container max-w-7xl mx-auto sm:px-10">
-      <div className="w-full px-5 py-5 flex items-center justify-between">
-        <nav className="flex items-center w-full">
-          <Link className="w-fit" href={"/"}>
-            <Image
-              src={"/assets/images/i-Tribe-logo.png"}
-              width={48}
-              height={48}
-              className="cursor-pointer w-12 h-12 object-contain"
-              priority={true}
-              alt="iTribe logo"
-              quality={100}
-            />
-          </Link>
+    <div
+      className={`bg-black w-full ${
+        isFixed ? " fixed top-0 left-0 right-0 z-10" : " "
+      } `}
+    >
+      <div className="container max-w-7xl mx-auto sm:px-10  ">
+        <div className="w-full px-5 py-5 flex items-center justify-between">
+          <nav className="flex items-center w-full">
+            <Link className="w-fit" href={"/"}>
+              <Image
+                src={"/assets/images/i-Tribe-logo.png"}
+                width={48}
+                height={48}
+                className="cursor-pointer w-12 h-12 object-contain"
+                priority={true}
+                alt="iTribe logo"
+                quality={100}
+              />
+            </Link>
 
-          <Link className=" flex flex-1 justify-center" href={"/iphone"}>
-            <p className=" text-sm cursor-pointer text-gray font-semibold hover:text-white transition-all">
-              iPhone
-            </p>
-          </Link>
+            <Link className=" flex flex-1 justify-center" href={"/iphone"}>
+              <p className=" text-sm cursor-pointer text-gray font-semibold hover:text-white transition-all">
+                iPhone
+              </p>
+            </Link>
 
-          <div className="flex items-center w-fit gap-2 sm:gap-4 text-white">
-            <ShoppingCart className="w-5 h-5 sm:h-6 sm:w-6" />
-            <Heart className="w-5 h-5 sm:h-6 sm:w-6" />
+            <div className="flex items-center w-fit gap-2 sm:gap-4 text-white">
+              <ShoppingCart className="w-5 h-5 sm:h-6 sm:w-6" />
+              <Heart className="w-5 h-5 sm:h-6 sm:w-6" />
 
-            <DropdownMenu>
-              <DropdownMenuTrigger>
-                {isTokenExpired ? (
-                  <User className="w-5 h-5 sm:h-6 sm:w-6" />
-                ) : (
-                  <UserCheck className="w-5 h-5 sm:h-6 sm:w-6" />
-                )}
-              </DropdownMenuTrigger>
-
-              <DropdownMenuContent className="w-36">
-                <DropdownMenuGroup>
+              <DropdownMenu>
+                <DropdownMenuTrigger>
                   {isTokenExpired ? (
-                    <>
-                      <Link href={"/login"}>
-                        <DropdownMenuItem className="cursor-pointer">
-                          Đăng nhập
-                        </DropdownMenuItem>
-                      </Link>
-                      <Link href={"/register"}>
-                        <DropdownMenuItem className="cursor-pointer">
-                          Đăng ký
-                        </DropdownMenuItem>
-                      </Link>
-                    </>
+                    <User className="w-5 h-5 sm:h-6 sm:w-6" />
                   ) : (
-                    <>
-                      <Link href={"/profile"}>
-                        <DropdownMenuItem className="cursor-pointer">
-                          Tài khoản
-                        </DropdownMenuItem>
-                      </Link>
-                      <Link href={"/orders"}>
-                        <DropdownMenuItem className="cursor-pointer">
-                          Đơn hàng
-                        </DropdownMenuItem>
-                      </Link>
-                      <Link href={"/logout"}>
-                        <DropdownMenuItem className="cursor-pointer">
-                          Đăng xuất
-                        </DropdownMenuItem>
-                      </Link>
-                    </>
+                    <UserCheck className="w-5 h-5 sm:h-6 sm:w-6" />
                   )}
-                </DropdownMenuGroup>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        </nav>
+                </DropdownMenuTrigger>
+
+                <DropdownMenuContent className="w-36">
+                  <DropdownMenuGroup>
+                    {isTokenExpired ? (
+                      <>
+                        <Link href={"/login"}>
+                          <DropdownMenuItem className="cursor-pointer">
+                            Đăng nhập
+                          </DropdownMenuItem>
+                        </Link>
+                        <Link href={"/register"}>
+                          <DropdownMenuItem className="cursor-pointer">
+                            Đăng ký
+                          </DropdownMenuItem>
+                        </Link>
+                      </>
+                    ) : (
+                      <>
+                        <Link href={"/profile"}>
+                          <DropdownMenuItem className="cursor-pointer">
+                            Tài khoản
+                          </DropdownMenuItem>
+                        </Link>
+                        <Link href={"/orders"}>
+                          <DropdownMenuItem className="cursor-pointer">
+                            Đơn hàng
+                          </DropdownMenuItem>
+                        </Link>
+                        <Link href={"/logout"}>
+                          <DropdownMenuItem className="cursor-pointer">
+                            Đăng xuất
+                          </DropdownMenuItem>
+                        </Link>
+                      </>
+                    )}
+                  </DropdownMenuGroup>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          </nav>
+        </div>
       </div>
     </div>
   );
-}
+};
+
+export default Navbar;
