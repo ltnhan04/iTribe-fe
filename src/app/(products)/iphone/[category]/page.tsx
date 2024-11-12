@@ -28,12 +28,14 @@ const SlugPage: React.FC<SlugProps> = ({ params }) => {
         <div className="py-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 place-items-center">
           {data.map((value, index) => (
             <ProductPage
+              _id={value._id}
+              status={value.status}
               key={index}
               price={value.price}
-              category={value.category}
+              name={value.name}
               image={value.image}
-              rating={value.rating}
               colors={value.colors}
+              storages={value.storages}
             />
           ))}
         </div>
