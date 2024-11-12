@@ -1,8 +1,12 @@
 "use client";
-import React, { useRef, useLayoutEffect, useState } from "react";
+import React, { useRef, useLayoutEffect, useState, useEffect } from "react";
+import Link from "next/link";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { useRouter, usePathname } from "next/navigation";
 import { categories } from "@/constants/page";
+import { getProducts } from "@/api/services/products/productsApi";
+import { Products } from "@/app/(products)/iphone/type";
+import ProductCard from "@/app/(products)/iphone/components/product";
 
 const Categories = () => {
   const router = useRouter();
@@ -22,6 +26,7 @@ const Categories = () => {
 
   const [selectedIndex, setSelectedIndex] = useState(initialSelectedIndex);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
+  const [products, setProducts] = useState<Products[]>([]);
 
   useLayoutEffect(() => {
     const handleResizeWindow = () => {
@@ -46,6 +51,23 @@ const Categories = () => {
     setSelectedIndex(index);
     router.push(`/iphone/${slug}`);
   };
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      if (selectedIndex === 0) {
+        try {
+          const response = await getProducts();
+          setProducts(response.data.data);
+        } catch (error) {
+          console.error("Error fetching products:", error);
+        }
+      } else {
+        setProducts([]);
+      }
+    };
+
+    fetchProducts();
+  }, [selectedIndex]);
 
   return (
     <div className="flex flex-col w-full">
@@ -83,6 +105,26 @@ const Categories = () => {
           ))
         )}
       </div>
+
+      {selectedIndex === 0 && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
+          {products.map((product) => (
+            <Link
+              key={product._id}
+              href={`/iphone/${product.slug}/${product._id}`}
+            >
+              <ProductCard
+                _id={product._id}
+                price={product.price}
+                name={product.name}
+                image={product.image}
+                colors={product.colors}
+                storages={product.storages}
+              />
+            </Link>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
