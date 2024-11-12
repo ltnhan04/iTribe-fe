@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import axios, { AxiosInstance } from "axios";
-import { useAppStore } from "@/lib/hooks";
-import { useAppDispatch } from "@/lib/hooks";
+import { makeStore } from "@/lib/store";
 import { updateAccessToken } from "@/lib/features/authentication/authSlice";
 import { refreshToken } from "@/api/services/auth/authApi";
 
@@ -27,7 +26,7 @@ export const axiosInstance: AxiosInstance = axios.create({
 
 axiosInstance.interceptors.response.use(
   (config) => {
-    const state = useAppStore().getState();
+    const state = makeStore().getState();
     const accessToken = state.auth.accessToken;
     if (accessToken) {
       config.headers.Authorization = `Bearer ${accessToken}`;
@@ -66,9 +65,8 @@ axiosInstance.interceptors.response.use(
       try {
         const response = await refreshToken();
         const newAccessToken = response.data.accessToken;
-
-        const dispatch = useAppDispatch();
-        await dispatch(updateAccessToken(newAccessToken));
+        const dispatch = makeStore().dispatch;
+        dispatch(updateAccessToken(newAccessToken));
 
         addQueue(null, newAccessToken);
 

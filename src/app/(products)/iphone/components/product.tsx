@@ -1,8 +1,8 @@
 import Image from "next/image";
 import React from "react";
 import { formatCurrency } from "@/utils/format-currency";
-import { cn } from "@/lib/utils";
-
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import type { Color } from "@/app/(products)/iphone/type";
 
 interface ProductProps {
@@ -12,7 +12,6 @@ interface ProductProps {
   colors: Color[];
   storages: string[];
   image: string | null;
-  status: string;
 }
 
 const ProductCard: React.FC<ProductProps> = ({
@@ -21,11 +20,17 @@ const ProductCard: React.FC<ProductProps> = ({
   colors,
   storages,
   image,
-  status,
 }) => {
+  const uniqueColors = colors.reduce((acc: Color[], color) => {
+    if (!acc.some((c) => c.colorCode === color.colorCode)) {
+      acc.push(color);
+    }
+    return acc;
+  }, []);
+
   return (
-    <div className="px-5 py-3 bg-background w-full cursor-pointer max-w-60 border border-border rounded-xl transition-all duration-200 ease-out hover:shadow-lg shadow-md">
-      <div className="w-full flex flex-col items-center">
+    <Card className="w-full max-w-sm p-4 bg-background border border-border rounded-xl shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer">
+      <CardHeader className="flex flex-col items-center">
         <div className="relative w-[200px] h-[250px]">
           {image ? (
             <Image
@@ -42,12 +47,14 @@ const ProductCard: React.FC<ProductProps> = ({
             </div>
           )}
         </div>
+      </CardHeader>
+      <CardContent className="text-center">
         <div className="flex items-center justify-center gap-2 py-2">
-          {colors.length > 0 ? (
-            colors.map((color, index) => (
+          {uniqueColors.length > 0 ? (
+            uniqueColors.map((color, index) => (
               <span
                 key={index}
-                className="w-5 h-5 rounded-full border-2 outline outline-2 outline-offset-2 transition-all duration-300"
+                className="w-4 h-4 rounded-full border transition-all duration-300"
                 style={{
                   backgroundColor: color.colorCode,
                   borderColor: `gray`,
@@ -63,19 +70,18 @@ const ProductCard: React.FC<ProductProps> = ({
             </span>
           )}
         </div>
-        <div className="text-xl font-semibold text-foreground">{name}</div>
-        <div className="text-lg font-medium text-foreground py-2">
+        <CardTitle className="text-lg font-semibold text-foreground">
+          {name}
+        </CardTitle>
+        <div className="text-md font-medium text-foreground py-2">
           {price > 0 ? formatCurrency(price) : "Price not available"}
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 justify-center">
           {storages.length > 0 ? (
             storages.map((storage, index) => (
-              <span
-                key={index}
-                className="px-2 py-1 bg-muted text-muted-foreground rounded-md text-sm"
-              >
+              <Badge key={index} className="px-2 py-1 bg-blue">
                 {storage}GB
-              </span>
+              </Badge>
             ))
           ) : (
             <span className="text-sm text-muted-foreground">
@@ -83,18 +89,8 @@ const ProductCard: React.FC<ProductProps> = ({
             </span>
           )}
         </div>
-        <div
-          className={cn(
-            "mt-2 px-2 py-1 text-sm rounded-full",
-            status === "active"
-              ? "bg-green-100 text-green-800"
-              : "bg-red-100 text-red-800"
-          )}
-        >
-          {status}
-        </div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 };
 

@@ -47,8 +47,14 @@ const Navbar: React.FC<NavbarProps> = ({ isFixed }) => {
             </Link>
 
             <div className="flex items-center w-fit gap-2 sm:gap-4 text-white">
-              <ShoppingCart className="w-5 h-5 sm:h-6 sm:w-6" />
-              <Heart className="w-5 h-5 sm:h-6 sm:w-6" />
+              <Link href={"/cart"}>
+                {" "}
+                <ShoppingCart className="w-5 h-5 sm:h-6 sm:w-6" />
+              </Link>
+              <Link href={"/wishlists"}>
+                {" "}
+                <Heart className="w-5 h-5 sm:h-6 sm:w-6" />
+              </Link>
 
               <DropdownMenu>
                 <DropdownMenuTrigger>

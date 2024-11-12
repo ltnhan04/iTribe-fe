@@ -1,5 +1,5 @@
 import axios from "axios";
-import { axiosInstance } from "@/api/axiosInstance";
+import { axiosInstance } from "@/config/axiosInstance";
 
 import {
   SignUpType,
@@ -8,14 +8,16 @@ import {
 } from "@/api/services/auth/authType";
 
 export const login = async ({ email, password }: LoginType) => {
-  const response = await axios.post(
+  return await axios.post(
     `${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/auth/login`,
     {
       email,
       password,
+    },
+    {
+      withCredentials: true,
     }
   );
-  return response;
 };
 
 export const signUp = async ({ name, email, password }: SignUpType) => {

@@ -1,12 +1,22 @@
+export interface Products {
+  _id: string;
+  price: number;
+  name: string;
+  colors: Color[];
+  storages: string[];
+  image: string | null;
+  status: string;
+  slug: string;
+}
 export interface Color {
   colorName: string;
   colorCode: string;
 }
 
-interface Review {
+export interface Review {
   _id: string;
   productId: string;
-  user: string;
+  user: { name: string; email: string };
   rating: number;
   comment: string;
   isAnonymous: boolean;
@@ -14,7 +24,7 @@ interface Review {
   updatedAt: string;
 }
 
-interface Variant {
+export interface Variant {
   _id: string;
   name: string;
   storage: string;
