@@ -13,14 +13,28 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { StarIcon, User, ShoppingCart, Heart } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
+import { addToCart, removeToCart } from "@/lib/features/cart/cartSlice";
+import {
+  addToWishlist,
+  removeFromWishlist,
+} from "@/lib/features/wishlists/wistlistSlice";
+import type { CartType } from "@/lib/features/cart/cartType";
+import type { WishlistType } from "@/lib/features/wishlists/wishlistsType";
+
 import { getProductDetails } from "@/api/services/products/productsApi";
-import { Product, Variant } from "@/app/(products)/iphone/type";
+import type { Product, Variant } from "@/app/(products)/iphone/type";
 
 interface SlugProps {
   params: { slug: string[] };
 }
 
 const ProductDetail: React.FC<SlugProps> = ({ params }) => {
+  const dispatch = useAppDispatch();
+  const cart = useAppSelector((state) => state.cart.cart);
+  const wishlist = useAppSelector((state) => state.wishlist.wishlists);
+
   const [product, setProduct] = useState<Product | null>(null);
   const [selectedVariant, setSelectedVariant] = useState<Variant | null>(null);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -60,6 +74,50 @@ const ProductDetail: React.FC<SlugProps> = ({ params }) => {
     }
   };
 
+  const isProductInCart = selectedVariant
+    ? cart.some((item: CartType) => item.id === selectedVariant._id)
+    : false;
+
+  const isProductInWishlist = selectedVariant
+    ? wishlist.some((item: WishlistType) => item.id === selectedVariant._id)
+    : false;
+
+  const handleAddOrRemoveFromCart = () => {
+    if (selectedVariant) {
+      if (isProductInCart) {
+        dispatch(removeToCart(selectedVariant._id));
+      } else {
+        dispatch(
+          addToCart({
+            id: selectedVariant._id,
+            name: selectedVariant.name,
+            price: selectedVariant.price,
+            image: selectedVariant.images[0],
+            quantity: 1,
+          })
+        );
+      }
+    }
+  };
+
+  const handleAddOrRemoveFromWishlist = () => {
+    if (selectedVariant) {
+      if (isProductInWishlist) {
+        dispatch(removeFromWishlist(selectedVariant._id));
+      } else {
+        dispatch(
+          addToWishlist({
+            id: selectedVariant._id,
+            name: selectedVariant.name,
+            price: selectedVariant.price,
+            image: selectedVariant.images[0],
+            quantity: 1,
+          })
+        );
+      }
+    }
+  };
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-4 md:p-8">
       {selectedVariant && (
@@ -70,6 +128,7 @@ const ProductDetail: React.FC<SlugProps> = ({ params }) => {
                 transform: `translateX(-${
                   selectedVariant.images.indexOf(selectedImage || "") * 100
                 }%)`,
+                transition: "transform 0.5s ease-in-out",
               }}
             >
               {selectedVariant.images.map((image, index) => (
@@ -87,6 +146,7 @@ const ProductDetail: React.FC<SlugProps> = ({ params }) => {
                 </CarouselItem>
               ))}
             </CarouselContent>
+
             <CarouselNext
               onClick={() =>
                 setSelectedImage(
@@ -99,6 +159,7 @@ const ProductDetail: React.FC<SlugProps> = ({ params }) => {
               className="border-gray-200 h-6 w-6 sm:h-8 sm:w-8 border absolute top-1/2 transform -translate-y-1/2 right-3"
             />
             <CarouselPrevious
+              disabled={false}
               onClick={() =>
                 setSelectedImage(
                   selectedVariant.images[
@@ -176,11 +237,15 @@ const ProductDetail: React.FC<SlugProps> = ({ params }) => {
             ))}
           </Tabs>
           <div className="flex space-x-2">
-            <Button className="flex-1">
+            <Button onClick={handleAddOrRemoveFromCart} className="flex-1">
               <ShoppingCart className="w-4 h-4 mr-2" />
-              Add to Cart
+              {isProductInCart ? "Remove from Cart" : "Add to Cart"}
             </Button>
-            <Button variant="outline" className="px-3">
+            <Button
+              onClick={handleAddOrRemoveFromWishlist}
+              variant={isProductInWishlist ? "destructive" : "outline"}
+              className="px-3"
+            >
               <Heart className="w-4 h-4" />
               <span className="sr-only">Add to Wishlist</span>
             </Button>
@@ -191,7 +256,9 @@ const ProductDetail: React.FC<SlugProps> = ({ params }) => {
         <h2 className="text-2xl font-bold mb-4">Reviews</h2>
         <div className="flex items-center mb-4">
           <span className="text-3xl font-bold mr-2">
-            {averageRating.toFixed(1)}
+            {isNaN(Number(averageRating.toFixed(1)))
+              ? 0
+              : averageRating.toFixed(1)}
           </span>
           <div className="flex">
             {[1, 2, 3, 4, 5].map((star) => (
@@ -209,7 +276,7 @@ const ProductDetail: React.FC<SlugProps> = ({ params }) => {
             ({selectedVariant?.reviews.length} reviews)
           </span>
         </div>
-        <div className="space-y-4">
+        <div className="space-x-4 flex items-center">
           {selectedVariant?.reviews.map((review) => (
             <Card key={review._id}>
               <CardContent className="p-4">
@@ -224,11 +291,27 @@ const ProductDetail: React.FC<SlugProps> = ({ params }) => {
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex-1">
-                    <div className="flex items-center justify-between">
-                      <h3 className="text-sm font-bold">{review.user.name}</h3>
-                      <span className="text-sm text-gray-500">
-                        {new Date(review.createdAt).toLocaleDateString()}
-                      </span>
+                    <div className="flex flex-col space-y-2">
+                      <div className="flex items-center justify-between space-x-2">
+                        <h3 className="text-sm font-bold">
+                          {review.user.name}
+                        </h3>
+                        <span className="text-sm text-gray-500">
+                          {new Date(review.createdAt).toLocaleDateString()}
+                        </span>
+                      </div>
+                      <div className="flex">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <StarIcon
+                            key={star}
+                            className={`w-4 h-4 ${
+                              star <= review.rating
+                                ? "text-yellow-400"
+                                : "text-gray-300"
+                            }`}
+                          />
+                        ))}
+                      </div>
                     </div>
                     <p className="text-sm text-gray-600 mt-1">
                       {review.comment}

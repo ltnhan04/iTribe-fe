@@ -4,6 +4,7 @@ import Link from "next/link";
 import ProductPage from "@/app/(products)/iphone/components/product";
 import BreadCrumb from "@/components/common/bread-crumb";
 import CarouselAutoPlay from "@/app/(products)/iphone/components/carousel";
+
 import Categories from "@/app/(products)/iphone/components/categories";
 import { formatTitle } from "@/utils/formatTitle";
 import { getProductByName } from "@/api/services/products/productsApi";

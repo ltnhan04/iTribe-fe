@@ -1,59 +1,36 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Trash2, ShoppingCart } from "lucide-react";
 
-interface WishlistItem {
-  id: string;
-  name: string;
-  price: number;
-  image: string;
-}
-
-const initialWishlistItems: WishlistItem[] = [
-  {
-    id: "1",
-    name: "iPhone 11",
-    price: 8990000,
-    image:
-      "https://res.cloudinary.com/durjxrcdm/image/upload/v1731384247/products/bz7g3xcjoeu2wugxvqxj.jpg",
-  },
-  {
-    id: "2",
-    name: "AirPods Pro",
-    price: 4990000,
-    image:
-      "https://res.cloudinary.com/durjxrcdm/image/upload/v1731384247/products/bz7g3xcjoeu2wugxvqxj.jpg",
-  },
-  {
-    id: "3",
-    name: "MacBook Air",
-    price: 25990000,
-    image:
-      "https://res.cloudinary.com/durjxrcdm/image/upload/v1731384247/products/bz7g3xcjoeu2wugxvqxj.jpg",
-  },
-];
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
+import { removeFromWishlist } from "@/lib/features/wishlists/wistlistSlice";
+import { addToCart } from "@/lib/features/cart/cartSlice";
+import type { WishlistType } from "@/lib/features/wishlists/wishlistsType";
 
 export default function WishlistPage() {
-  const [wishlistItems, setWishlistItems] =
-    useState<WishlistItem[]>(initialWishlistItems);
+  const router = useRouter();
+  const dispatch = useAppDispatch();
 
-  const removeFromWishlist = (id: string) => {
-    setWishlistItems(wishlistItems.filter((item) => item.id !== id));
+  const wishlistItems: WishlistType[] = useAppSelector(
+    (state) => state.wishlist.wishlists
+  );
+
+  const handleRemoveFromWishlist = (id: string) => {
+    dispatch(removeFromWishlist(id));
   };
 
-  const addToCart = (id: string) => {
-    console.log(`Added item ${id} to cart`);
-    // Here you would typically call an API to add the item to the cart
-    // For now, we'll just remove it from the wishlist
-    removeFromWishlist(id);
+  const handleAddToCart = (item: WishlistType) => {
+    dispatch(addToCart({ ...item, quantity: item.quantity ?? 1 }));
+    dispatch(removeFromWishlist(item.id));
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8 h-screen">
       <h1 className="text-3xl font-bold mb-8">Your Wishlist</h1>
       {wishlistItems.length === 0 ? (
         <div className="text-center py-12">
@@ -61,14 +38,16 @@ export default function WishlistPage() {
             Your wishlist is empty
           </h2>
           <p className="text-gray-600 mb-8">
-            Add items to your wishlist to keep track of products you &apos re
+            Add items to your wishlist to keep track of products youre
             interested in.
           </p>
-          <Button>Continue Shopping</Button>
+          <Button onClick={() => router.push("/iphone")}>
+            Continue Shopping
+          </Button>
         </div>
       ) : (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {wishlistItems.map((item) => (
+          {wishlistItems.map((item: WishlistType) => (
             <Card key={item.id} className="overflow-hidden">
               <CardContent className="p-0">
                 <div className="relative h-48 w-full">
@@ -89,12 +68,12 @@ export default function WishlistPage() {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => removeFromWishlist(item.id)}
+                      onClick={() => handleRemoveFromWishlist(item.id)}
                     >
                       <Trash2 className="w-4 h-4 mr-2" />
                       Remove
                     </Button>
-                    <Button size="sm" onClick={() => addToCart(item.id)}>
+                    <Button size="sm" onClick={() => handleAddToCart(item)}>
                       <ShoppingCart className="w-4 h-4 mr-2" />
                       Add to Cart
                     </Button>
