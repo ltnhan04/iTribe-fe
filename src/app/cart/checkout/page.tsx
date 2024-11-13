@@ -1,31 +1,105 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { ShoppingBag, CreditCard, Wallet } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { ShoppingBag, CreditCard, Wallet, Tag } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 import { useAppSelector } from "@/lib/hooks";
 import type { CartType } from "@/lib/features/cart/cartType";
 
+type Promotion = {
+  _id: string;
+  code: string;
+  discountPercentage: number;
+  validFrom: string;
+  validTo: string;
+  isActive: boolean;
+  maxUsage: number;
+  usedCount: number;
+};
+
 export default function CheckoutPage() {
   const cart = useAppSelector((state) => state.cart.cart);
-  const totalAmount = useAppSelector((state) => state.cart.total);
-
+  const [totalAmount, setTotalAmount] = useState(
+    useAppSelector((state) => state.cart.total)
+  );
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("stripe");
+  const [promotions, setPromotions] = useState<Promotion[]>([]);
+  const [selectedPromotion, setSelectedPromotion] = useState<Promotion | null>(
+    null
+  );
+  const [promoCode, setPromoCode] = useState("");
+  const { toast } = useToast();
+
+  useEffect(() => {
+    fetchPromotions();
+  }, []);
+
+  const fetchPromotions = async () => {
+    try {
+      const response = await fetch("/api/promotions"); 
+      const data = await response.json();
+      setPromotions(data.promotions);
+    } catch (error) {
+      console.error("Error fetching promotions:", error);
+    }
+  };
+
+  const applyPromotion = async () => {
+    try {
+      const response = await fetch("/api/apply-promotion", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          totalAmount,
+          code: promoCode,
+        }),
+      });
+      const data = await response.json();
+      if (data.success) {
+        setTotalAmount(data.discountedTotal);
+        setSelectedPromotion(
+          promotions.find((promo) => promo.code === promoCode) || null
+        );
+        toast({
+          title: "Promotion Applied",
+          description: `Discount of ${data.discountAmount} VND applied successfully.`,
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: data.message || "Failed to apply promotion.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error("Error applying promotion:", error);
+      toast({
+        title: "Error",
+        description: "An error occurred while applying the promotion.",
+        variant: "destructive",
+      });
+    }
+  };
 
   const handleConfirmOrder = () => {
     const checkoutData = {
-      products: cart.map((item: CartType) => ({
-        product: item.id,
+      productVariants: cart.map((item: CartType) => ({
+        productVariant: item.id,
         quantity: item.quantity,
       })),
       totalAmount,
       shippingAddress: "123 Example St, City, Country",
       paymentMethod: selectedPaymentMethod,
       stripeSessionId: "id12",
+      appliedPromotion: selectedPromotion ? selectedPromotion.code : null,
     };
 
     console.log("Order confirmed", checkoutData);
@@ -72,6 +146,41 @@ export default function CheckoutPage() {
               <p>123 Example St, City, Country</p>
             </CardContent>
           </Card>
+
+          <Card className="mt-8">
+            <CardHeader>
+              <CardTitle>Apply Promotion</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex space-x-2 mb-4">
+                <Input
+                  placeholder="Enter promo code"
+                  value={promoCode}
+                  onChange={(e) => setPromoCode(e.target.value)}
+                />
+                <Button onClick={applyPromotion}>Apply</Button>
+              </div>
+              {selectedPromotion && (
+                <div className="text-sm text-green-600">
+                  Promotion applied: {selectedPromotion.code} (
+                  {selectedPromotion.discountPercentage}% off)
+                </div>
+              )}
+              <div className="mt-4">
+                <h4 className="font-semibold mb-2">Available Promotions:</h4>
+                <ul className="space-y-2">
+                  {promotions.map((promo) => (
+                    <li key={promo._id} className="flex items-center space-x-2">
+                      <Tag className="h-4 w-4" />
+                      <span>
+                        {promo.code} - {promo.discountPercentage}% off
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
         <div>
@@ -93,8 +202,8 @@ export default function CheckoutPage() {
                   </Label>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="credit-card" id="credit-card" />
-                  <Label htmlFor="credit-card" className="flex items-center">
+                  <RadioGroupItem value="stripe" id="stripe" />
+                  <Label htmlFor="stripe" className="flex items-center">
                     <CreditCard className="mr-2 h-4 w-4" />
                     Stripe
                   </Label>
