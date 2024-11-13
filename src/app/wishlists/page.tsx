@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unescaped-entities */
 "use client";
 
 import React from "react";
@@ -38,7 +39,7 @@ export default function WishlistPage() {
             Your wishlist is empty
           </h2>
           <p className="text-gray-600 mb-8">
-            Add items to your wishlist to keep track of products youre
+            Add items to your wishlist to keep track of products you're
             interested in.
           </p>
           <Button onClick={() => router.push("/iphone")}>
@@ -46,25 +47,30 @@ export default function WishlistPage() {
           </Button>
         </div>
       ) : (
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {wishlistItems.map((item: WishlistType) => (
-            <Card key={item.id} className="overflow-hidden">
+            <Card
+              key={item.id}
+              className="overflow-hidden transition-all duration-300 hover:shadow-lg bg-white"
+            >
               <CardContent className="p-0">
-                <div className="relative h-48 w-full">
+                <div className="relative h-56 w-full group">
                   <Image
                     src={item.image}
                     alt={item.name}
                     layout="fill"
                     objectFit="cover"
-                    className="transition-transform duration-300 ease-in-out hover:scale-105"
+                    className="transition-transform duration-300 group-hover:scale-110"
                   />
                 </div>
-                <div className="p-4">
-                  <h3 className="font-semibold text-lg mb-2">{item.name}</h3>
-                  <p className="text-gray-600 mb-4">
+                <div className="p-6">
+                  <h3 className="font-semibold text-xl mb-3 text-gray-800 line-clamp-2">
+                    {item.name}
+                  </h3>
+                  <p className="text-blue-600 font-medium text-lg mb-4">
                     {item.price.toLocaleString()} VND
                   </p>
-                  <div className="flex justify-between items-center">
+                  <div className="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center">
                     <Button
                       variant="outline"
                       size="sm"
