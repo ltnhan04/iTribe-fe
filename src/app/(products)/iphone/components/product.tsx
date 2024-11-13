@@ -1,8 +1,9 @@
 import Image from "next/image";
 import React from "react";
-import { formatCurrency } from "@/utils/format-currency";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+
+import { formatCurrency } from "@/utils/format-currency";
 import type { Color } from "@/app/(products)/iphone/type";
 
 interface ProductProps {

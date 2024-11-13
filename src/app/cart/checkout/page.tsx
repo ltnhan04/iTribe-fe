@@ -1,67 +1,34 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { ShoppingBag, CreditCard, Wallet } from "lucide-react";
 
-interface Product {
-  id: string;
-  name: string;
-  price: number;
-}
-
-interface CheckoutData {
-  products: { product: string; quantity: number }[];
-  totalAmount: number;
-  shippingAddress: string;
-  paymentMethod: string;
-  stripeSessionId: string;
-}
-
-// This would typically come from your API
-const fetchProductDetails = async (productId: string): Promise<Product> => {
-  // Simulating API call
-  await new Promise((resolve) => setTimeout(resolve, 500));
-  return {
-    id: productId,
-    name: "iPhone 13",
-    price: 5000000,
-  };
-};
+import { useAppSelector } from "@/lib/hooks";
+import type { CartType } from "@/lib/features/cart/cartType";
 
 export default function CheckoutPage() {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [checkoutData, setCheckoutData] = useState<CheckoutData>({
-    products: [
-      {
-        product: "672ccb9f7aede78237e074dd",
-        quantity: 3,
-      },
-    ],
-    totalAmount: 15000000,
-    shippingAddress: "123 Example St, City, Country",
-    paymentMethod: "pointer-wallet",
-    stripeSessionId: "id12",
-  });
+  const cart = useAppSelector((state) => state.cart.cart);
+  const totalAmount = useAppSelector((state) => state.cart.total);
 
-  const [productDetails, setProductDetails] = useState<Product[]>([]);
-
-  useEffect(() => {
-    const fetchProducts = async () => {
-      const details = await Promise.all(
-        checkoutData.products.map((p) => fetchProductDetails(p.product))
-      );
-      setProductDetails(details);
-    };
-    fetchProducts();
-  }, [checkoutData.products]);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("stripe");
 
   const handleConfirmOrder = () => {
+    const checkoutData = {
+      products: cart.map((item: CartType) => ({
+        product: item.id,
+        quantity: item.quantity,
+      })),
+      totalAmount,
+      shippingAddress: "123 Example St, City, Country",
+      paymentMethod: selectedPaymentMethod,
+      stripeSessionId: "id12",
+    };
+
     console.log("Order confirmed", checkoutData);
-    // Here you would typically send this data to your backend
   };
 
   return (
@@ -74,29 +41,24 @@ export default function CheckoutPage() {
               <CardTitle>Order Summary</CardTitle>
             </CardHeader>
             <CardContent>
-              {productDetails.map((product, index) => (
+              {cart.map((item: CartType) => (
                 <div
-                  key={product.id}
+                  key={item.id}
                   className="flex justify-between items-center mb-4"
                 >
                   <div>
-                    <h3 className="font-semibold">{product.name}</h3>
+                    <h3 className="font-semibold">{item.name}</h3>
                     <p className="text-sm text-gray-500">
-                      Quantity: {checkoutData.products[index].quantity}
+                      Quantity: {item.quantity}
                     </p>
                   </div>
-                  <p>
-                    {(
-                      product.price * checkoutData.products[index].quantity
-                    ).toLocaleString()}{" "}
-                    VND
-                  </p>
+                  <p>{(item.price * item.quantity).toLocaleString()} VND</p>
                 </div>
               ))}
               <div className="border-t pt-4 mt-4">
                 <div className="flex justify-between items-center font-bold">
                   <span>Total</span>
-                  <span>{checkoutData.totalAmount.toLocaleString()} VND</span>
+                  <span>{totalAmount.toLocaleString()} VND</span>
                 </div>
               </div>
             </CardContent>
@@ -107,7 +69,7 @@ export default function CheckoutPage() {
               <CardTitle>Shipping Address</CardTitle>
             </CardHeader>
             <CardContent>
-              <p>{checkoutData.shippingAddress}</p>
+              <p>123 Example St, City, Country</p>
             </CardContent>
           </Card>
         </div>
@@ -119,7 +81,8 @@ export default function CheckoutPage() {
             </CardHeader>
             <CardContent>
               <RadioGroup
-                defaultValue={checkoutData.paymentMethod}
+                value={selectedPaymentMethod}
+                onValueChange={setSelectedPaymentMethod}
                 className="space-y-4"
               >
                 <div className="flex items-center space-x-2">
@@ -133,7 +96,7 @@ export default function CheckoutPage() {
                   <RadioGroupItem value="credit-card" id="credit-card" />
                   <Label htmlFor="credit-card" className="flex items-center">
                     <CreditCard className="mr-2 h-4 w-4" />
-                    Credit Card
+                    Stripe
                   </Label>
                 </div>
               </RadioGroup>

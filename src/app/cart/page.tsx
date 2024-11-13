@@ -1,71 +1,67 @@
 /* eslint-disable react/no-unescaped-entities */
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Minus, Plus, Trash2, ShoppingBag } from "lucide-react";
 
-interface CartItem {
-  id: string;
-  name: string;
-  price: number;
-  image: string;
-  quantity: number;
-}
-
-const initialCartItems: CartItem[] = [
-  {
-    id: "6732d2a7e7884dd43885d622",
-    name: "iPhone 11 64GB",
-    price: 8990000,
-    image:
-      "https://res.cloudinary.com/durjxrcdm/image/upload/v1731384247/products/bz7g3xcjoeu2wugxvqxj.jpg",
-    quantity: 1,
-  },
-];
+import { useAppSelector, useAppDispatch } from "@/lib/hooks";
+import { updateCart } from "@/lib/features/cart/cartSlice";
+import type { CartType } from "@/lib/features/cart/cartType";
 
 export default function CartPage() {
-  const [cartItems, setCartItems] = useState<CartItem[]>(initialCartItems);
+  const dispatch = useAppDispatch();
+  const router = useRouter();
+  const cartArray: CartType[] = useAppSelector((state) => state.cart.cart);
 
   const updateQuantity = (id: string, newQuantity: number) => {
-    if (newQuantity < 1) return;
-    setCartItems(
-      cartItems.map((item) =>
-        item.id === id ? { ...item, quantity: newQuantity } : item
-      )
+    if (newQuantity < 1 || newQuantity > 20) return;
+    const updatedCart = cartArray.map((item) =>
+      item.id === id ? { ...item, quantity: newQuantity } : item
     );
+    dispatch(updateCart(updatedCart));
   };
 
   const removeItem = (id: string) => {
-    setCartItems(cartItems.filter((item) => item.id !== id));
+    const updatedCart = cartArray.filter((item: CartType) => item.id !== id);
+    dispatch(updateCart(updatedCart));
   };
 
   const calculateTotal = () => {
-    return cartItems.reduce(
+    return cartArray.reduce(
       (total, item) => total + item.price * item.quantity,
       0
     );
   };
 
+  const handleCheckout = () => {
+    dispatch(updateCart(cartArray));
+    router.push("/cart/checkout");
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-8">Your Shopping Cart</h1>
-      {cartItems.length === 0 ? (
+      {cartArray.length === 0 ? (
         <div className="text-center py-12">
           <ShoppingBag className="mx-auto h-12 w-12 text-gray-400 mb-4" />
           <h2 className="text-2xl font-semibold mb-4">Your cart is empty</h2>
           <p className="text-gray-600 mb-8">
             Looks like you haven't added any items to your cart yet.
           </p>
-          <Button>Continue Shopping</Button>
+          <Button onClick={() => router.push("/iphone")}>
+            Continue Shopping
+          </Button>
         </div>
       ) : (
         <>
           <div className="space-y-4">
-            {cartItems.map((item) => (
+            {cartArray.map((item) => (
               <Card key={item.id}>
                 <CardContent className="flex items-center p-4">
                   <div className="relative h-24 w-24 flex-shrink-0">
@@ -93,9 +89,14 @@ export default function CartPage() {
                     </Button>
                     <Input
                       type="number"
+                      min="1"
+                      max="20"
                       value={item.quantity}
                       onChange={(e) =>
-                        updateQuantity(item.id, parseInt(e.target.value))
+                        updateQuantity(
+                          item.id,
+                          Math.min(parseInt(e.target.value), 20)
+                        )
                       }
                       className="w-16 text-center"
                     />
@@ -107,7 +108,7 @@ export default function CartPage() {
                       <Plus className="h-4 w-4" />
                     </Button>
                   </div>
-                  <div className="ml-4 text-right">
+                  <div className="ml-4 text-right flex items-center">
                     <p className="font-semibold">
                       {(item.price * item.quantity).toLocaleString()} VND
                     </p>
@@ -131,7 +132,9 @@ export default function CartPage() {
                 {calculateTotal().toLocaleString()} VND
               </p>
             </div>
-            <Button size="lg">Proceed to Checkout</Button>
+            <Button size="lg" onClick={handleCheckout}>
+              Proceed to Checkout
+            </Button>
           </div>
         </>
       )}
