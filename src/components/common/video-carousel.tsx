@@ -6,7 +6,6 @@ gsap.registerPlugin(ScrollTrigger);
 
 import { hightLightsSlides } from "@/constants/page";
 import { Pause, Play, RotateCcw } from "lucide-react";
-import { Typewriter } from "react-simple-typewriter";
 
 const VideoCarousel = () => {
   const videoRef = useRef<(HTMLVideoElement | null)[]>([]);
@@ -214,16 +213,7 @@ const VideoCarousel = () => {
                     key={idx}
                     className="md:text-2xl text-white text-xl font-medium"
                   >
-                    <Typewriter
-                      key={videoId}
-                      words={[text]}
-                      loop={false}
-                      cursor
-                      cursorStyle="|"
-                      typeSpeed={90}
-                      deleteSpeed={55}
-                      delaySpeed={3000}
-                    />
+                    {text}
                   </p>
                 ))}
               </div>

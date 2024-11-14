@@ -45,9 +45,16 @@ export const verifySignUp = async ({ email, otp }: VerifySignUpType) => {
 
 export const logout = async () => {
   const response = await axiosInstance.post(
-    `${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/auth/logout`,
+    `${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/auth/logout`
   );
   return response;
+};
+
+export const resentOTP = async (email: string) => {
+  return await axiosInstance.post(
+    `${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/auth/resent-otp`,
+    { email }
+  );
 };
 
 export const getProfile = async () => {
@@ -55,6 +62,25 @@ export const getProfile = async () => {
     `${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/auth/profile`
   );
   return response;
+};
+
+export const updateProfile = async ({
+  name,
+  address,
+  phoneNumber,
+}: {
+  name: string;
+  address: string;
+  phoneNumber: string;
+}) => {
+  return await axiosInstance.post(
+    `${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/auth/update-profile`,
+    {
+      name,
+      address,
+      phoneNumber,
+    }
+  );
 };
 
 export const refreshToken = async () => {
