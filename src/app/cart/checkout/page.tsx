@@ -86,7 +86,6 @@ const CheckoutPage = () => {
       shippingAddress: "123 Example St, City, Country",
       paymentMethod: selectedPaymentMethod,
     };
-    console.log(checkoutData);
 
     const response = await createOrder(checkoutData);
     if (response.status === 201) {

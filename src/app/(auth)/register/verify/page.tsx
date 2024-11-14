@@ -7,6 +7,7 @@ import {
   clearMessage,
   clearError,
 } from "@/lib/features/authentication/authSlice";
+import { resentOTP } from "@/api/services/auth/authApi";
 import InputOTPPattern from "@/components/common/input-otp";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
@@ -90,7 +91,8 @@ export default function VerifyRegister() {
     [dispatch, email, router]
   );
 
-  const handleResendOTP = () => {
+  const handleResendOTP = async () => {
+    await resentOTP(email);
     setOtp("");
     setCounter(60);
     setResetTrigger((prev) => !prev);

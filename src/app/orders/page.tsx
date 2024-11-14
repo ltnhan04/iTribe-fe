@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -26,28 +27,7 @@ import {
   XCircle,
 } from "lucide-react";
 
-interface Product {
-  productId: string;
-  productName: string;
-  productColor: string;
-  productColorCode: string;
-  productStorage: string;
-  productPrice: number;
-  quantity: number;
-  productImages: string[];
-}
-
-interface Order {
-  orderId: string;
-  user: { id: string; name: string };
-  products: Product[];
-  totalAmount: number;
-  status: "pending" | "processing" | "delivered" | "cancel";
-  shippingAddress: string;
-  paymentMethod: string;
-  createdAt: string;
-  updatedAt: string;
-}
+import { Order } from "@/app/orders/type";
 
 const OrderTracker = () => {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -89,7 +69,7 @@ const OrderTracker = () => {
       case "pending":
         return <Clock className="h-5 w-5 text-yellow-500" />;
       case "processing":
-        return <Package className="h-5 w-5 text-blue-500" />;
+        return <Package className="h-5 w-5 text-blue" />;
       case "delivered":
         return <CheckCircle className="h-5 w-5 text-green-500" />;
       case "cancel":
@@ -161,7 +141,7 @@ const OrderTracker = () => {
                   fill="#8884d8"
                   dataKey="value"
                 >
-                  {pieChartData.map((entry, index) => (
+                  {pieChartData.map((_, index) => (
                     <Cell
                       key={`cell-${index}`}
                       fill={COLORS[index % COLORS.length]}
@@ -256,10 +236,12 @@ const OrderTracker = () => {
                               {order.products.map((product) => (
                                 <li key={product.productId} className="mb-2">
                                   <div className="flex items-center space-x-2">
-                                    <img
+                                    <Image
                                       src={product.productImages[0]}
                                       alt={product.productName}
-                                      className="w-12 h-12 object-cover rounded"
+                                      width={80}
+                                      height={80}
+                                      className="rounded-md object-cover"
                                     />
                                     <div>
                                       <p className="font-medium">
