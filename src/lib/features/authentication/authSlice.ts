@@ -84,6 +84,10 @@ const authSlice = createSlice({
       const newAccessToken = action.payload;
       state.accessToken = newAccessToken;
     },
+    clearAccessToken: (state) => {
+      state.accessToken = "";
+      state.name = "";
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(loginThunk.pending, (state) => {
@@ -149,6 +153,6 @@ const authSlice = createSlice({
     });
   },
 });
-export const { clearMessage, clearError, updateAccessToken } =
+export const { clearMessage, clearError, updateAccessToken, clearAccessToken } =
   authSlice.actions;
 export default authSlice.reducer;

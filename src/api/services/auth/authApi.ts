@@ -43,6 +43,13 @@ export const verifySignUp = async ({ email, otp }: VerifySignUpType) => {
   return response;
 };
 
+export const logout = async () => {
+  const response = await axiosInstance.post(
+    `${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/auth/logout`,
+  );
+  return response;
+};
+
 export const getProfile = async () => {
   const response = await axiosInstance.get(
     `${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/auth/profile`
