@@ -6,24 +6,26 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Input } from "@/components/ui/input";
+
+import { useRouter } from "next/navigation";
+
+import withAuth from "@/components/common/withAuth";
+
 import { ShoppingBag, CreditCard, Wallet, Tag } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 import { useAppSelector } from "@/lib/hooks";
 import type { CartType } from "@/lib/features/cart/cartType";
+import type { Promotion } from "@/app/cart/checkout/type";
 
-type Promotion = {
-  _id: string;
-  code: string;
-  discountPercentage: number;
-  validFrom: string;
-  validTo: string;
-  isActive: boolean;
-  maxUsage: number;
-  usedCount: number;
-};
+import {
+  applyPromotion,
+  getPromotions,
+} from "@/api/services/promotions/promotionApi";
+import { createOrder } from "@/api/services/orders/orderApi";
 
-export default function CheckoutPage() {
+const CheckoutPage = () => {
+  const router = useRouter();
   const cart = useAppSelector((state) => state.cart.cart);
   const [totalAmount, setTotalAmount] = useState(
     useAppSelector((state) => state.cart.total)
@@ -42,43 +44,28 @@ export default function CheckoutPage() {
 
   const fetchPromotions = async () => {
     try {
-      const response = await fetch("/api/promotions"); 
-      const data = await response.json();
-      setPromotions(data.promotions);
+      const response = await getPromotions();
+      setPromotions(response.data.promotions);
     } catch (error) {
       console.error("Error fetching promotions:", error);
     }
   };
 
-  const applyPromotion = async () => {
+  const applyAPromotion = async () => {
     try {
-      const response = await fetch("/api/apply-promotion", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          totalAmount,
-          code: promoCode,
-        }),
+      const response = await applyPromotion({
+        code: promoCode,
+        totalAmount: totalAmount,
       });
-      const data = await response.json();
-      if (data.success) {
-        setTotalAmount(data.discountedTotal);
-        setSelectedPromotion(
-          promotions.find((promo) => promo.code === promoCode) || null
-        );
-        toast({
-          title: "Promotion Applied",
-          description: `Discount of ${data.discountAmount} VND applied successfully.`,
-        });
-      } else {
-        toast({
-          title: "Error",
-          description: data.message || "Failed to apply promotion.",
-          variant: "destructive",
-        });
-      }
+      const data = response.data;
+      setTotalAmount(data.discountedAmount);
+      setSelectedPromotion(
+        promotions.find((promo) => promo.code === promoCode) || null
+      );
+      toast({
+        title: "Promotion Applied",
+        description: `Discount of ${data.discountAmount} VND applied successfully.`,
+      });
     } catch (error) {
       console.error("Error applying promotion:", error);
       toast({
@@ -89,7 +76,7 @@ export default function CheckoutPage() {
     }
   };
 
-  const handleConfirmOrder = () => {
+  const handleConfirmOrder = async () => {
     const checkoutData = {
       productVariants: cart.map((item: CartType) => ({
         productVariant: item.id,
@@ -98,11 +85,19 @@ export default function CheckoutPage() {
       totalAmount,
       shippingAddress: "123 Example St, City, Country",
       paymentMethod: selectedPaymentMethod,
-      stripeSessionId: "id12",
-      appliedPromotion: selectedPromotion ? selectedPromotion.code : null,
     };
+    console.log(checkoutData);
 
-    console.log("Order confirmed", checkoutData);
+    const response = await createOrder(checkoutData);
+    if (response.status === 201) {
+      toast({
+        title: "Order Placed",
+        description: "Your order has been placed successfully.",
+      });
+      setTimeout(() => {
+        router.push("/orders");
+      }, 1000);
+    }
   };
 
   return (
@@ -158,7 +153,7 @@ export default function CheckoutPage() {
                   value={promoCode}
                   onChange={(e) => setPromoCode(e.target.value)}
                 />
-                <Button onClick={applyPromotion}>Apply</Button>
+                <Button onClick={applyAPromotion}>Apply</Button>
               </div>
               {selectedPromotion && (
                 <div className="text-sm text-green-600">
@@ -230,4 +225,6 @@ export default function CheckoutPage() {
       </div>
     </div>
   );
-}
+};
+
+export default withAuth(CheckoutPage);

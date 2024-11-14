@@ -14,6 +14,7 @@ import { useAppSelector, useAppDispatch } from "@/lib/hooks";
 import { updateCart } from "@/lib/features/cart/cartSlice";
 import type { CartType } from "@/lib/features/cart/cartType";
 
+
 export default function CartPage() {
   const dispatch = useAppDispatch();
   const router = useRouter();

@@ -1,3 +1,4 @@
+// store.ts
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/es/storage";
@@ -16,34 +17,17 @@ const rootReducer = combineReducers({
   wishlist: wishlistsSlice,
 });
 
-const makeConfiguredStore = () =>
-  configureStore({
-    reducer: rootReducer,
-    middleware: (getDefaultMiddleware) =>
-      getDefaultMiddleware({
-        serializableCheck: false,
-      }),
-  });
+const persistedReducer = persistReducer(persistConfig, rootReducer);
 
-export const makeStore = () => {
-  const isServer = typeof window === "undefined";
-  if (isServer) {
-    return makeConfiguredStore();
-  } else {
-    const persistedReducer = persistReducer(persistConfig, rootReducer);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const store: any = configureStore({
-      reducer: persistedReducer,
-      middleware: (getDefaultMiddleware) =>
-        getDefaultMiddleware({
-          serializableCheck: false,
-        }),
-    });
-    store.__persistor = persistStore(store);
-    return store;
-  }
-};
+const store = configureStore({
+  reducer: persistedReducer,
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: false,
+    }),
+});
 
-export type AppStore = ReturnType<typeof makeStore>;
-export type RootState = ReturnType<AppStore["getState"]>;
-export type AppDispatch = AppStore["dispatch"];
+export const persistor = persistStore(store);
+export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;
+export default store;

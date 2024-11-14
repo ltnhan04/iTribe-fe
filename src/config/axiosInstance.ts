@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import axios, { AxiosInstance } from "axios";
-import { makeStore } from "@/lib/store";
+import store from "@/lib/store";
 import { updateAccessToken } from "@/lib/features/authentication/authSlice";
 import { refreshToken } from "@/api/services/auth/authApi";
 
@@ -24,10 +24,9 @@ export const axiosInstance: AxiosInstance = axios.create({
   withCredentials: true,
 });
 
-axiosInstance.interceptors.response.use(
+axiosInstance.interceptors.request.use(
   (config) => {
-    const state = makeStore().getState();
-    const accessToken = state.auth.accessToken;
+    const accessToken = store.getState().auth.accessToken;
     if (accessToken) {
       config.headers.Authorization = `Bearer ${accessToken}`;
     }
@@ -65,8 +64,7 @@ axiosInstance.interceptors.response.use(
       try {
         const response = await refreshToken();
         const newAccessToken = response.data.accessToken;
-        const dispatch = makeStore().dispatch;
-        dispatch(updateAccessToken(newAccessToken));
+        store.dispatch(updateAccessToken(newAccessToken));
 
         addQueue(null, newAccessToken);
 
@@ -80,5 +78,7 @@ axiosInstance.interceptors.response.use(
         isRefreshing = false;
       }
     }
+
+    return Promise.reject(error);
   }
 );
