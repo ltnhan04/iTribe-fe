@@ -19,7 +19,7 @@ export default function VerifyRegister() {
   const { toast } = useToast();
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const { email } = useAppSelector((state) => state.auth.signUp.signUpState);
+  const { signUpState } = useAppSelector((state) => state.auth.signUp);
   const { isLoading, error, verifySignUpState } = useAppSelector(
     (state) => state.auth.verifySignUp
   );
@@ -84,15 +84,16 @@ export default function VerifyRegister() {
     async (otp: string) => {
       setOtp(otp);
       if (otp.length === 6) {
+        const email = signUpState?.email;
         const verify = { email, otp };
         await dispatch(verifySignUpThunk({ verify, router }));
       }
     },
-    [dispatch, email, router]
+    [dispatch, signUpState?.email, router]
   );
 
   const handleResendOTP = async () => {
-    await resentOTP(email);
+    await resentOTP(signUpState?.email);
     setOtp("");
     setCounter(60);
     setResetTrigger((prev) => !prev);
@@ -121,7 +122,7 @@ export default function VerifyRegister() {
             </h1>
             <p className="text-center text-gray-600 font-medium mb-6">
               Mã OTP đã được gửi đến{" "}
-              <span className="text-[#0D99FF]">{email}</span>
+              <span className="text-[#0D99FF]">{signUpState?.email}</span>
             </p>
             <InputOTPPattern
               getOTP={handleChangeOTP}
