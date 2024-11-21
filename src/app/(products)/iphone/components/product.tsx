@@ -81,7 +81,7 @@ const ProductCard: React.FC<ProductProps> = ({
           {storages.length > 0 ? (
             storages.map((storage, index) => (
               <Badge key={index} className="px-2 py-1 bg-blue">
-                {storage}GB
+                {storage}
               </Badge>
             ))
           ) : (

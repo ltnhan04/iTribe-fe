@@ -1,57 +1,56 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Input } from "@/components/ui/input";
 
-import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 import withAuth from "@/components/common/withAuth";
 
-import { ShoppingBag, CreditCard, Wallet, Tag } from "lucide-react";
+import { ShoppingBag, CreditCard, Wallet } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-
-import { useAppSelector } from "@/lib/hooks";
+import { useAppSelector, useAppDispatch } from "@/lib/hooks";
+import { clearCart } from "@/lib/features/cart/cartSlice";
 import type { CartType } from "@/lib/features/cart/cartType";
-import type { Promotion } from "@/app/cart/checkout/type";
-
-import {
-  applyPromotion,
-  getPromotions,
-} from "@/api/services/promotions/promotionApi";
+import { applyPromotion } from "@/api/services/promotions/promotionApi";
+import { createCheckoutSession } from "@/api/services/payment/paymentApi";
 import { createOrder } from "@/api/services/orders/orderApi";
+import {
+  AlertDialog,
+  AlertDialogTrigger,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+} from "@/components/ui/alert-dialog";
+
+interface ErrorType {
+  response: {
+    data: {
+      message: string;
+    };
+  };
+}
 
 const CheckoutPage = () => {
-  const router = useRouter();
+  const dispatch = useAppDispatch();
   const cart = useAppSelector((state) => state.cart.cart);
   const [totalAmount, setTotalAmount] = useState(
     useAppSelector((state) => state.cart.total)
   );
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("stripe");
-  const [promotions, setPromotions] = useState<Promotion[]>([]);
-  const [selectedPromotion, setSelectedPromotion] = useState<Promotion | null>(
-    null
-  );
+  const [isLoading, setIsLoading] = useState(false);
   const [promoCode, setPromoCode] = useState("");
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const { toast } = useToast();
 
-  useEffect(() => {
-    fetchPromotions();
-  }, []);
-
-  const fetchPromotions = async () => {
-    try {
-      const response = await getPromotions();
-      setPromotions(response.data.promotions);
-    } catch (error) {
-      console.error("Error fetching promotions:", error);
-    }
-  };
-
   const applyAPromotion = async () => {
+    setIsLoading(true);
     try {
       const response = await applyPromotion({
         code: promoCode,
@@ -59,24 +58,25 @@ const CheckoutPage = () => {
       });
       const data = response.data;
       setTotalAmount(data.discountedAmount);
-      setSelectedPromotion(
-        promotions.find((promo) => promo.code === promoCode) || null
-      );
       toast({
         title: "Promotion Applied",
         description: `Discount of ${data.discountAmount} VND applied successfully.`,
+        variant: "default",
       });
-    } catch (error) {
-      console.error("Error applying promotion:", error);
+    } catch (error: unknown) {
+      const typedError = error as ErrorType;
       toast({
         title: "Error",
-        description: "An error occurred while applying the promotion.",
+        description: typedError.response.data.message,
         variant: "destructive",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleConfirmOrder = async () => {
+    setIsLoading(true);
     const checkoutData = {
       productVariants: cart.map((item: CartType) => ({
         productVariant: item.id,
@@ -87,44 +87,74 @@ const CheckoutPage = () => {
       paymentMethod: selectedPaymentMethod,
     };
 
-    const response = await createOrder(checkoutData);
-    if (response.status === 201) {
+    try {
+      const response = await createOrder(checkoutData);
+      if (response.status === 201) {
+        const { productVariants } = checkoutData;
+        const orderId = response.data.order._id;
+        const checkoutSession = await createCheckoutSession({
+          productVariants,
+          orderId,
+        });
+        if (checkoutSession.status === 200) {
+          window.location.href = checkoutSession.data.url;
+          dispatch(clearCart());
+        }
+        toast({
+          title: "Order Placed",
+          description: response.data.message,
+        });
+      }
+    } catch (error: unknown) {
+      const typedError = error as ErrorType;
       toast({
-        title: "Order Placed",
-        description: "Your order has been placed successfully.",
+        title: "Error",
+        description: typedError.response.data.message,
+        variant: "destructive",
       });
-      setTimeout(() => {
-        router.push("/orders");
-      }, 1000);
+    } finally {
+      setIsLoading(false);
+      setShowConfirmDialog(false);
     }
   };
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8">Checkout</h1>
+      <h1 className="text-3xl font-bold mb-8 text-center">Checkout</h1>
       <div className="grid gap-8 md:grid-cols-2">
         <div>
           <Card>
             <CardHeader>
-              <CardTitle>Order Summary</CardTitle>
+              <CardTitle className="text-xl">Order Summary</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="space-y-4">
               {cart.map((item: CartType) => (
                 <div
                   key={item.id}
-                  className="flex justify-between items-center mb-4"
+                  className="flex items-center justify-between space-x-4 p-2 rounded-lg bg-gray-50 shadow-sm"
                 >
-                  <div>
-                    <h3 className="font-semibold">{item.name}</h3>
-                    <p className="text-sm text-gray-500">
-                      Quantity: {item.quantity}
-                    </p>
+                  <div className="flex items-center space-x-4">
+                    <Image
+                      src={item.image}
+                      alt={item.name}
+                      width={48}
+                      height={48}
+                      className="w-12 h-12 rounded-lg object-cover"
+                    />
+                    <div>
+                      <h3 className="font-medium">{item.name}</h3>
+                      <p className="text-sm text-gray-500">
+                        Qty: {item.quantity}
+                      </p>
+                    </div>
                   </div>
-                  <p>{(item.price * item.quantity).toLocaleString()} VND</p>
+                  <p className="font-semibold text-gray-700">
+                    {(item.price * item.quantity).toLocaleString()} VND
+                  </p>
                 </div>
               ))}
               <div className="border-t pt-4 mt-4">
-                <div className="flex justify-between items-center font-bold">
+                <div className="flex justify-between items-center font-bold text-lg">
                   <span>Total</span>
                   <span>{totalAmount.toLocaleString()} VND</span>
                 </div>
@@ -134,44 +164,33 @@ const CheckoutPage = () => {
 
           <Card className="mt-8">
             <CardHeader>
-              <CardTitle>Shipping Address</CardTitle>
+              <CardTitle className="text-xl">Shipping Address</CardTitle>
             </CardHeader>
             <CardContent>
-              <p>123 Example St, City, Country</p>
+              <p className="text-gray-600">123 Example St, City, Country</p>
             </CardContent>
           </Card>
 
           <Card className="mt-8">
             <CardHeader>
-              <CardTitle>Apply Promotion</CardTitle>
+              <CardTitle className="text-xl">Apply Promotion</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="flex space-x-2 mb-4">
+              <div className="flex items-center space-x-2">
                 <Input
                   placeholder="Enter promo code"
+                  disabled={isLoading}
                   value={promoCode}
                   onChange={(e) => setPromoCode(e.target.value)}
+                  className="flex-1"
                 />
-                <Button onClick={applyAPromotion}>Apply</Button>
-              </div>
-              {selectedPromotion && (
-                <div className="text-sm text-green-600">
-                  Promotion applied: {selectedPromotion.code} (
-                  {selectedPromotion.discountPercentage}% off)
-                </div>
-              )}
-              <div className="mt-4">
-                <h4 className="font-semibold mb-2">Available Promotions:</h4>
-                <ul className="space-y-2">
-                  {promotions.map((promo) => (
-                    <li key={promo._id} className="flex items-center space-x-2">
-                      <Tag className="h-4 w-4" />
-                      <span>
-                        {promo.code} - {promo.discountPercentage}% off
-                      </span>
-                    </li>
-                  ))}
-                </ul>
+                <Button
+                  disabled={isLoading}
+                  onClick={applyAPromotion}
+                  className="bg-blue transition-colors duration-300 ease-in-out hover:bg-blue/60 text-white"
+                >
+                  Apply
+                </Button>
               </div>
             </CardContent>
           </Card>
@@ -180,7 +199,7 @@ const CheckoutPage = () => {
         <div>
           <Card>
             <CardHeader>
-              <CardTitle>Payment Method</CardTitle>
+              <CardTitle className="text-xl">Payment Method</CardTitle>
             </CardHeader>
             <CardContent>
               <RadioGroup
@@ -188,36 +207,84 @@ const CheckoutPage = () => {
                 onValueChange={setSelectedPaymentMethod}
                 className="space-y-4"
               >
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="pointer-wallet" id="pointer-wallet" />
-                  <Label htmlFor="pointer-wallet" className="flex items-center">
-                    <Wallet className="mr-2 h-4 w-4" />
-                    Pointer Wallet
-                  </Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="stripe" id="stripe" />
-                  <Label htmlFor="stripe" className="flex items-center">
-                    <CreditCard className="mr-2 h-4 w-4" />
-                    Stripe
-                  </Label>
-                </div>
+                {[
+                  {
+                    id: "pointer-wallet",
+                    label: "Pointer Wallet",
+                    icon: Wallet,
+                  },
+                  { id: "stripe", label: "Stripe", icon: CreditCard },
+                ].map((method) => (
+                  <div
+                    key={method.id}
+                    className={`flex items-center space-x-2 p-3 border rounded-lg ${
+                      selectedPaymentMethod === method.id
+                        ? "border-blue"
+                        : "border-gray-200"
+                    }`}
+                  >
+                    <RadioGroupItem value={method.id} id={method.id} />
+                    <Label
+                      htmlFor={method.id}
+                      className="flex items-center space-x-2 cursor-pointer"
+                    >
+                      <method.icon className="h-6 w-6 text-gray-600" />
+                      <span className="font-medium text-gray-700">
+                        {method.label}
+                      </span>
+                    </Label>
+                  </div>
+                ))}
               </RadioGroup>
             </CardContent>
           </Card>
 
           <Card className="mt-8">
             <CardHeader>
-              <CardTitle>Confirm Order</CardTitle>
+              <CardTitle className="text-xl">Confirm Order</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="mb-4">
+              <p className="mb-4 text-gray-600">
                 Please review your order details before confirming.
               </p>
-              <Button onClick={handleConfirmOrder} className="w-full">
-                <ShoppingBag className="mr-2 h-4 w-4" />
-                Place Order
-              </Button>
+              <AlertDialog
+                open={showConfirmDialog}
+                onOpenChange={setShowConfirmDialog}
+              >
+                <AlertDialogTrigger asChild>
+                  <Button
+                    disabled={isLoading}
+                    className="w-full transition-colors duration-300 ease-in-out bg-blue hover:bg-blue/60 text-white py-3 font-bold"
+                  >
+                    <ShoppingBag className="mr-2 h-5 w-5" />
+                    Place Order
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Confirm Order</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Are you sure you want to place this order?
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <Button
+                      variant="secondary"
+                      onClick={() => setShowConfirmDialog(false)}
+                      disabled={isLoading}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      onClick={handleConfirmOrder}
+                      disabled={isLoading}
+                      className="text-white"
+                    >
+                      Confirm
+                    </Button>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </CardContent>
           </Card>
         </div>

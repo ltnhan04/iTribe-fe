@@ -13,6 +13,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { StarIcon, User, ShoppingCart, Heart } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { toast } from "@/hooks/use-toast";
 
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { addToCart, removeToCart } from "@/lib/features/cart/cartSlice";
@@ -25,9 +26,18 @@ import type { WishlistType } from "@/lib/features/wishlists/wishlistsType";
 
 import { getProductDetails } from "@/api/services/products/productsApi";
 import type { Product, Variant } from "@/app/(products)/iphone/type";
+import Loading from "@/app/loading";
 
 interface SlugProps {
   params: { slug: string[] };
+}
+
+interface ErrorType {
+  response: {
+    data: {
+      message: string;
+    };
+  };
 }
 
 const ProductDetail: React.FC<SlugProps> = ({ params }) => {
@@ -36,11 +46,13 @@ const ProductDetail: React.FC<SlugProps> = ({ params }) => {
   const wishlist = useAppSelector((state) => state.wishlist.wishlists);
 
   const [product, setProduct] = useState<Product | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const [selectedVariant, setSelectedVariant] = useState<Variant | null>(null);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchProducts = async () => {
+      setIsLoading(true);
       try {
         const response = await getProductDetails(params.slug[0]);
         const productData = response.data.product;
@@ -50,12 +62,21 @@ const ProductDetail: React.FC<SlugProps> = ({ params }) => {
           setSelectedVariant(initialVariant);
           setSelectedImage(initialVariant.images[0]);
         }
-      } catch (error) {
-        console.error("Error fetching products:", error);
+      } catch (error: unknown) {
+        const typedError = error as ErrorType;
+        toast({
+          title: "Error",
+          description: typedError.response.data.message,
+          variant: "destructive",
+        });
+      } finally {
+        setIsLoading(false);
       }
     };
     fetchProducts();
   }, [params.slug]);
+
+  if (isLoading) return <Loading />;
 
   const averageRating = selectedVariant
     ? selectedVariant.reviews.reduce((acc, review) => acc + review.rating, 0) /
@@ -230,13 +251,13 @@ const ProductDetail: React.FC<SlugProps> = ({ params }) => {
                         title={variant.color.colorName}
                       ></span>
                     </div>
-                    <div>Storage: {variant.storage} GB</div>
+                    <div>Storage: {variant.storage}</div>
                   </CardContent>
                 </Card>
               </TabsContent>
             ))}
           </Tabs>
-          <div className="flex space-x-2">
+          <div className="flex space-x-2 ">
             <Button onClick={handleAddOrRemoveFromCart} className="flex-1">
               <ShoppingCart className="w-4 h-4 mr-2" />
               {isProductInCart ? "Remove from Cart" : "Add to Cart"}
