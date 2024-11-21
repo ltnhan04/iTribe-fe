@@ -7,6 +7,7 @@ import {
 } from "@/lib/features/authentication/authThunk";
 
 export interface AuthState {
+  userId: any;
   login: {
     loginState: { message: string };
     isLoading: boolean;
