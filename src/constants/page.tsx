@@ -119,3 +119,5 @@ export const categories = [
     url: "iphone-11",
   },
 ];
+
+export const COLORS = ["#FCD34D", "#60A5FA", "#34D399", "#EF4444"];

@@ -11,7 +11,7 @@ export default function Loading() {
   }, []);
 
   return (
-    <div className="absolute inset-0 z-50 bg-black/70 flex items-center justify-center">
+    <div className="absolute inset-0 z-50 bg-black/80 flex items-center justify-center">
       <Spinner className="text-white" size="large" />
     </div>
   );
