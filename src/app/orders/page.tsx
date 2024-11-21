@@ -13,7 +13,9 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Progress } from "@/components/ui/progress";
-import withAuth from "@/components/common/withAuth";
+import Loading from "@/app/loading";
+import { COLORS } from "@/constants/page";
+
 import {
   getOrders,
   cancelOrder as cancelOrderAPI,
@@ -27,22 +29,43 @@ import {
   XCircle,
 } from "lucide-react";
 
+import withAuth from "@/components/common/withAuth";
+
 import { Order } from "@/app/orders/type";
+import { toast } from "@/hooks/use-toast";
+
+interface ErrorType {
+  response: {
+    data: {
+      message: string;
+    };
+  };
+}
 
 const OrderTracker = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchOrders = async () => {
       setLoading(true);
       try {
         const response = await getOrders();
-        setOrders(response.data.orders);
-      } catch (err) {
-        console.error(err);
-        setError("Failed to load orders. Please try again later.");
+        if (response.status === 200) {
+          setOrders(response.data.orders);
+          toast({
+            title: "Success",
+            description: response.data.message,
+            variant: "default",
+          });
+        }
+      } catch (err: unknown) {
+        const error = err as ErrorType;
+        toast({
+          title: "Error",
+          description: error.response.data.message,
+          variant: "destructive",
+        });
       } finally {
         setLoading(false);
       }
@@ -53,14 +76,26 @@ const OrderTracker = () => {
 
   const handleCancelOrder = async (orderId: string) => {
     try {
-      await cancelOrderAPI(orderId);
-      setOrders(
-        orders.map((order) =>
-          order.orderId === orderId ? { ...order, status: "cancel" } : order
-        )
-      );
-    } catch {
-      setError("Failed to cancel order. Please try again later.");
+      const response = await cancelOrderAPI(orderId);
+      if (response.status === 200) {
+        toast({
+          title: "Success",
+          description: response.data.message,
+          variant: "default",
+        });
+        setOrders(
+          orders.map((order) =>
+            order.orderId === orderId ? { ...order, status: "cancel" } : order
+          )
+        );
+      }
+    } catch (error: unknown) {
+      const typedError = error as ErrorType;
+      toast({
+        title: "Error",
+        description: typedError.response.data.message,
+        variant: "destructive",
+      });
     }
   };
 
@@ -95,11 +130,7 @@ const OrderTracker = () => {
   };
 
   if (loading) {
-    return <div className="container mx-auto p-4">Loading orders...</div>;
-  }
-
-  if (error) {
-    return <div className="container mx-auto p-4 text-red-500">{error}</div>;
+    return <Loading />;
   }
 
   if (orders.length === 0) {
@@ -117,8 +148,6 @@ const OrderTracker = () => {
       value: count,
     })
   );
-
-  const COLORS = ["#FCD34D", "#60A5FA", "#34D399", "#EF4444"];
 
   return (
     <div className="container mx-auto p-4">

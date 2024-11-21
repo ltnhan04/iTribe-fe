@@ -9,26 +9,43 @@ import Categories from "@/app/(products)/iphone/components/categories";
 import { formatTitle } from "@/utils/formatTitle";
 import { getProductByName } from "@/api/services/products/productsApi";
 import { Products } from "@/app/(products)/iphone/type";
+import Loading from "@/app/loading";
+import { toast } from "@/hooks/use-toast";
 
 interface SlugProps {
   params: { category: string };
 }
-
+interface ErrorType {
+  response: {
+    data: {
+      message: string;
+    };
+  };
+}
 const SlugPage: React.FC<SlugProps> = ({ params }) => {
   const [products, setProducts] = useState<Products[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
+      setIsLoading(true);
       try {
         const response = await getProductByName(formatTitle(params.category));
         setProducts(response.data.data);
-      } catch (error) {
-        console.error("Error fetching products:", error);
+      } catch (error: unknown) {
+        const typedError = error as ErrorType;
+        toast({
+          title: "Error",
+          description: typedError.response.data.message,
+        });
+      } finally {
+        setIsLoading(false);
       }
     };
 
     fetchData();
   }, [params.category]);
+  if (isLoading) return <Loading />;
 
   return (
     <>
