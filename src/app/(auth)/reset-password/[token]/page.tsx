@@ -1,4 +1,3 @@
-/* eslint-disable react/no-unescaped-entities */
 "use client";
 
 import { useState } from "react";
@@ -15,11 +14,14 @@ import {
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { AlertCircle, ArrowLeft } from "lucide-react";
-
-import { forgotPassword } from "@/api/services/auth/authApi";
+import { AlertCircle } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { resetPassword } from "@/api/services/auth/authApi";
 import { ReloadIcon } from "@radix-ui/react-icons";
+
+interface ResetPasswordPageProps {
+  params: { token: string };
+}
 
 interface ErrorType {
   response: {
@@ -29,31 +31,33 @@ interface ErrorType {
   };
 }
 
-const validateEmail = (email: string): boolean => {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email);
-};
-
-export default function ForgotPasswordPage() {
-  const [email, setEmail] = useState("");
+const ResetPasswordPage: React.FC<ResetPasswordPageProps> = ({ params }) => {
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setErrorMessage(null);
     setIsLoading(true);
+    setError("");
 
-    if (!validateEmail(email)) {
-      setErrorMessage("Invalid email format. Please enter a valid email.");
+    if (newPassword !== confirmPassword) {
+      setError("Passwords do not match. Please try again.");
+      setIsLoading(false);
+      return;
+    }
+
+    if (newPassword.length < 8) {
+      setError("Password must be at least 8 characters.");
       setIsLoading(false);
       return;
     }
 
     try {
-      const response = await forgotPassword(email);
+      const response = await resetPassword(params.token, newPassword);
       if (response.status === 200) {
         toast({
           title: "Success",
@@ -63,7 +67,9 @@ export default function ForgotPasswordPage() {
       }
     } catch (err: unknown) {
       const error = err as ErrorType;
-      setErrorMessage(error.response.data.message || "Something went wrong.");
+      setError(
+        error.response.data.message || "An error occurred. Please try again."
+      );
     } finally {
       setIsLoading(false);
     }
@@ -74,18 +80,14 @@ export default function ForgotPasswordPage() {
       <div className="flex items-center justify-center min-h-screen bg-gray-100">
         <Card className="w-[350px]">
           <CardHeader>
-            <CardTitle>Check Your Email</CardTitle>
+            <CardTitle>Password Reset Successful</CardTitle>
             <CardDescription>
-              We've sent a password reset link to your email.
+              Your password has been reset successfully.
             </CardDescription>
           </CardHeader>
           <CardFooter>
-            <Button
-              disabled={isLoading}
-              onClick={() => router.push("/login")}
-              className="w-full"
-            >
-              Return to Login
+            <Button onClick={() => router.push("/login")} className="w-full">
+              Go to Login
             </Button>
           </CardFooter>
         </Card>
@@ -97,36 +99,44 @@ export default function ForgotPasswordPage() {
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <Card className="w-[350px]">
         <CardHeader>
-          <CardTitle>Forgot Password</CardTitle>
-          <CardDescription>
-            Enter your email to reset your password.
-          </CardDescription>
+          <CardTitle>Reset Password</CardTitle>
+          <CardDescription>Enter your new password below.</CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit}>
           <CardContent>
             <div className="grid w-full items-center gap-4">
-              {errorMessage && (
-                <Alert variant="destructive" className="mt-2">
-                  <AlertCircle className="h-4 w-4" />
-                  <AlertTitle>Error</AlertTitle>
-                  <AlertDescription>{errorMessage}</AlertDescription>
-                </Alert>
-              )}
               <div className="flex flex-col space-y-1.5">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="newPassword">New Password</Label>
                 <Input
-                  id="email"
-                  type="email"
+                  id="newPassword"
+                  type="password"
                   disabled={isLoading}
-                  placeholder="Enter your email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="flex flex-col space-y-1.5">
+                <Label htmlFor="confirmPassword">Confirm New Password</Label>
+                <Input
+                  id="confirmPassword"
+                  type="password"
+                  disabled={isLoading}
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
                   required
                 />
               </div>
             </div>
+            {error && (
+              <Alert variant="destructive" className="mt-4">
+                <AlertCircle className="h-4 w-4" />
+                <AlertTitle>Error</AlertTitle>
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
           </CardContent>
-          <CardFooter className="flex flex-col gap-4">
+          <CardFooter>
             <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading ? (
                 <>
@@ -134,20 +144,14 @@ export default function ForgotPasswordPage() {
                   Please wait...
                 </>
               ) : (
-                "Send Reset Link"
+                "Reset Password"
               )}
-            </Button>
-            <Button
-              variant="outline"
-              className="w-full"
-              disabled={isLoading}
-              onClick={() => router.push("/login")}
-            >
-              <ArrowLeft className="mr-2 h-4 w-4" /> Back to Login
             </Button>
           </CardFooter>
         </form>
       </Card>
     </div>
   );
-}
+};
+
+export default ResetPasswordPage;

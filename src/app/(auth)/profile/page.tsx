@@ -198,17 +198,20 @@ const UserProfile = () => {
                         <div>
                           <strong>Products:</strong>
                           <ul className="list-disc pl-5 mt-2">
-                            {order.productVariants.map((item, itemIndex) => (
-                              <li key={itemIndex}>
-                                {item.productVariant.name} -{" "}
-                                {item.productVariant.color.colorName} (
-                                {item.productVariant.storage}GB) x{" "}
-                                {item.quantity} -{" "}
-                                {formatCurrency(
-                                  item.productVariant.price * item.quantity
-                                )}
-                              </li>
-                            ))}
+                            {order.productVariants &&
+                              order.productVariants
+                                .filter((item) => item.productVariant !== null)
+                                .map((item, itemIndex) => (
+                                  <li key={itemIndex}>
+                                    {item.productVariant.name} -{" "}
+                                    {item.productVariant.color.colorName} (
+                                    {item.productVariant.storage}GB) x{" "}
+                                    {item.quantity} -{" "}
+                                    {formatCurrency(
+                                      item.productVariant.price * item.quantity
+                                    )}
+                                  </li>
+                                ))}
                           </ul>
                         </div>
                       </div>

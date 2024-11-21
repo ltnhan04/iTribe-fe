@@ -51,16 +51,11 @@ export const logout = async () => {
 };
 
 export const resentOTP = async (email: string) => {
-  return await axiosInstance.post(
-    `${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/auth/resent-otp`,
-    { email }
-  );
+  return await axiosInstance.post(`/api/auth/resent-otp`, { email });
 };
 
 export const getProfile = async () => {
-  const response = await axiosInstance.get(
-    `${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/auth/profile`
-  );
+  const response = await axiosInstance.get(`/api/auth/profile`);
   return response;
 };
 
@@ -73,18 +68,29 @@ export const updateProfile = async ({
   address: string;
   phoneNumber: string;
 }) => {
-  return await axiosInstance.post(
-    `${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/auth/update-profile`,
-    {
-      name,
-      address,
-      phoneNumber,
-    }
+  return await axiosInstance.post(`/api/auth/update-profile`, {
+    name,
+    address,
+    phoneNumber,
+  });
+};
+
+export const forgotPassword = async (email: string) => {
+  return await axios.post(
+    `${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/auth/forgot-password`,
+    { email }
+  );
+};
+
+export const resetPassword = async (token: string, password: string) => {
+  return await axios.post(
+    `${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/auth/reset-password/${token}`,
+    { password }
   );
 };
 
 export const refreshToken = async () => {
-  const response = await axios.post(
+  const response = await axiosInstance.post(
     `${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/auth/refresh-token`,
     { withCredentials: true }
   );
