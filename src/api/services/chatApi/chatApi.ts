@@ -31,7 +31,7 @@ export const sendMessageApi = async (userId: string, message: string) => {
 };
 
 // Lấy tin nhắn của người dùng từ API
-export const getMessages = async (userName: string) => {
+export const getMessages = async () => {
   try {
     const response = await axiosInstance.get(
       `${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/chat/messages`
@@ -62,11 +62,13 @@ export const sendMessageSocket = (message: { user: string; message: string }) =>
 };
 
 // Đăng ký sự kiện nhận tin nhắn mới từ WebSocket
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const onNewMessage = (callback: (message: any) => void) => {
   socket.on("newMessage", callback);
 };
 
 // Hủy đăng ký sự kiện nhận tin nhắn mới từ WebSocket
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const offNewMessage = (callback: (message: any) => void) => {
   socket.off("newMessage", callback);
 };

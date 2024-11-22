@@ -18,6 +18,7 @@ const UserPage = () => {
 
   const decodeToken = (accessToken: string) => {
     try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const decoded: any = jwtDecode(accessToken);
       return decoded.userId;
     } catch (error) {
@@ -32,11 +33,12 @@ const UserPage = () => {
   const fetchMessages = useCallback(async () => {
     setLoadingMessages(true);
     try {
-      const fetchedMessages = await getMessages(userName); 
+      const fetchedMessages = await getMessages(); 
       const sortedMessages = fetchedMessages.sort((a: Message, b: Message) =>
         new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
       );
       setMessages(sortedMessages); 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       message.error("Failed to load messages!");
       setMessages([]);
@@ -77,6 +79,7 @@ const UserPage = () => {
         ]);
         setNewMessage(""); 
         message.success("Message sent successfully!");
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (error) {
         message.error("Failed to send message, please try again!");
       }
