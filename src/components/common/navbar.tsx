@@ -135,6 +135,11 @@ const Navbar: React.FC<NavbarProps> = ({ isFixed }) => {
                               Đơn hàng
                             </DropdownMenuItem>
                           </Link>
+                          <Link href={"/chatbox"}>
+                            <DropdownMenuItem className="cursor-pointer">
+                              Hỗ trợ
+                            </DropdownMenuItem>
+                          </Link>
                           <DropdownMenuItem
                             className="cursor-pointer"
                             onClick={() => setShowLogoutDialog(true)}

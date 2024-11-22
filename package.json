@@ -31,7 +31,6 @@
     "@react-three/drei": "^9.114.0",
     "@react-three/fiber": "^8.17.9",
     "@reduxjs/toolkit": "^2.2.7",
-    "@stripe/react-stripe-js": "^3.0.0",
     "axios": "^1.7.7",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
@@ -56,9 +55,11 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@types/antd": "^1.0.4",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "@types/socket.io-client": "^3.0.0",
     "@types/three": "^0.169.0",
     "eslint": "^8",
     "eslint-config-next": "14.2.13",
