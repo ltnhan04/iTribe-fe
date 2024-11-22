@@ -45,7 +45,7 @@ const UserPage = () => {
     } finally {
       setLoadingMessages(false);
     }
-  }, [userName]);
+  }, []);
 
   useEffect(() => {
     fetchMessages();
