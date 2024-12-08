@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 
 import { formatCurrency } from "@/utils/format-currency";
 import type { Color } from "@/app/(products)/iphone/type";
+const noImage = "/assets/images/no-image.jpg";
 
 interface ProductProps {
   _id: string;
@@ -30,7 +31,7 @@ const ProductCard: React.FC<ProductProps> = ({
   }, []);
 
   return (
-    <Card className="w-full max-w-sm p-4 bg-background border border-border rounded-xl shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer">
+    <Card className="w-full max-w-sm p-4 bg-background border border-border rounded-xl shadow-md hover:shadow-lg transition-shadow duration-200 ease-in-out cursor-pointer">
       <CardHeader className="flex flex-col items-center">
         <div className="relative w-[200px] h-[250px]">
           {image ? (
@@ -43,9 +44,14 @@ const ProductCard: React.FC<ProductProps> = ({
               quality={100}
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center bg-muted rounded-lg">
-              <span className="text-muted-foreground">No image available</span>
-            </div>
+            <Image
+              src={noImage}
+              fill={true}
+              alt={`${name} image`}
+              className="object-contain rounded-lg"
+              priority
+              quality={100}
+            />
           )}
         </div>
       </CardHeader>
@@ -58,7 +64,7 @@ const ProductCard: React.FC<ProductProps> = ({
                 className="w-4 h-4 rounded-full border transition-all duration-300"
                 style={{
                   backgroundColor: color.colorCode,
-                  borderColor: `gray`,
+                  borderColor: `yellow`,
                   outlineColor: color.colorCode,
                   boxShadow: `0 0 5px ${color.colorCode}55`,
                 }}
@@ -80,7 +86,11 @@ const ProductCard: React.FC<ProductProps> = ({
         <div className="flex items-center gap-2 justify-center">
           {storages.length > 0 ? (
             storages.map((storage, index) => (
-              <Badge key={index} className="px-2 py-1 bg-blue">
+              <Badge
+                key={index}
+                variant={"outline"}
+                className="border border-blue text-blue"
+              >
                 {storage}
               </Badge>
             ))

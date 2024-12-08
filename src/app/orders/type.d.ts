@@ -8,15 +8,36 @@ export interface Product {
   quantity: number;
   productImages: string[];
 }
+export interface User {
+  _id: string
+  name: string
+}
+export interface ProductVariant {
+  productVariant: ProductVariant2
+  quantity: number
+  _id: string
+}
+
+export interface ProductVariant2 {
+  _id: string
+  name: string
+  color: Color
+  storage: string
+  price: number
+  stock: number
+  images: string[]
+}
 
 export interface Order {
-  orderId: string;
-  user: { id: string; name: string };
-  products: Product[];
-  totalAmount: number;
-  status: "pending" | "processing" | "delivered" | "cancel";
-  shippingAddress: string;
-  paymentMethod: string;
-  createdAt: string;
-  updatedAt: string;
+  _id: string
+  user: User
+  productVariants: ProductVariant[]
+  totalAmount: number
+  status: string
+  shippingAddress: string
+  paymentMethod: string
+  stripeSessionId?: string
+  createdAt: string
+  updatedAt: string
+  __v: number
 }

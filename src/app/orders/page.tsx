@@ -85,7 +85,7 @@ const OrderTracker = () => {
         });
         setOrders(
           orders.map((order) =>
-            order.orderId === orderId ? { ...order, status: "cancel" } : order
+            order._id === orderId ? { ...order, status: "cancel" } : order
           )
         );
       }
@@ -201,10 +201,10 @@ const OrderTracker = () => {
             <ul className="space-y-2">
               {orders.slice(0, 5).map((order) => (
                 <li
-                  key={order.orderId}
+                  key={order._id}
                   className="flex items-center justify-between"
                 >
-                  <span>#{order.orderId}</span>
+                  <span>#{order._id}</span>
                   <Badge variant="outline">{order.status}</Badge>
                 </li>
               ))}
@@ -228,12 +228,12 @@ const OrderTracker = () => {
                 {orders
                   .filter((order) => tab === "all" || order.status === tab)
                   .map((order) => (
-                    <AccordionItem key={order.orderId} value={order.orderId}>
+                    <AccordionItem key={order._id} value={order._id}>
                       <AccordionTrigger>
                         <div className="flex items-center justify-between w-full">
                           <div className="flex items-center space-x-4">
                             {getStatusIcon(order.status)}
-                            <span>Order #{order.orderId}</span>
+                            <span>Order #{order._id}</span>
                           </div>
                           <Badge variant="outline">
                             {order.status.charAt(0).toUpperCase() +
@@ -262,23 +262,23 @@ const OrderTracker = () => {
                           <div>
                             <strong>Products:</strong>
                             <ul className="list-disc pl-5 mt-2">
-                              {order.products.map((product) => (
-                                <li key={product.productId} className="mb-2">
+                              {order.productVariants.map((product) => (
+                                <li key={product._id} className="mb-2">
                                   <div className="flex items-center space-x-2">
                                     <Image
-                                      src={product.productImages[0]}
-                                      alt={product.productName}
+                                      src={product.productVariant.images[0]}
+                                      alt={product.productVariant.name}
                                       width={80}
                                       height={80}
                                       className="rounded-md object-cover"
                                     />
                                     <div>
                                       <p className="font-medium">
-                                        {product.productName}
+                                        {product.productVariant.name}
                                       </p>
                                       <p className="text-sm text-gray-500">
-                                        {product.productColor} (
-                                        {product.productStorage}GB) x{" "}
+                                        {product.productVariant.color} (
+                                        {product.productVariant.storage}GB) x{" "}
                                         {product.quantity}
                                       </p>
                                     </div>
@@ -289,7 +289,7 @@ const OrderTracker = () => {
                           </div>
                           {order.status === "pending" && (
                             <Button
-                              onClick={() => handleCancelOrder(order.orderId)}
+                              onClick={() => handleCancelOrder(order._id)}
                               variant="destructive"
                             >
                               Cancel Order
