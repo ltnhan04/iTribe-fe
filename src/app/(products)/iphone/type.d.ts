@@ -44,3 +44,11 @@ interface Product {
   variants: Variant[];
   reviews: Review[];
 }
+
+export interface ErrorType {
+  response: {
+    data: {
+      message: string;
+    };
+  };
+}

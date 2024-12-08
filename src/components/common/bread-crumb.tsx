@@ -46,7 +46,7 @@ const BreadCrumb: React.FC<BreadCrumbProps> = ({ slug }) => {
             <BreadcrumbItem>
               <BreadcrumbLink
                 className="text-black transition-colors duration-300 ease-out hover:text-blue"
-                href={`/${slug}`} // Sử dụng template literal đúng cách
+                href={`/${slug}`}
               >
                 {slug}
               </BreadcrumbLink>

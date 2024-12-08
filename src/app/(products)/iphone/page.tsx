@@ -1,14 +1,18 @@
+import React from "react";
+import { Suspense } from "react";
+import Loading from "../../../app/loading";
 import CarouselAutoPlay from "@/app/(products)/iphone/components/carousel";
 import Categories from "@/app/(products)/iphone/components/categories";
 import BreadCrumb from "@/components/common/bread-crumb";
-import React from "react";
 
 const IPhone = () => {
   return (
     <>
       <BreadCrumb />
       <CarouselAutoPlay />
-      <Categories />
+      <Suspense fallback={<Loading />}>
+        <Categories />
+      </Suspense>
     </>
   );
 };
