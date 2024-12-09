@@ -91,7 +91,7 @@ const ProductCard: React.FC<ProductProps> = ({
               <Badge
                 key={index}
                 variant={"outline"}
-                className="border border-blue text-blue"
+                className="border border-blue text-blue text-[9px]"
               >
                 {storage}
               </Badge>

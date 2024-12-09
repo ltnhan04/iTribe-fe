@@ -16,6 +16,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAppSelector, useAppDispatch } from "@/lib/hooks";
 import { clearCart } from "@/lib/features/cart/cartSlice";
 import type { CartType } from "@/lib/features/cart/cartType";
+
 import { applyPromotion } from "@/api/services/promotions/promotionApi";
 import { createCheckoutSession } from "@/api/services/payment/paymentApi";
 import { createOrder } from "@/api/services/orders/orderApi";
@@ -29,13 +30,7 @@ import {
   AlertDialogFooter,
 } from "@/components/ui/alert-dialog";
 
-interface ErrorType {
-  response: {
-    data: {
-      message: string;
-    };
-  };
-}
+import type { ErrorType } from "./type";
 
 const CheckoutPage = () => {
   const dispatch = useAppDispatch();
@@ -59,15 +54,14 @@ const CheckoutPage = () => {
       const data = response.data;
       setTotalAmount(data.discountedAmount);
       toast({
-        title: "Promotion Applied",
-        description: `Discount of ${data.discountAmount} VND applied successfully.`,
+        title: "Sử dụng khuyến mãi thành công",
+        description: `Giảm giá còn ${data.discountAmount} VND cho đơn hàng.`,
         variant: "default",
       });
     } catch (error: unknown) {
-      const typedError = error as ErrorType;
       toast({
-        title: "Error",
-        description: typedError.response.data.message,
+        title: "Đã xảy ra lỗi",
+        description: (error as ErrorType).response.data.message,
         variant: "destructive",
       });
     } finally {
@@ -101,15 +95,15 @@ const CheckoutPage = () => {
           dispatch(clearCart());
         }
         toast({
-          title: "Order Placed",
+          title: "Đã đặt hàng thành công",
           description: response.data.message,
+          variant: "default",
         });
       }
     } catch (error: unknown) {
-      const typedError = error as ErrorType;
       toast({
-        title: "Error",
-        description: typedError.response.data.message,
+        title: "Đã xảy ra lỗi",
+        description: (error as ErrorType).response.data.message,
         variant: "destructive",
       });
     } finally {
@@ -120,12 +114,14 @@ const CheckoutPage = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8 text-center">Checkout</h1>
+      <h1 className="text-3xl font-bold mb-8 text-center">
+        Tiến hành thanh toán
+      </h1>
       <div className="grid gap-8 md:grid-cols-2">
         <div>
           <Card>
             <CardHeader>
-              <CardTitle className="text-xl">Order Summary</CardTitle>
+              <CardTitle className="text-xl">Tổng quan đơn hàng</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               {cart.map((item: CartType) => (
@@ -143,9 +139,7 @@ const CheckoutPage = () => {
                     />
                     <div>
                       <h3 className="font-medium">{item.name}</h3>
-                      <p className="text-sm text-gray-500">
-                        Qty: {item.quantity}
-                      </p>
+                      <p className="text-sm text-gray-500">x {item.quantity}</p>
                     </div>
                   </div>
                   <p className="font-semibold text-gray-700">
@@ -155,7 +149,7 @@ const CheckoutPage = () => {
               ))}
               <div className="border-t pt-4 mt-4">
                 <div className="flex justify-between items-center font-bold text-lg">
-                  <span>Total</span>
+                  <span>Tổng tiền</span>
                   <span>{totalAmount.toLocaleString()} VND</span>
                 </div>
               </div>
@@ -164,7 +158,7 @@ const CheckoutPage = () => {
 
           <Card className="mt-8">
             <CardHeader>
-              <CardTitle className="text-xl">Shipping Address</CardTitle>
+              <CardTitle className="text-xl">Địa chỉ giao hàng</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-gray-600">123 Example St, City, Country</p>
@@ -173,12 +167,12 @@ const CheckoutPage = () => {
 
           <Card className="mt-8">
             <CardHeader>
-              <CardTitle className="text-xl">Apply Promotion</CardTitle>
+              <CardTitle className="text-xl">Khuyến mãi</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-center space-x-2">
                 <Input
-                  placeholder="Enter promo code"
+                  placeholder="Nhập mã khuyến mãi"
                   disabled={isLoading}
                   value={promoCode}
                   onChange={(e) => setPromoCode(e.target.value)}
@@ -189,7 +183,7 @@ const CheckoutPage = () => {
                   onClick={applyAPromotion}
                   className="bg-blue transition-colors duration-300 ease-in-out hover:bg-blue/60 text-white"
                 >
-                  Apply
+                  Sử dụng
                 </Button>
               </div>
             </CardContent>
@@ -199,7 +193,7 @@ const CheckoutPage = () => {
         <div>
           <Card>
             <CardHeader>
-              <CardTitle className="text-xl">Payment Method</CardTitle>
+              <CardTitle className="text-xl">Phương thức thanh toán</CardTitle>
             </CardHeader>
             <CardContent>
               <RadioGroup
@@ -241,12 +235,13 @@ const CheckoutPage = () => {
 
           <Card className="mt-8">
             <CardHeader>
-              <CardTitle className="text-xl">Confirm Order</CardTitle>
+              <CardTitle className="text-xl">Xác nhận thanh toán</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="mb-4 text-gray-600">
-                Please review your order details before confirming.
-              </p>
+              <div className="mb-4 text-gray-600">
+                Vui lòng kiểm tra lại thông tin đơn hàng của bạn trước khi xác
+                nhận.
+              </div>
               <AlertDialog
                 open={showConfirmDialog}
                 onOpenChange={setShowConfirmDialog}
@@ -257,14 +252,14 @@ const CheckoutPage = () => {
                     className="w-full transition-colors duration-300 ease-in-out bg-blue hover:bg-blue/60 text-white py-3 font-bold"
                   >
                     <ShoppingBag className="mr-2 h-5 w-5" />
-                    Place Order
+                    Đặt hàng
                   </Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent>
                   <AlertDialogHeader>
-                    <AlertDialogTitle>Confirm Order</AlertDialogTitle>
+                    <AlertDialogTitle>Xác nhận đặt hàng</AlertDialogTitle>
                     <AlertDialogDescription>
-                      Are you sure you want to place this order?
+                      Bạn có chắc chắn muốn đặt hàng không?
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
@@ -273,14 +268,14 @@ const CheckoutPage = () => {
                       onClick={() => setShowConfirmDialog(false)}
                       disabled={isLoading}
                     >
-                      Cancel
+                      Hủy
                     </Button>
                     <Button
                       onClick={handleConfirmOrder}
                       disabled={isLoading}
                       className="text-white"
                     >
-                      Confirm
+                      Xác nhận
                     </Button>
                   </AlertDialogFooter>
                 </AlertDialogContent>

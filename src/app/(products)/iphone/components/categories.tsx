@@ -144,7 +144,7 @@ const Categories = () => {
               </div>
             </div>
           ) : (
-            <div className="py-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 place-items-center">
+            <div className=" grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 place-items-center">
               {products.map((product) => (
                 <Link
                   key={product._id}

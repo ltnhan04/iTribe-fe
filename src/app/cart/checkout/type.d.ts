@@ -8,3 +8,11 @@ export type Promotion = {
   maxUsage: number;
   usedCount: number;
 };
+
+export interface ErrorType {
+  response: {
+    data: {
+      message: string;
+    };
+  };
+}
