@@ -1,11 +1,13 @@
 "use client";
 import React from "react";
+import { useRouter } from "next/navigation";
 import { useGSAP } from "@gsap/react";
 import { CirclePlay } from "lucide-react";
 import { animateWithGsap } from "@/utils/animations";
 import VideoCarousel from "@/components/common/video-carousel";
 
 export default function HighLights() {
+  const router = useRouter();
   useGSAP(() => {
     animateWithGsap("#watch", { opacity: 1, y: 0, duration: 1 });
     animateWithGsap("#title", { opacity: 1, y: 0 });
@@ -23,6 +25,9 @@ export default function HighLights() {
           <p
             id="watch"
             className="text-blue hover:underline cursor-pointer flex items-center text-base opacity-0 translate-y-20"
+            onClick={() =>
+              router.push("https://youtu.be/eDqfg_LexCQ?si=xWmSqhgsLJ8HYOv3")
+            }
           >
             Xem Phim
             <CirclePlay className="ml-2" size={20} />

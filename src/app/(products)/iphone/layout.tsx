@@ -11,7 +11,7 @@ export default function Layout({
     <>
       <Navbar isFixed={true} />
       <div className="bg-white mt-[88px]">
-        <div className="container max-w-7xl mx-auto sm:px-10">
+        <div className="container max-w-7xl mx-auto sm:px-20">
           <div className="w-full px-5 sm:px-0 py-5">{children}</div>
         </div>
       </div>

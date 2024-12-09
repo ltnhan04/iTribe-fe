@@ -21,7 +21,7 @@ const BreadCrumb: React.FC<BreadCrumbProps> = ({ slug }) => {
             className="text-black transition-colors duration-300 ease-out hover:text-blue"
             href="/"
           >
-            Home
+            Trang chủ
           </BreadcrumbLink>
         </BreadcrumbItem>
 

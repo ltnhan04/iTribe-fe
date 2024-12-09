@@ -58,9 +58,8 @@ export default function WishlistPage() {
                   <Image
                     src={item.image}
                     alt={item.name}
-                    layout="fill"
-                    objectFit="cover"
-                    className="transition-transform duration-300 group-hover:scale-110"
+                    fill={true}
+                    className=" object-contain transition-transform duration-300 group-hover:scale-110"
                   />
                 </div>
                 <div className="p-6">

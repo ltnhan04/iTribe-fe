@@ -31,13 +31,14 @@ const ProductCard: React.FC<ProductProps> = ({
   }, []);
 
   return (
-    <Card className="w-full max-w-sm p-4 bg-background border border-border rounded-xl shadow-md hover:shadow-lg transition-shadow duration-200 ease-in-out cursor-pointer">
+    <Card className="w-full max-w-sm bg-background border border-border rounded-xl shadow-md hover:shadow-lg transition-shadow duration-200 ease-in-out cursor-pointer">
       <CardHeader className="flex flex-col items-center">
         <div className="relative w-[200px] h-[250px]">
           {image ? (
             <Image
               src={image}
               fill={true}
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 200px"
               alt={`${name} image`}
               className="object-contain rounded-lg"
               priority
@@ -47,6 +48,7 @@ const ProductCard: React.FC<ProductProps> = ({
             <Image
               src={noImage}
               fill={true}
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 200px"
               alt={`${name} image`}
               className="object-contain rounded-lg"
               priority
@@ -81,7 +83,7 @@ const ProductCard: React.FC<ProductProps> = ({
           {name}
         </CardTitle>
         <div className="text-md font-medium text-foreground py-2">
-          {price > 0 ? formatCurrency(price) : "Price not available"}
+          {price > 0 ? formatCurrency(price) : 0}
         </div>
         <div className="flex items-center gap-2 justify-center">
           {storages.length > 0 ? (

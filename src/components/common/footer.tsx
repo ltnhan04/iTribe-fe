@@ -40,7 +40,7 @@ export default function Footer() {
         </div>
         <div className="bg-neutral-700 h-[1px] my-5 w-full"></div>
         <p className="font-semibold text-gray text-xs text-center">
-          Copright @ 2024 iTribe Team. All rights reserved.
+          Copright @ 2024 Nhan Luong. All rights reserved.
         </p>
       </div>
     </div>

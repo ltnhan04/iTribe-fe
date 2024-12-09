@@ -14,7 +14,6 @@ import { useAppSelector, useAppDispatch } from "@/lib/hooks";
 import { updateCart } from "@/lib/features/cart/cartSlice";
 import type { CartType } from "@/lib/features/cart/cartType";
 
-
 export default function CartPage() {
   const dispatch = useAppDispatch();
   const router = useRouter();
@@ -69,9 +68,9 @@ export default function CartPage() {
                     <Image
                       src={item.image}
                       alt={item.name}
-                      layout="fill"
-                      objectFit="cover"
-                      className="rounded-md"
+                      fill
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 200px"
+                      className=" object-contain rounded-md"
                     />
                   </div>
                   <div className="ml-4 flex-grow">

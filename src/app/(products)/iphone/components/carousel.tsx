@@ -28,6 +28,7 @@ export default function CarouselAutoPlay() {
                 src={carousel[index]}
                 alt="image"
                 fill
+                sizes="100%"
                 className="rounded-xl"
                 quality={100}
                 priority={true}

@@ -8,6 +8,13 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -23,6 +30,7 @@ import {
 } from "@/lib/features/wishlists/wistlistSlice";
 import type { CartType } from "@/lib/features/cart/cartType";
 import type { WishlistType } from "@/lib/features/wishlists/wishlistsType";
+import type { ErrorType } from "@/app/(products)/iphone/type";
 
 import { getProductDetails } from "@/api/services/products/productsApi";
 import type { Product, Variant } from "@/app/(products)/iphone/type";
@@ -30,14 +38,6 @@ import Loading from "@/app/loading";
 
 interface SlugProps {
   params: { slug: string[] };
-}
-
-interface ErrorType {
-  response: {
-    data: {
-      message: string;
-    };
-  };
 }
 
 const ProductDetail: React.FC<SlugProps> = ({ params }) => {
@@ -159,7 +159,7 @@ const ProductDetail: React.FC<SlugProps> = ({ params }) => {
                       src={image}
                       fill
                       quality={100}
-                      priority
+                      priority={true}
                       sizes="(max-width: 768px) 100vw, 500px"
                       alt="Product image"
                     />
@@ -201,14 +201,14 @@ const ProductDetail: React.FC<SlugProps> = ({ params }) => {
                 onClick={() => handleThumbnailClick(image)}
                 className={`relative w-12 h-12 sm:w-16 sm:h-16 ${
                   image === selectedImage ? "border-2 border-blue" : ""
-                } rounded-md cursor-pointer transition-opacity duration-300 hover:opacity-80`}
+                } rounded-md cursor-pointer transition-opacity duration-300 ease-in-out hover:opacity-80`}
               >
                 <Image
                   src={image}
                   fill
                   quality={100}
                   sizes="48px"
-                  alt="Thumbnail image"
+                  alt="Thumbnail"
                 />
               </div>
             ))}
@@ -218,19 +218,30 @@ const ProductDetail: React.FC<SlugProps> = ({ params }) => {
       {product && selectedVariant && (
         <div className="space-y-6">
           <h1 className="font-bold text-3xl">{product.name}</h1>
-          <p className="text-gray-600">{product.description}</p>
+          <ScrollArea className="h-32">
+            <div
+              className="text-gray-600"
+              dangerouslySetInnerHTML={{ __html: product.description }}
+            ></div>
+          </ScrollArea>
 
           <Tabs
             defaultValue={selectedVariant._id}
             onValueChange={handleVariantChange}
           >
             <TabsList>
-              {product.variants.map((variant) => (
-                <TabsTrigger key={variant._id} value={variant._id}>
-                  {variant.name}
-                </TabsTrigger>
-              ))}
+              <ScrollArea className="max-w-lg overflow-hidden py-3">
+                <div className="flex space-x-2">
+                  {product.variants.map((variant) => (
+                    <TabsTrigger key={variant._id} value={variant._id}>
+                      {variant.name}
+                    </TabsTrigger>
+                  ))}
+                </div>
+                <ScrollBar orientation="horizontal" />
+              </ScrollArea>
             </TabsList>
+
             {product.variants.map((variant) => (
               <TabsContent key={variant._id} value={variant._id}>
                 <Card>
@@ -240,41 +251,54 @@ const ProductDetail: React.FC<SlugProps> = ({ params }) => {
                         {variant.price.toLocaleString()} VND
                       </span>
                       <span className="text-sm text-gray-500">
-                        Stock: {variant.stock}
+                        Số lượng: {variant.stock}
                       </span>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <span>Color: </span>
+                      <span>Màu: </span>
                       <span
                         className="w-6 h-6 rounded-full border"
                         style={{ backgroundColor: variant.color.colorCode }}
                         title={variant.color.colorName}
                       ></span>
                     </div>
-                    <div>Storage: {variant.storage}</div>
+                    <div>Dung lượng: {variant.storage}</div>
                   </CardContent>
                 </Card>
               </TabsContent>
             ))}
           </Tabs>
-          <div className="flex space-x-2 ">
-            <Button onClick={handleAddOrRemoveFromCart} className="flex-1">
-              <ShoppingCart className="w-4 h-4 mr-2" />
-              {isProductInCart ? "Remove from Cart" : "Add to Cart"}
-            </Button>
-            <Button
-              onClick={handleAddOrRemoveFromWishlist}
-              variant={isProductInWishlist ? "destructive" : "outline"}
-              className="px-3"
-            >
-              <Heart className="w-4 h-4" />
-              <span className="sr-only">Add to Wishlist</span>
-            </Button>
-          </div>
+          <TooltipProvider>
+            <div className="flex items-center space-x-2">
+              <Button
+                onClick={handleAddOrRemoveFromCart}
+                variant={isProductInCart ? "destructive" : "default"}
+                className="flex-1"
+              >
+                <ShoppingCart className="w-4 h-4 mr-2" />
+                {isProductInCart ? "Xóa khỏi giỏ hàng" : "Thêm vào giỏ hàng"}
+              </Button>
+
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    onClick={handleAddOrRemoveFromWishlist}
+                    variant={isProductInWishlist ? "destructive" : "outline"}
+                    className="px-3"
+                  >
+                    <Heart className="w-4 h-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent className="bg-white border border-gray-50 rounded-md text-primary shadow-xl">
+                  Thêm vào danh sách yêu thích
+                </TooltipContent>
+              </Tooltip>
+            </div>
+          </TooltipProvider>
         </div>
       )}
       <div className="mt-12">
-        <h2 className="text-2xl font-bold mb-4">Reviews</h2>
+        <h2 className="text-2xl font-bold mb-4">Đánh giá</h2>
         <div className="flex items-center mb-4">
           <span className="text-3xl font-bold mr-2">
             {isNaN(Number(averageRating.toFixed(1)))
@@ -294,7 +318,7 @@ const ProductDetail: React.FC<SlugProps> = ({ params }) => {
             ))}
           </div>
           <span className="ml-2 text-sm text-gray-500">
-            ({selectedVariant?.reviews.length} reviews)
+            ({selectedVariant?.reviews.length} đánh giá)
           </span>
         </div>
         <div className="space-x-4 flex items-center">
