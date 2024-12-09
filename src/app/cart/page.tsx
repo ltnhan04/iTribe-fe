@@ -46,16 +46,16 @@ export default function CartPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8">Your Shopping Cart</h1>
+      <h1 className="text-3xl font-bold mb-8">Giỏ hàng của bạn</h1>
       {cartArray.length === 0 ? (
         <div className="text-center py-12">
           <ShoppingBag className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-          <h2 className="text-2xl font-semibold mb-4">Your cart is empty</h2>
+          <h2 className="text-2xl font-semibold mb-4">Giỏ hàng trống.</h2>
           <p className="text-gray-600 mb-8">
-            Looks like you haven't added any items to your cart yet.
+            Chưa có sản phẩm nào trong giỏ hàng hết bạn ơi !
           </p>
           <Button onClick={() => router.push("/iphone")}>
-            Continue Shopping
+            Tiếp tục mua sắm nhé!
           </Button>
         </div>
       ) : (
@@ -127,13 +127,13 @@ export default function CartPage() {
           </div>
           <div className="mt-8 flex justify-between items-center">
             <div>
-              <p className="text-lg font-semibold">Total:</p>
+              <p className="text-lg font-semibold">Tổng đơn hàng:</p>
               <p className="text-2xl font-bold">
                 {calculateTotal().toLocaleString()} VND
               </p>
             </div>
             <Button size="lg" onClick={handleCheckout}>
-              Proceed to Checkout
+              Tiến hành thanh toán.
             </Button>
           </div>
         </>
