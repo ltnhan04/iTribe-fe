@@ -1,10 +1,10 @@
 "use client";
-import { useAppSelector } from "@/lib/hooks";
+import store from "@/lib/store";
 import { jwtDecode } from "jwt-decode";
 import { JwtPayload } from "@/app/type";
 
 export const useAccessTokenExpired = (): boolean => {
-  const accessToken = useAppSelector((state) => state.auth.accessToken);
+  const accessToken = store.getState().auth.accessToken;
 
   if (accessToken) {
     try {

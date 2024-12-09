@@ -132,6 +132,7 @@ const Categories = () => {
                 <Image
                   src={NoProductFound}
                   fill={true}
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 250px"
                   alt="product not found"
                   quality={100}
                   className="object-contain rounded-lg"
