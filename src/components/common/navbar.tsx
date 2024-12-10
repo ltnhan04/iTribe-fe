@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -9,6 +9,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -19,6 +20,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { useToast } from "@/hooks/use-toast";
 import { User, ShoppingCart, Heart, UserCheck } from "lucide-react";
 
 import { useAccessTokenExpired } from "@/utils/expired-token";
@@ -27,12 +29,15 @@ import { useAppSelector, useAppDispatch } from "@/lib/hooks";
 import { logout } from "@/api/services/auth/authApi";
 import { clearAccessToken } from "@/lib/features/authentication/authSlice";
 
+import type { ErrorType } from "@/app/type";
+
 interface NavbarProps {
   isFixed?: boolean;
 }
 
 const Navbar: React.FC<NavbarProps> = ({ isFixed }) => {
-  const [showLogoutDialog, setShowLogoutDialog] = React.useState(false);
+  const { toast } = useToast();
+  const [showLogoutDialog, setShowLogoutDialog] = useState(false);
   const dispatch = useAppDispatch();
   const {
     cart: { cart },
@@ -48,7 +53,11 @@ const Navbar: React.FC<NavbarProps> = ({ isFixed }) => {
       await logout();
       dispatch(clearAccessToken());
     } catch (error) {
-      console.error("Logout failed:", error);
+      toast({
+        variant: "destructive",
+        title: "Đã xảy ra lỗi!",
+        description: (error as ErrorType).response.data.message,
+      });
     }
   };
 

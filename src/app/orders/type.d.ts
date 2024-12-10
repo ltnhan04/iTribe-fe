@@ -9,35 +9,50 @@ export interface Product {
   productImages: string[];
 }
 export interface User {
-  _id: string
-  name: string
+  _id: string;
+  name: string;
 }
 export interface ProductVariant {
-  productVariant: ProductVariant2
-  quantity: number
-  _id: string
+  productVariant: ProductVariant2;
+  quantity: number;
+  _id: string;
 }
 
 export interface ProductVariant2 {
-  _id: string
-  name: string
-  color: Color
-  storage: string
-  price: number
-  stock: number
-  images: string[]
+  _id: string;
+  name: string;
+  color: Color;
+  storage: string;
+  price: number;
+  stock: number;
+  images: string[];
 }
+type OrderStatus =
+  | "pending"
+  | "processing"
+  | "shipped"
+  | "delivered"
+  | "cancelled";
 
 export interface Order {
-  _id: string
-  user: User
-  productVariants: ProductVariant[]
-  totalAmount: number
-  status: string
-  shippingAddress: string
-  paymentMethod: string
-  stripeSessionId?: string
-  createdAt: string
-  updatedAt: string
-  __v: number
+  _id: string;
+  user: User;
+  productVariants: ProductVariant[];
+  totalAmount: number;
+  status: OrderStatus;
+  shippingAddress: string;
+  paymentMethod: string;
+  stripeSessionId?: string;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
 }
+
+export interface ErrorType {
+  response: {
+    data: {
+      message: string;
+    };
+  };
+}
+
