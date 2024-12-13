@@ -30,7 +30,13 @@ const UserProfile = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedName, setEditedName] = useState("");
   const [editedPhoneNumber, setEditedPhoneNumber] = useState("");
-  const [editedAddress, setEditedAddress] = useState("");
+  const [editedAddress, setEditedAddress] = useState<{
+    street: string;
+    ward: string;
+    district: string;
+    city: string;
+    country: string;
+  }>({ street: "", ward: "", district: "", city: "", country: "" });
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -38,7 +44,7 @@ const UserProfile = () => {
         const response = await getProfile();
         setUserData(response.data);
         setEditedName(response.data.name);
-        setEditedPhoneNumber(response.data.phoneNumber);
+        setEditedPhoneNumber(response.data.phoneNumber || "");
         setEditedAddress(response.data.address);
       } catch (error) {
         console.error("Failed to load user data:", error);

@@ -9,15 +9,17 @@ export default function Footer() {
       <div className="w-full py-5 px-5">
         <div className="flex items-center justify-between">
           <Link href={"/"}>
-            <Image
-              src={"/assets/images/i-Tribe-logo.png"}
-              width={64}
-              height={64}
-              className="cursor-pointer w-12 h-12 "
-              priority={true}
-              alt="iTribe logo"
-              quality={100}
-            />
+            <div className="w-10 h-10 md:w-12 md:h-12 relative">
+              <Image
+                src={"/assets/images/i-Tribe-logo.png"}
+                className="cursor-pointer w-12 h-12 object-contain "
+                priority={true}
+                fill={true}
+                sizes="(max-width: 768px) 100vw, (max-width: 1280px), 48px"
+                alt="iTribe logo"
+                quality={100}
+              />
+            </div>
           </Link>
 
           <div>

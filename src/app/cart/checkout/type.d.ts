@@ -16,3 +16,11 @@ export interface ErrorType {
     };
   };
 }
+
+export interface UserAddress {
+  street?: string;
+  ward?: string;
+  district?: string;
+  city?: string;
+  country: string;
+}

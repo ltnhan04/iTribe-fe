@@ -5,6 +5,7 @@ import {
   SignUpType,
   LoginType,
   VerifySignUpType,
+  ProfileType,
 } from "@/api/services/auth/authType";
 
 export const login = async ({ email, password }: LoginType) => {
@@ -55,8 +56,7 @@ export const resentOTP = async (email: string) => {
 };
 
 export const getProfile = async () => {
-  const response = await axiosInstance.get(`/api/auth/profile`);
-  return response;
+  return await axiosInstance.get<ProfileType>(`/api/auth/profile`);
 };
 
 export const updateProfile = async ({

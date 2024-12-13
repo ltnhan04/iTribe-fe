@@ -72,15 +72,17 @@ const Navbar: React.FC<NavbarProps> = ({ isFixed }) => {
           <div className="w-full px-5 py-5 flex items-center justify-between">
             <nav className="flex items-center w-full">
               <Link className="w-fit" href={"/"}>
-                <Image
-                  src={"/assets/images/i-Tribe-logo.png"}
-                  width={48}
-                  height={48}
-                  className="cursor-pointer w-12 h-12 object-contain"
-                  priority={true}
-                  alt="iTribe logo"
-                  quality={100}
-                />
+                <div className=" w-10 h-10 md:w-12 md:h-12 relative">
+                  <Image
+                    src={"/assets/images/i-Tribe-logo.png"}
+                    className="cursor-pointer w-12 h-12 object-contain"
+                    priority={true}
+                    fill={true}
+                    sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 48px"
+                    alt="iTribe logo"
+                    quality={100}
+                  />
+                </div>
               </Link>
 
               <Link className="flex flex-1 justify-center" href={"/iphone"}>
