@@ -3,7 +3,7 @@ export interface ProfileType {
   name: string;
   email: string;
   phoneNumber?: string;
-  address?: string;
+  address?: UserAddress;
   password: string;
   role: string;
   active: boolean;
@@ -45,4 +45,11 @@ export interface ProductVariant2 {
 export interface Color {
   colorName: string;
   colorCode: string;
+}
+export interface UserAddress {
+  street?: string;
+  ward?: string;
+  district?: string;
+  city?: string;
+  country: string;
 }

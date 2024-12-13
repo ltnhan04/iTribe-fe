@@ -12,18 +12,15 @@ import {
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
+
+import { useAppDispatch } from "@/lib/hooks";
+import { clearCart } from "@/lib/features/cart/cartSlice";
 import { updateOrderPayment } from "@/api/services/payment/paymentApi";
 import { toast } from "@/hooks/use-toast";
-
-interface ErrorType {
-  response: {
-    data: {
-      error: string;
-    };
-  };
-}
+import { ErrorResponse } from "@/app/payment/type";
 
 export default function SuccessPage() {
+  const dispatch = useAppDispatch();
   const searchParams = useSearchParams();
 
   const sessionId = searchParams.get("session_id") as string;
@@ -37,12 +34,12 @@ export default function SuccessPage() {
           description: response.data.message,
           variant: "default",
         });
+        dispatch(clearCart());
       }
     } catch (error: unknown) {
-      const typedError = error as ErrorType;
       toast({
         title: "Error",
-        description: typedError.response.data.error,
+        description: (error as ErrorResponse).response.data.message,
         variant: "destructive",
       });
     }
