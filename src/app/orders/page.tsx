@@ -42,6 +42,8 @@ import {
   Calendar,
 } from "lucide-react";
 
+const noOrder = "/assets/images/no-order.jpg";
+
 const OrderTracker = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
@@ -141,7 +143,19 @@ const OrderTracker = () => {
   }
 
   if (orders.length === 0) {
-    return <div className="container mx-auto p-4">No orders found.</div>;
+    return (
+      <div className="container mx-auto p-4 flex flex-col justify-center">
+        <div className="w-[300px] h-[300px] relative">
+          <Image
+            src={noOrder}
+            alt="no order"
+            fill={true}
+            sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 300px"
+          />
+        </div>
+        <div>No orders found.</div>
+      </div>
+    );
   }
 
   const orderStatusCounts = orders.reduce((acc, order) => {

@@ -21,24 +21,24 @@ export default function CancelPage() {
             <XCircle className="h-12 w-12 text-red-500" />
           </div>
           <CardTitle className="text-2xl font-bold text-center">
-            Payment Failed
+            Thanh toán thất bại
           </CardTitle>
           <CardDescription className="text-center">
-            We're sorry, but your payment could not be processed at this time.
+            Chúng tôi rất tiếc, thanh toán của bạn không thành công.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <p className="text-center text-gray-600">
-            Please check your payment details and try again, or contact our
-            support team if you need assistance.
+            Vui lòng kiểm tra lại thông tin thanh toán và thử lại. Nếu cần hỗ
+            trợ, hãy liên hệ với đội ngũ hỗ trợ của chúng tôi.
           </p>
         </CardContent>
         <CardFooter className="flex justify-center space-x-4">
           <Button asChild variant="outline">
-            <Link href="/chatbox">Contact Support</Link>
+            <Link href="/chatbox">Liên hệ hỗ trợ</Link>
           </Button>
           <Button asChild>
-            <Link href="/cart/checkout">Try Again</Link>
+            <Link href="/cart/checkout">Thử lại</Link>
           </Button>
         </CardFooter>
       </Card>

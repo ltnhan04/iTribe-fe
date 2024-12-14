@@ -29,40 +29,41 @@ const AddressSection: React.FC<AddressProps> = ({ setCheckoutData }) => {
   );
   const [errMsg, setErrMsg] = useState("Vui lòng thêm địa chỉ của bạn!");
 
-  const getAddress = async () => {
-    try {
-      const res = await getProfile();
-      if (res.status === 200) {
-        setUserAddress(res.data.address);
-        if (
-          userAddress &&
-          userAddress.street &&
-          userAddress.ward &&
-          userAddress.city
-        ) {
-          const address =
-            userAddress?.street +
-            ", " +
-            userAddress?.ward +
-            ", " +
-            userAddress?.city +
-            ", " +
-            userAddress?.country;
-          setCheckoutData((prev) => ({
-            ...prev,
-            shippingAddress: address,
-          }));
-        }
-      } else {
-        setErrMsg("Địa chỉ của bạn chưa được cập nhật!");
-      }
-    } catch (error) {
-      setErrMsg((error as ErrorType).response.data.message);
-    }
-  };
   useEffect(() => {
+    const getAddress = async () => {
+      try {
+        const res = await getProfile();
+        if (res.status === 200) {
+          setUserAddress(res.data.address);
+          if (
+            userAddress &&
+            userAddress.street &&
+            userAddress.ward &&
+            userAddress.city
+          ) {
+            const address =
+              userAddress?.street +
+              ", " +
+              userAddress?.ward +
+              ", " +
+              userAddress?.city +
+              ", " +
+              userAddress?.country;
+            setCheckoutData((prev) => ({
+              ...prev,
+              shippingAddress: address,
+            }));
+          }
+        } else {
+          setErrMsg("Địa chỉ của bạn chưa được cập nhật!");
+        }
+      } catch (error) {
+        setErrMsg((error as ErrorType).response.data.message);
+      }
+    };
     getAddress();
-  }, []);
+  }, [setCheckoutData, userAddress]);
+
   return (
     <Card className="mt-6 md:mt-8">
       <CardHeader>
