@@ -37,6 +37,7 @@ import type {
 } from "@/app/(auth)/profile/type";
 import withAuth from "@/components/common/withAuth";
 
+import { validatePhoneNumber } from "@/utils/validate-phoneNumber";
 import { formatCurrency } from "@/utils/format-currency";
 import { formatDate } from "@/utils/format-day";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -57,6 +58,23 @@ const UserProfile = () => {
     },
     editedPhoneNumber: userData?.phoneNumber || "",
   });
+
+  useEffect(() => {
+    if (userData) {
+      setEditedProfile({
+        isEdited: false,
+        editedName: userData.name || "",
+        editedAddress: {
+          street: userData.address?.street || "",
+          ward: userData.address?.ward || "",
+          district: userData.address?.district || "",
+          city: userData.address?.city || "",
+          country: userData.address?.country || "Vietnam",
+        },
+        editedPhoneNumber: userData.phoneNumber || "",
+      });
+    }
+  }, [userData]);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -89,6 +107,15 @@ const UserProfile = () => {
   }, [toast]);
 
   const handleUpdateProfile = async () => {
+    if (!validatePhoneNumber(editedProfile.editedPhoneNumber)) {
+      toast({
+        title: "Đã xảy ra lỗi!",
+        description: "Số điện thoại không hợp lệ!",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setEditedProfile((prev) => ({ ...prev, isEdited: true }));
     try {
       const res = await updateProfile({
@@ -114,11 +141,11 @@ const UserProfile = () => {
   };
 
   return (
-    <div className="container mx-auto p-4 bg-gray-50 min-h-screen">
+    <div className="container mx-auto bg-gray-50 min-h-screen">
       <Card className="w-full max-w-4xl mx-auto shadow-lg">
-        <CardHeader className="bg-gradient-to-r from-blue-500 to-purple-600 text-white">
+        <CardHeader>
           <div className="flex items-center space-x-4">
-            <Avatar className="w-20 h-20 border-4 border-white">
+            <Avatar className="w-10 h-10 md:w-16 md:h-16 border-4 border-white">
               <AvatarImage
                 src={`https://api.dicebear.com/6.x/initials/svg?seed=${userData?.name}`}
               />
@@ -127,7 +154,7 @@ const UserProfile = () => {
               </AvatarFallback>
             </Avatar>
             <div>
-              <CardTitle className="text-3xl font-bold">
+              <CardTitle className="text-xl font-bold">
                 {userData?.name}
               </CardTitle>
               <CardDescription className="text-gray-200">
@@ -136,22 +163,22 @@ const UserProfile = () => {
             </div>
           </div>
         </CardHeader>
-        <CardContent className="mt-6">
+        <CardContent className="mt-4">
           <Tabs defaultValue="profile" className="w-full">
             <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="profile" className="text-lg">
-                <User className="w-5 h-5 mr-2" />
+              <TabsTrigger value="profile" className="text-xs md:text-lg">
+                <User className="w-4 h-4 md:w-5 md:h-5 mr-2" />
                 Thông tin
               </TabsTrigger>
-              <TabsTrigger value="orders" className="text-lg">
-                <Package className="w-5 h-5 mr-2" />
+              <TabsTrigger value="orders" className="text-xs md:text-lg">
+                <Package className="w-4 h-4 md:w-5 md:h-5 mr-2" />
                 Lịch sử đặt hàng
               </TabsTrigger>
             </TabsList>
-            <TabsContent value="profile" className="mt-6">
-              <div className="space-y-6">
-                <div className="flex items-center space-x-4">
-                  <User className="w-6 h-6 text-gray-500" />
+            <TabsContent value="profile" className="mt-4">
+              <div className="space-y-4 md:space-y-6">
+                <div className="flex items-center space-x-2 md:space-x-4">
+                  <User className="w-4 h-4 md:w-6 md:h-6 text-gray-500" />
                   <div className="flex-grow">
                     <Label
                       htmlFor="name"
@@ -163,23 +190,24 @@ const UserProfile = () => {
                       <Input
                         id="name"
                         value={editedProfile.editedName}
+                        maxLength={50}
                         onChange={(e) =>
                           setEditedProfile((prev) => ({
                             ...prev,
                             editedName: e.target.value,
                           }))
                         }
-                        className="mt-1"
+                        className="md:mt-1"
                       />
                     ) : (
-                      <div className="mt-1 text-lg">
+                      <div className=" md:mt-1 text-sm md:text-lg">
                         {editedProfile.editedName}
                       </div>
                     )}
                   </div>
                 </div>
-                <div className="flex items-center space-x-4">
-                  <Phone className="w-6 h-6 text-gray-500" />
+                <div className="flex items-center space-x-2 md:space-x-4">
+                  <Phone className="w-4 h-4 md:w-6 md:h-6 text-gray-500" />
                   <div className="flex-grow">
                     <Label
                       htmlFor="phoneNumber"
@@ -197,10 +225,10 @@ const UserProfile = () => {
                             editedPhoneNumber: e.target.value,
                           }))
                         }
-                        className="mt-1"
+                        className="md:mt-1"
                       />
                     ) : (
-                      <div className="mt-1 text-sm">
+                      <div className=" md:mt-1 text-sm">
                         {userData && userData.phoneNumber
                           ? userData.phoneNumber
                           : "Vui lòng thêm số điện thoại"}
@@ -276,7 +304,7 @@ const UserProfile = () => {
                                     <li key={itemIndex} className="text-sm">
                                       {item.productVariant.name} -{" "}
                                       {item.productVariant.color.colorName} (
-                                      {item.productVariant.storage}GB) x{" "}
+                                      {item.productVariant.storage}) x{" "}
                                       {item.quantity} -{" "}
                                       {formatCurrency(
                                         item.productVariant.price *
@@ -297,10 +325,7 @@ const UserProfile = () => {
         <CardFooter className="flex justify-end space-x-4 mt-6">
           {editedProfile.isEdited ? (
             <>
-              <Button
-                onClick={handleUpdateProfile}
-                className="bg-blue hover:bg-blue/80"
-              >
+              <Button onClick={handleUpdateProfile} variant={"default"}>
                 Lưu thay đổi
               </Button>
               <Button

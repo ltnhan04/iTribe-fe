@@ -154,7 +154,7 @@ const AddressSection: React.FC<AddressProps> = ({
   return (
     <div className="flex items-start space-x-4">
       <MapPin className="w-6 h-6 text-gray-500 mt-1" />
-      <div className="flex-grow space-y-4">
+      <div className="flex-grow ">
         <Label htmlFor="address" className="text-sm font-medium text-gray-500">
           Địa chỉ
         </Label>
@@ -229,13 +229,14 @@ const AddressSection: React.FC<AddressProps> = ({
 
             <Input
               id="street"
+              maxLength={100}
               placeholder="Số nhà, Đường"
               value={editedProfile.editedAddress.street}
               onChange={(e) => updateAddress("street", e.target.value)}
             />
           </>
         ) : (
-          <div className="mt-1 text-sm">
+          <div className="text-sm">
             {userData?.address?.street ? (
               <>
                 {userData.address.street}, {userData.address.ward},{" "}
