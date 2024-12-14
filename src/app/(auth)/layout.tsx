@@ -1,5 +1,7 @@
 import Navbar from "@/components/common/navbar";
 import Footer from "@/components/common/footer";
+import { Suspense } from "react";
+import Loading from "../loading";
 
 export default function LoginLayout({
   children,
@@ -9,7 +11,7 @@ export default function LoginLayout({
   return (
     <>
       <Navbar />
-      {children}
+      <Suspense fallback={<Loading />}>{children}</Suspense>
       <Footer />
     </>
   );

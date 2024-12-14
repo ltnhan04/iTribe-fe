@@ -65,7 +65,13 @@ export const updateProfile = async ({
   phoneNumber,
 }: {
   name: string;
-  address: string;
+  address: {
+    street?: string;
+    ward?: string;
+    district?: string;
+    city?: string;
+    country: string;
+  };
   phoneNumber: string;
 }) => {
   return await axiosInstance.post(`/api/auth/update-profile`, {

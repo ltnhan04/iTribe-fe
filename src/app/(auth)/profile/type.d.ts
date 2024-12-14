@@ -53,3 +53,18 @@ export interface UserAddress {
   city?: string;
   country: string;
 }
+
+export interface EditedProfile {
+  isEdited: boolean;
+  editedName: string;
+  editedAddress: UserAddress;
+  editedPhoneNumber: string;
+}
+
+export interface ErrorType {
+  response: {
+    data: {
+      message: string;
+    };
+  };
+}
