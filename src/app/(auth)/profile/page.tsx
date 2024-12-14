@@ -20,232 +20,312 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { User, Phone, MapPin } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import {
+  User,
+  Phone,
+  MapPin,
+  CreditCard,
+  Calendar,
+  Package,
+} from "lucide-react";
 import { getProfile, updateProfile } from "@/api/services/auth/authApi";
-import type { ProfileType } from "@/app/(auth)/profile/type";
+import type {
+  ProfileType,
+  EditedProfile,
+  ErrorType,
+} from "@/app/(auth)/profile/type";
 import withAuth from "@/components/common/withAuth";
 
+import { formatCurrency } from "@/utils/format-currency";
+import { formatDate } from "@/utils/format-day";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import AddressSection from "@/app/(auth)/profile/components/address";
+
 const UserProfile = () => {
+  const { toast } = useToast();
   const [userData, setUserData] = useState<ProfileType | null>(null);
-  const [isEditing, setIsEditing] = useState(false);
-  const [editedName, setEditedName] = useState("");
-  const [editedPhoneNumber, setEditedPhoneNumber] = useState("");
-  const [editedAddress, setEditedAddress] = useState<{
-    street: string;
-    ward: string;
-    district: string;
-    city: string;
-    country: string;
-  }>({ street: "", ward: "", district: "", city: "", country: "" });
+  const [editedProfile, setEditedProfile] = useState<EditedProfile>({
+    isEdited: false,
+    editedName: userData?.name || "",
+    editedAddress: {
+      street: userData?.address?.street || "",
+      ward: userData?.address?.ward || "",
+      district: userData?.address?.district || "",
+      city: userData?.address?.city || "",
+      country: userData?.address?.country || "Vietnam",
+    },
+    editedPhoneNumber: userData?.phoneNumber || "",
+  });
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
         const response = await getProfile();
         setUserData(response.data);
-        setEditedName(response.data.name);
-        setEditedPhoneNumber(response.data.phoneNumber || "");
-        setEditedAddress(response.data.address);
+
+        setEditedProfile((prev) => ({
+          ...prev,
+          editedName: response.data.name || "",
+          editedAddress: {
+            street: response.data.address?.street || "",
+            ward: response.data.address?.ward || "",
+            district: response.data.address?.district || "",
+            city: response.data.address?.city || "",
+            country: response.data.address?.country || "Vietnam",
+          },
+          editedPhoneNumber: response.data.phoneNumber || "",
+        }));
       } catch (error) {
-        console.error("Failed to load user data:", error);
+        toast({
+          title: "Đã xảy ra lỗi!",
+          description: (error as ErrorType).response.data.message,
+          variant: "destructive",
+        });
       }
     };
 
     fetchUserData();
-  }, []);
+  }, [toast]);
 
   const handleUpdateProfile = async () => {
+    setEditedProfile((prev) => ({ ...prev, isEdited: true }));
     try {
-      await updateProfile({
-        name: editedName,
-        phoneNumber: editedPhoneNumber,
-        address: editedAddress,
+      const res = await updateProfile({
+        name: editedProfile.editedName,
+        phoneNumber: editedProfile.editedPhoneNumber,
+        address: editedProfile.editedAddress,
       });
-      setIsEditing(false);
-      alert("Profile updated successfully");
+      if (res.status === 200) {
+        toast({
+          title: "Thay đổi thành công!",
+          description: res.data.message,
+          variant: "default",
+        });
+      }
+      setEditedProfile((prev) => ({ ...prev, isEdited: false }));
     } catch (error) {
-      console.error("Error updating profile:", error);
-      alert("Failed to update profile. Please try again.");
+      toast({
+        title: "Đã xảy ra lỗi!",
+        description: (error as ErrorType).response.data.message,
+        variant: "destructive",
+      });
     }
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  };
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("vi-VN", {
-      style: "currency",
-      currency: "VND",
-    }).format(amount);
-  };
-
-  if (!userData) {
-    return <p>Loading...</p>;
-  }
-
   return (
-    <div className="container mx-auto p-4">
-      <Card className="w-full max-w-3xl mx-auto">
-        <CardHeader>
-          <CardTitle className="text-2xl font-bold flex items-center">
-            <User className="mr-2" /> User Profile
-          </CardTitle>
-          <CardDescription>
-            Manage your account details and view your order history
-          </CardDescription>
+    <div className="container mx-auto p-4 bg-gray-50 min-h-screen">
+      <Card className="w-full max-w-4xl mx-auto shadow-lg">
+        <CardHeader className="bg-gradient-to-r from-blue-500 to-purple-600 text-white">
+          <div className="flex items-center space-x-4">
+            <Avatar className="w-20 h-20 border-4 border-white">
+              <AvatarImage
+                src={`https://api.dicebear.com/6.x/initials/svg?seed=${userData?.name}`}
+              />
+              <AvatarFallback>
+                {userData?.name?.charAt(0) || "U"}
+              </AvatarFallback>
+            </Avatar>
+            <div>
+              <CardTitle className="text-3xl font-bold">
+                {userData?.name}
+              </CardTitle>
+              <CardDescription className="text-gray-200">
+                {userData?.role} | {userData?.active ? "Active" : "Inactive"}
+              </CardDescription>
+            </div>
+          </div>
         </CardHeader>
-        <CardContent>
-          <Tabs defaultValue="profile">
-            <TabsList>
-              <TabsTrigger value="profile">Profile</TabsTrigger>
-              <TabsTrigger value="orders">Order History</TabsTrigger>
+        <CardContent className="mt-6">
+          <Tabs defaultValue="profile" className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="profile" className="text-lg">
+                <User className="w-5 h-5 mr-2" />
+                Thông tin
+              </TabsTrigger>
+              <TabsTrigger value="orders" className="text-lg">
+                <Package className="w-5 h-5 mr-2" />
+                Lịch sử đặt hàng
+              </TabsTrigger>
             </TabsList>
-            <TabsContent value="profile">
-              <div className="space-y-4">
-                <div>
-                  <Label htmlFor="name">Name</Label>
-                  {isEditing ? (
-                    <Input
-                      id="name"
-                      value={editedName}
-                      onChange={(e) => setEditedName(e.target.value)}
-                    />
-                  ) : (
-                    <div className="mt-1">{userData.name}</div>
-                  )}
-                </div>
-                <div>
-                  <Label htmlFor="phoneNumber">Phone Number</Label>
-                  {isEditing ? (
-                    <Input
-                      id="phoneNumber"
-                      value={editedPhoneNumber}
-                      onChange={(e) => setEditedPhoneNumber(e.target.value)}
-                    />
-                  ) : (
-                    <div className="mt-1 flex items-center">
-                      <Phone className="h-4 w-4 mr-2" />
-                      {userData?.phoneNumber}
-                    </div>
-                  )}
-                </div>
-                <div>
-                  <Label htmlFor="address">Address</Label>
-                  {isEditing ? (
-                    <Input
-                      id="address"
-                      value={editedAddress}
-                      onChange={(e) => setEditedAddress(e.target.value)}
-                    />
-                  ) : (
-                    <div className="mt-1 flex items-center">
-                      <MapPin className="h-4 w-4 mr-2" />
-                      {userData.address}
-                    </div>
-                  )}
-                </div>
-                <div>
-                  <Label>Role</Label>
-                  <div className="mt-1">{userData.role}</div>
-                </div>
-                <div>
-                  <Label>Account Status</Label>
-                  <div className="mt-1">
-                    <Badge
-                      variant={userData.active ? "outline" : "destructive"}
+            <TabsContent value="profile" className="mt-6">
+              <div className="space-y-6">
+                <div className="flex items-center space-x-4">
+                  <User className="w-6 h-6 text-gray-500" />
+                  <div className="flex-grow">
+                    <Label
+                      htmlFor="name"
+                      className="text-sm font-medium text-gray-500"
                     >
-                      {userData.active ? "Active" : "Inactive"}
-                    </Badge>
+                      Tên
+                    </Label>
+                    {editedProfile.isEdited ? (
+                      <Input
+                        id="name"
+                        value={editedProfile.editedName}
+                        onChange={(e) =>
+                          setEditedProfile((prev) => ({
+                            ...prev,
+                            editedName: e.target.value,
+                          }))
+                        }
+                        className="mt-1"
+                      />
+                    ) : (
+                      <div className="mt-1 text-lg">
+                        {editedProfile.editedName}
+                      </div>
+                    )}
                   </div>
                 </div>
+                <div className="flex items-center space-x-4">
+                  <Phone className="w-6 h-6 text-gray-500" />
+                  <div className="flex-grow">
+                    <Label
+                      htmlFor="phoneNumber"
+                      className="text-sm font-medium text-gray-500"
+                    >
+                      Số điện thoại
+                    </Label>
+                    {editedProfile.isEdited ? (
+                      <Input
+                        id="phoneNumber"
+                        value={editedProfile.editedPhoneNumber}
+                        onChange={(e) =>
+                          setEditedProfile((prev) => ({
+                            ...prev,
+                            editedPhoneNumber: e.target.value,
+                          }))
+                        }
+                        className="mt-1"
+                      />
+                    ) : (
+                      <div className="mt-1 text-sm">
+                        {userData && userData.phoneNumber
+                          ? userData.phoneNumber
+                          : "Vui lòng thêm số điện thoại"}
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <AddressSection
+                  userData={userData}
+                  setEditedProfile={setEditedProfile}
+                  editedProfile={editedProfile}
+                />
               </div>
             </TabsContent>
-            <TabsContent value="orders">
+            <TabsContent value="orders" className="mt-6">
               <Accordion type="single" collapsible className="w-full">
-                {userData.orderHistory.map((order, index) => (
-                  <AccordionItem key={order._id} value={`item-${index}`}>
-                    <AccordionTrigger>
-                      <div className="flex justify-between w-full">
-                        <span>Order #{order._id.slice(-6)}</span>
-                        <Badge
-                          variant={
-                            order.status === "pending"
-                              ? "default"
-                              : order.status === "processing"
-                              ? "secondary"
-                              : "outline"
-                          }
-                        >
-                          {order.status}
-                        </Badge>
-                      </div>
-                    </AccordionTrigger>
-                    <AccordionContent>
-                      <div className="space-y-2">
-                        <p>
-                          <strong>Date:</strong> {formatDate(order.createdAt)}
-                        </p>
-                        <p>
-                          <strong>Total Amount:</strong>{" "}
-                          {formatCurrency(order.totalAmount)}
-                        </p>
-                        <p>
-                          <strong>Shipping Address:</strong>{" "}
-                          {order.shippingAddress}
-                        </p>
-                        <p>
-                          <strong>Payment Method:</strong> {order.paymentMethod}
-                        </p>
-                        <div>
-                          <strong>Products:</strong>
-                          <ul className="list-disc pl-5 mt-2">
-                            {order.productVariants &&
-                              order.productVariants
-                                .filter((item) => item.productVariant !== null)
-                                .map((item, itemIndex) => (
-                                  <li key={itemIndex}>
-                                    {item.productVariant.name} -{" "}
-                                    {item.productVariant.color.colorName} (
-                                    {item.productVariant.storage}GB) x{" "}
-                                    {item.quantity} -{" "}
-                                    {formatCurrency(
-                                      item.productVariant.price * item.quantity
-                                    )}
-                                  </li>
-                                ))}
-                          </ul>
+                {userData &&
+                  userData.orderHistory.map((order, index) => (
+                    <AccordionItem key={order._id} value={`item-${index}`}>
+                      <AccordionTrigger className="hover:no-underline">
+                        <div className="flex justify-between w-full items-center">
+                          <span className="font-medium">
+                            Đơn hàng #{order._id.slice(-6)}
+                          </span>
+                          <Badge
+                            variant={
+                              order.status === "pending"
+                                ? "default"
+                                : order.status === "processing"
+                                ? "secondary"
+                                : "outline"
+                            }
+                          >
+                            {order.status}
+                          </Badge>
                         </div>
-                      </div>
-                    </AccordionContent>
-                  </AccordionItem>
-                ))}
+                      </AccordionTrigger>
+                      <AccordionContent>
+                        <div className="space-y-4 p-4 bg-gray-50 rounded-lg">
+                          <div className="flex items-center space-x-2">
+                            <Calendar className="w-5 h-5 text-gray-500" />
+                            <span className="font-medium">Ngày:</span>{" "}
+                            {formatDate(order.createdAt)}
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <CreditCard className="w-5 h-5 text-gray-500" />
+                            <span className="font-medium">Tổng tiền:</span>{" "}
+                            {formatCurrency(order.totalAmount)}
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <MapPin className="w-5 h-5 text-gray-500" />
+                            <span className="font-medium">
+                              Địa chỉ giao hàng:
+                            </span>{" "}
+                            {order.shippingAddress}
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <CreditCard className="w-5 h-5 text-gray-500" />
+                            <span className="font-medium">
+                              Phương thức thanh toán:
+                            </span>{" "}
+                            {order.paymentMethod}
+                          </div>
+                          <div>
+                            <span className="font-medium">Sản phẩm:</span>
+                            <ul className="list-disc pl-5 mt-2 space-y-2">
+                              {order.productVariants &&
+                                order.productVariants
+                                  .filter(
+                                    (item) => item.productVariant !== null
+                                  )
+                                  .map((item, itemIndex) => (
+                                    <li key={itemIndex} className="text-sm">
+                                      {item.productVariant.name} -{" "}
+                                      {item.productVariant.color.colorName} (
+                                      {item.productVariant.storage}GB) x{" "}
+                                      {item.quantity} -{" "}
+                                      {formatCurrency(
+                                        item.productVariant.price *
+                                          item.quantity
+                                      )}
+                                    </li>
+                                  ))}
+                            </ul>
+                          </div>
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+                  ))}
               </Accordion>
             </TabsContent>
           </Tabs>
         </CardContent>
-        <CardFooter>
-          {isEditing ? (
+        <CardFooter className="flex justify-end space-x-4 mt-6">
+          {editedProfile.isEdited ? (
             <>
-              <Button onClick={handleUpdateProfile}>Save Changes</Button>
+              <Button
+                onClick={handleUpdateProfile}
+                className="bg-blue hover:bg-blue/80"
+              >
+                Lưu thay đổi
+              </Button>
               <Button
                 variant="outline"
-                onClick={() => setIsEditing(false)}
-                className="ml-2"
+                onClick={() =>
+                  setEditedProfile((prev) => ({ ...prev, isEdited: false }))
+                }
               >
-                Cancel
+                Hủy
               </Button>
             </>
           ) : (
-            <Button onClick={() => setIsEditing(true)}>Edit Profile</Button>
+            <Button
+              onClick={() =>
+                setEditedProfile((prev) => ({ ...prev, isEdited: true }))
+              }
+              variant={"default"}
+            >
+              Chỉnh sửa thông tin
+            </Button>
           )}
         </CardFooter>
       </Card>
     </div>
   );
 };
+
 export default withAuth(UserProfile);
