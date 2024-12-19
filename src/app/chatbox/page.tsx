@@ -45,7 +45,6 @@ const UserPage = () => {
 
   const userId = accessToken ? decodeToken(accessToken) : null;
 
-  // Fetch messages when component mounts
   const fetchMessages = useCallback(async () => {
     setLoadingMessages(true);
     try {
