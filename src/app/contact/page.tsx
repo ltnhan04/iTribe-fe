@@ -10,7 +10,7 @@ export default function Contact() {
   }, []);
 
   return (
-    <div className="text-center mt-4 text-white">
+    <div className="text-center mt-4">
       <p>My CV</p>
     </div>
   );
