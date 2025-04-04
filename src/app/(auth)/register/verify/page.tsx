@@ -7,7 +7,7 @@ import {
   clearMessage,
   clearError,
 } from "@/lib/features/authentication/authSlice";
-import { resentOTP } from "@/api/services/auth/authApi";
+import { resentOTP } from "@/services/auth/authApi";
 import InputOTPPattern from "@/components/common/input-otp";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";

@@ -13,12 +13,12 @@ import {
   getProvinces,
   getDistricts,
   getWards,
-} from "@/api/services/profile/profileApi";
+} from "@/services/profile/profileApi";
 import type {
   ProvinceType,
   DistrictType,
   WardType,
-} from "@/api/services/profile/profileType";
+} from "@/services/profile/profileType";
 import type { EditedProfile, ProfileType } from "@/app/(auth)/profile/type";
 
 interface AddressProps {

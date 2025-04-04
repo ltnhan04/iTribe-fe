@@ -16,7 +16,7 @@ import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
-import { resetPassword } from "@/api/services/auth/authApi";
+import { resetPassword } from "@/services/auth/authApi";
 import { ReloadIcon } from "@radix-ui/react-icons";
 
 interface ResetPasswordPageProps {

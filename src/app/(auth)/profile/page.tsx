@@ -29,7 +29,7 @@ import {
   Calendar,
   Package,
 } from "lucide-react";
-import { getProfile, updateProfile } from "@/api/services/auth/authApi";
+import { getProfile, updateProfile } from "@/services/auth/authApi";
 import type {
   ProfileType,
   EditedProfile,
