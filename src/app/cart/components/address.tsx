@@ -1,5 +1,7 @@
-import React, { useState, useEffect } from "react";
+"use client";
+import React, { useEffect } from "react";
 import Link from "next/link";
+import { useProfile } from "@/hooks/useProfile";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Tooltip,
@@ -8,14 +10,12 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { MapPin, MapPinHouse } from "lucide-react";
-
-import type { ErrorType, UserAddress } from "@/app/cart/checkout/type";
-import { getProfile } from "@/api/services/auth/authApi";
+import { useToast } from "@/hooks/use-toast";
 
 interface AddressProps {
   setCheckoutData: React.Dispatch<
     React.SetStateAction<{
-      productVariants: { productVariant: string; quantity: number }[];
+      variants: { variant: string; quantity: number }[];
       totalAmount: number;
       shippingAddress: string;
       paymentMethod: string;
@@ -24,45 +24,27 @@ interface AddressProps {
 }
 
 const AddressSection: React.FC<AddressProps> = ({ setCheckoutData }) => {
-  const [userAddress, setUserAddress] = useState<UserAddress | undefined>(
-    undefined
-  );
-  const [errMsg, setErrMsg] = useState("Vui lòng thêm địa chỉ của bạn!");
+  const { profile, isLoading, error } = useProfile();
+  const { toast } = useToast();
 
   useEffect(() => {
-    const getAddress = async () => {
-      try {
-        const res = await getProfile();
-        if (res.status === 200) {
-          setUserAddress(res.data.address);
-          if (
-            userAddress &&
-            userAddress.street &&
-            userAddress.ward &&
-            userAddress.city
-          ) {
-            const address =
-              userAddress?.street +
-              ", " +
-              userAddress?.ward +
-              ", " +
-              userAddress?.city +
-              ", " +
-              userAddress?.country;
-            setCheckoutData((prev) => ({
-              ...prev,
-              shippingAddress: address,
-            }));
-          }
-        } else {
-          setErrMsg("Địa chỉ của bạn chưa được cập nhật!");
-        }
-      } catch (error) {
-        setErrMsg((error as ErrorType).response.data.message);
+    if (profile?.address) {
+      const { street, ward, city, country } = profile.address;
+      if (street && ward && city) {
+        const address = `${street}, ${ward}, ${city}, ${country}`;
+        setCheckoutData((prev) => ({
+          ...prev,
+          shippingAddress: address,
+        }));
+      } else {
+        toast({
+          title: "Cần cập nhật địa chỉ đầy đủ!",
+          description: "Vui lòng cập nhật đầy đủ địa chỉ để tiếp tục.",
+          variant: "destructive",
+        });
       }
-    };
-    getAddress();
-  }, [setCheckoutData, userAddress]);
+    }
+  }, [profile, setCheckoutData, toast]);
 
   return (
     <Card className="mt-6 md:mt-8">
@@ -88,16 +70,13 @@ const AddressSection: React.FC<AddressProps> = ({ setCheckoutData }) => {
       </CardHeader>
       <CardContent>
         <p className="text-sm md:text-base text-gray-600">
-          {!userAddress ||
-          (!userAddress.street && !userAddress.ward && !userAddress.city)
-            ? errMsg
-            : userAddress?.street +
-              ", " +
-              userAddress?.ward +
-              ", " +
-              userAddress?.city +
-              ", " +
-              userAddress?.country}
+          {isLoading
+            ? "Đang tải..."
+            : error
+            ? "Không thể tải địa chỉ."
+            : profile?.address
+            ? `${profile.address.street}, ${profile.address.ward}, ${profile.address.city}, ${profile.address.country}`
+            : "Vui lòng thêm địa chỉ của bạn!"}
         </p>
       </CardContent>
     </Card>

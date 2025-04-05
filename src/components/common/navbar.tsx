@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,30 +22,29 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
-import { User, ShoppingCart, Heart, UserCheck } from "lucide-react";
+import { useCategory } from "@/hooks/useCategories";
+import { User, ShoppingCart, Heart, UserCheck, Search } from "lucide-react";
 
 import { useAccessTokenExpired } from "@/utils/expired-token";
 import { useAppSelector, useAppDispatch } from "@/lib/hooks";
+import { APPLE_CATEGORIES } from "@/constants/categories";
 
-import { logout } from "@/api/services/auth/authApi";
+import { logout } from "@/services/auth/authApi";
 import { clearAccessToken } from "@/lib/features/authentication/authSlice";
 
 import type { ErrorType } from "@/app/type";
 
-interface NavbarProps {
-  isFixed?: boolean;
-}
-
-const Navbar: React.FC<NavbarProps> = ({ isFixed }) => {
-  const { toast } = useToast();
+const Navbar = ({ isFixed }: { isFixed?: boolean }) => {
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
-  const dispatch = useAppDispatch();
-  const {
-    cart: { cart },
-    wishlist: { wishlists },
-  } = useAppSelector((state) => state);
+  const { data: categories } = useCategory();
+  const { toast } = useToast();
   const isTokenExpired = useAccessTokenExpired();
+  const dispatch = useAppDispatch();
+  const pathname = usePathname();
+  const currentCategory = pathname.split("/")[2];
 
+  const cart = useAppSelector((state) => state.cart.cart);
+  const wishlists = useAppSelector((state) => state.wishlist.wishlists);
   const cartItemCount = cart.length;
   const wishlistItemCount = wishlists.length;
 
@@ -85,13 +85,33 @@ const Navbar: React.FC<NavbarProps> = ({ isFixed }) => {
                 </div>
               </Link>
 
-              <Link className="flex flex-1 justify-center" href={"/iphone"}>
-                <p className="text-sm cursor-pointer text-gray font-semibold hover:text-white transition-all">
-                  iPhone
-                </p>
-              </Link>
+              <div className="flex flex-1 justify-center gap-6 ml-28">
+                {categories &&
+                  categories.map((category) => {
+                    const appleCategory = APPLE_CATEGORIES.find(
+                      (c) =>
+                        c.name.toLowerCase() === category.name.toLowerCase()
+                    );
 
+                    return (
+                      <Link
+                        key={category._id}
+                        href={appleCategory ? appleCategory.href : "#"}
+                        className={`text-sm cursor-pointer font-semibold transition-all ${
+                          currentCategory === category._id
+                            ? "text-white"
+                            : "text-gray hover:text-white"
+                        }`}
+                      >
+                        {category.name}
+                      </Link>
+                    );
+                  })}
+              </div>
               <div className="flex items-center w-fit gap-2 sm:gap-4 text-white relative">
+                <span>
+                  <Search className="w-5 h-5 sm:h-6 sm:w-6" />
+                </span>
                 <Link href={"/cart"} className="relative">
                   <ShoppingCart className="w-5 h-5 sm:h-6 sm:w-6" />
                   {cartItemCount > 0 && (

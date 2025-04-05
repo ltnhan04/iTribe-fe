@@ -2,7 +2,7 @@
 import axios, { AxiosInstance } from "axios";
 import store from "@/lib/store";
 import { updateAccessToken } from "@/lib/features/authentication/authSlice";
-import { refreshToken } from "@/api/services/auth/authApi";
+import { refreshToken } from "@/services/auth/authApi";
 
 let isRefreshing = false;
 let failedQueue: any[] = [];

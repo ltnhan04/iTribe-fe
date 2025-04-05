@@ -49,7 +49,7 @@ export default function CartPage() {
       const updatedCart = cartArray.filter((item: CartType) => item.id !== id);
       dispatch(updateCart(updatedCart));
       setIsDeleting(false);
-    }, 1000);
+    }, 2000);
   };
 
   const calculateTotal = () => {
@@ -85,7 +85,7 @@ export default function CartPage() {
           <p className="text-gray-600 mb-8">
             Chưa có sản phẩm nào trong giỏ hàng hết bạn ơi !
           </p>
-          <Button onClick={() => router.push("/iphone")}>
+          <Button onClick={() => router.push("/apple/iphone")}>
             Tiếp tục mua sắm nhé!
           </Button>
         </div>

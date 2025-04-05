@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CreditCard, Wallet, WalletCards } from "lucide-react";
 
 interface CheckoutData {
-  productVariants: { productVariant: string; quantity: number }[];
+  variants: { variant: string; quantity: number }[];
   totalAmount: number;
   shippingAddress: string;
   paymentMethod: string;
@@ -20,8 +20,9 @@ const PaymentMethodSection: React.FC<PaymentMethodProps> = ({
   setCheckoutData,
 }) => {
   const paymentMethods = [
-    { id: "pointer-wallet", label: "Pointer Wallet", icon: Wallet },
+    { id: "momo", label: "Momo", icon: Wallet },
     { id: "stripe", label: "Stripe", icon: CreditCard },
+    { id: "ship-cod", label: "Ship Cod", icon: Wallet },
   ];
   return (
     <Card>

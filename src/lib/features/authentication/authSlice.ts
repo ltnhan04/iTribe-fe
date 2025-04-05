@@ -24,6 +24,7 @@ export interface AuthState {
   };
   accessToken: string;
   name: string;
+  email: string;
 }
 const initialState: AuthState = {
   login: {
@@ -50,6 +51,7 @@ const initialState: AuthState = {
   },
   accessToken: "",
   name: "",
+  email: "",
 };
 
 const authSlice = createSlice({
@@ -84,9 +86,24 @@ const authSlice = createSlice({
       const newAccessToken = action.payload;
       state.accessToken = newAccessToken;
     },
+    updateGoogleAuth: (
+      state,
+      action: PayloadAction<{
+        accessToken: string;
+        name: string;
+        email: string;
+      }>
+    ) => {
+      const { accessToken, name, email } = action.payload;
+      console.log({ accessToken, name, email });
+      state.accessToken = accessToken;
+      state.name = name;
+      state.email = email;
+    },
     clearAccessToken: (state) => {
       state.accessToken = "";
       state.name = "";
+      state.email = "";
     },
   },
   extraReducers: (builder) => {
@@ -153,6 +170,11 @@ const authSlice = createSlice({
     });
   },
 });
-export const { clearMessage, clearError, updateAccessToken, clearAccessToken } =
-  authSlice.actions;
+export const {
+  clearMessage,
+  clearError,
+  updateAccessToken,
+  updateGoogleAuth,
+  clearAccessToken,
+} = authSlice.actions;
 export default authSlice.reducer;

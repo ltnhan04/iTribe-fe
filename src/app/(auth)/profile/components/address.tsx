@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import {
@@ -9,16 +9,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { MapPin } from "lucide-react";
-import {
-  getProvinces,
-  getDistricts,
-  getWards,
-} from "@/api/services/profile/profileApi";
-import type {
-  ProvinceType,
-  DistrictType,
-  WardType,
-} from "@/api/services/profile/profileType";
+import { useProvinces, useDistricts, useWards } from "@/hooks/useLocation";
+
 import type { EditedProfile, ProfileType } from "@/app/(auth)/profile/type";
 
 interface AddressProps {
@@ -32,21 +24,27 @@ const AddressSection: React.FC<AddressProps> = ({
   editedProfile,
   userData,
 }) => {
-  const [provinces, setProvinces] = useState<ProvinceType[]>([]);
-  const [districts, setDistricts] = useState<DistrictType[]>([]);
-  const [wards, setWards] = useState<WardType[]>([]);
-  const [loading, setLoading] = useState({
-    province: false,
-    district: false,
-    ward: false,
-  });
-  const [error, setError] = useState<string | null>(null);
-
   const [selectedValue, setSelectedValue] = useState({
     provinceCode: "",
     districtCode: "",
     wardCode: "",
   });
+
+  const {
+    data: provinces = [],
+    isLoading: loadingProvinces,
+    error: errorProvinces,
+  } = useProvinces();
+  const {
+    data: districts = [],
+    isLoading: loadingDistricts,
+    error: errorDistricts,
+  } = useDistricts(Number(selectedValue.provinceCode));
+  const {
+    data: wards = [],
+    isLoading: loadingWards,
+    error: errorWards,
+  } = useWards(Number(selectedValue.districtCode));
 
   const updateAddress = (field: string, value: string) => {
     setEditedProfile((prev) => ({
@@ -57,68 +55,6 @@ const AddressSection: React.FC<AddressProps> = ({
       },
     }));
   };
-
-  useEffect(() => {
-    const fetchProvinces = async () => {
-      setLoading((prev) => ({ ...prev, province: true }));
-      setError(null);
-      try {
-        const response = await getProvinces();
-        setProvinces(response.data || []);
-      } catch (error) {
-        console.error("Error fetching provinces:", error);
-        setError("Không thể tải danh sách tỉnh/thành phố");
-      } finally {
-        setLoading((prev) => ({ ...prev, province: false }));
-      }
-    };
-    fetchProvinces();
-  }, []);
-
-  useEffect(() => {
-    if (!selectedValue.provinceCode) return;
-
-    const fetchDistricts = async () => {
-      setLoading((prev) => ({ ...prev, district: true }));
-      setError(null);
-      try {
-        const response = await getDistricts(Number(selectedValue.provinceCode));
-        setDistricts(response.data.districts || []);
-        setWards([]);
-        setSelectedValue((prev) => ({
-          ...prev,
-          districtCode: "",
-          wardCode: "",
-        }));
-      } catch (error) {
-        console.error("Error fetching districts:", error);
-        setError("Không thể tải danh sách quận/huyện");
-      } finally {
-        setLoading((prev) => ({ ...prev, district: false }));
-      }
-    };
-    fetchDistricts();
-  }, [selectedValue.provinceCode]);
-
-  useEffect(() => {
-    if (!selectedValue.districtCode) return;
-
-    const fetchWards = async () => {
-      setLoading((prev) => ({ ...prev, ward: true }));
-      setError(null);
-      try {
-        const response = await getWards(Number(selectedValue.districtCode));
-        setWards(response.data.wards || []);
-        setSelectedValue((prev) => ({ ...prev, wardCode: "" }));
-      } catch (error) {
-        console.error("Error fetching wards:", error);
-        setError("Không thể tải danh sách phường/xã");
-      } finally {
-        setLoading((prev) => ({ ...prev, ward: false }));
-      }
-    };
-    fetchWards();
-  }, [selectedValue.districtCode]);
 
   const handleProvinceChange = (value: string) => {
     setSelectedValue({ provinceCode: value, districtCode: "", wardCode: "" });
@@ -154,7 +90,7 @@ const AddressSection: React.FC<AddressProps> = ({
   return (
     <div className="flex items-start space-x-4">
       <MapPin className="w-6 h-6 text-gray-500 mt-1" />
-      <div className="flex-grow ">
+      <div className="flex-grow">
         <Label htmlFor="address" className="text-sm font-medium text-gray-500">
           Địa chỉ
         </Label>
@@ -163,12 +99,12 @@ const AddressSection: React.FC<AddressProps> = ({
             <Select
               onValueChange={handleProvinceChange}
               value={selectedValue.provinceCode}
-              disabled={loading.province}
+              disabled={loadingProvinces}
             >
               <SelectTrigger className="w-full">
                 <SelectValue
                   placeholder={
-                    loading.province ? "Đang tải..." : "Chọn Tỉnh/Thành phố"
+                    loadingProvinces ? "Đang tải..." : "Chọn Tỉnh/Thành phố"
                   }
                 />
               </SelectTrigger>
@@ -183,16 +119,19 @@ const AddressSection: React.FC<AddressProps> = ({
                 ))}
               </SelectContent>
             </Select>
+            {errorProvinces && (
+              <p className="text-red-500 text-sm">{errorProvinces.message}</p>
+            )}
 
             <Select
               onValueChange={handleDistrictChange}
               value={selectedValue.districtCode}
-              disabled={!selectedValue.provinceCode || loading.district}
+              disabled={!selectedValue.provinceCode || loadingDistricts}
             >
               <SelectTrigger className="w-full">
                 <SelectValue
                   placeholder={
-                    loading.district ? "Đang tải..." : "Chọn Quận/Huyện"
+                    loadingDistricts ? "Đang tải..." : "Chọn Quận/Huyện"
                   }
                 />
               </SelectTrigger>
@@ -207,15 +146,18 @@ const AddressSection: React.FC<AddressProps> = ({
                 ))}
               </SelectContent>
             </Select>
+            {errorDistricts && (
+              <p className="text-red-500 text-sm">{errorDistricts.message}</p>
+            )}
 
             <Select
               onValueChange={handleWardChange}
               value={selectedValue.wardCode}
-              disabled={!selectedValue.districtCode || loading.ward}
+              disabled={!selectedValue.districtCode || loadingWards}
             >
               <SelectTrigger className="w-full">
                 <SelectValue
-                  placeholder={loading.ward ? "Đang tải..." : "Chọn Phường/Xã"}
+                  placeholder={loadingWards ? "Đang tải..." : "Chọn Phường/Xã"}
                 />
               </SelectTrigger>
               <SelectContent>
@@ -226,6 +168,9 @@ const AddressSection: React.FC<AddressProps> = ({
                 ))}
               </SelectContent>
             </Select>
+            {errorWards && (
+              <p className="text-red-500 text-sm">{errorWards.message}</p>
+            )}
 
             <Input
               id="street"
@@ -248,7 +193,6 @@ const AddressSection: React.FC<AddressProps> = ({
             )}
           </div>
         )}
-        {error && <div className="text-red-500 text-sm">{error}</div>}
       </div>
     </div>
   );

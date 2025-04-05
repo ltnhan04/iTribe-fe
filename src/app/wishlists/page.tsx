@@ -74,7 +74,7 @@ export default function WishlistPage() {
             Thêm các mặt hàng vào danh sách yêu thích của bạn để theo dõi các
             sản phẩm bạn quan tâm.
           </p>
-          <Button onClick={() => router.push("/iphone")}>
+          <Button onClick={() => router.push("/apple/iphone")}>
             Tiếp tục mua sắm nhé!
           </Button>
         </div>
