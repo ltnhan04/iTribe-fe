@@ -1,5 +1,5 @@
 export interface OrderType {
-  variants: ProductVariant[];
+  variants: Variant[];
   totalAmount: number;
   shippingAddress: string;
   paymentMethod: string | "ship-cod";

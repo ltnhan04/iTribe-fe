@@ -26,7 +26,9 @@ export default function ProductActions({ variant }: ProductActionsProps) {
     : false;
 
   const isProductInWishlist = variant
-    ? wishlist.wishlists.some((item: WishlistType) => item.id === variant._id)
+    ? wishlist.wishlists.some(
+        (item: WishlistType) => item.id === variant._id
+      )
     : false;
 
   const handleAddOrRemoveFromCart = () => {
@@ -47,7 +49,7 @@ export default function ProductActions({ variant }: ProductActionsProps) {
         quantity: 1,
         storage: variant.storage,
         color: variant.color.colorName,
-        status: variant.stock_quantity > 0 ? "in stock" : "out of stock",
+        status: variant.stock > 0 ? "in stock" : "out of stock",
       };
       dispatch(addToCart(cartItem));
       toast({
@@ -99,20 +101,20 @@ export default function ProductActions({ variant }: ProductActionsProps) {
     <div className="flex flex-col gap-3">
       <Button
         onClick={handleBuyNow}
-        disabled={variant.stock_quantity === 0}
+        disabled={variant.stock === 0}
         className="w-full bg-black hover:bg-gray-900 text-white rounded-lg py-3 text-sm font-medium"
       >
-        Mua Ngay
+        Buy Now
       </Button>
 
       <div className="flex gap-3">
         <Button
           onClick={handleAddOrRemoveFromCart}
-          disabled={variant.stock_quantity === 0}
+          disabled={variant.stock === 0}
           variant="outline"
           className="flex-1 border-gray-300 hover:bg-gray-50"
         >
-          {isProductInCart ? "Xóa khỏi giỏ hàng" : "Thêm vào giỏ hàng"}
+          {isProductInCart ? "Remove from Cart" : "Add to Cart"}
         </Button>
 
         <Button
@@ -125,10 +127,12 @@ export default function ProductActions({ variant }: ProductActionsProps) {
           }`}
         >
           <Heart
-            className={`w-5 h-5 ${isProductInWishlist ? "fill-red-500" : ""}`}
+            className={`w-5 h-5 ${
+              isProductInWishlist ? "fill-red-500" : ""
+            }`}
           />
         </Button>
       </div>
     </div>
   );
-}
+} 

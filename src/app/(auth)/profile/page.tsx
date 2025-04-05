@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState, useEffect } from "react";
@@ -11,100 +12,49 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
-import { useToast } from "@/hooks/use-toast";
-import {
-  User,
-  Phone,
-  MapPin,
-  CreditCard,
-  Calendar,
-  Package,
-} from "lucide-react";
-import { getProfile, updateProfile } from "@/services/auth/authApi";
-import type {
-  ProfileType,
-  EditedProfile,
-  ErrorType,
-} from "@/app/(auth)/profile/type";
-import withAuth from "@/components/common/withAuth";
 
+import { useToast } from "@/hooks/use-toast";
+import { User, Phone, Mail, Shield } from "lucide-react";
+import { useProfile } from "@/hooks/useProfile";
 import { validatePhoneNumber } from "@/utils/validate-phoneNumber";
-import { formatCurrency } from "@/utils/format-currency";
-import { formatDate } from "@/utils/format-day";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import AddressSection from "@/app/(auth)/profile/components/address";
+import { ProfileType } from "@/services/auth/type";
+import { EditedProfile } from "@/app/(auth)/profile/type";
 
 const UserProfile = () => {
   const { toast } = useToast();
-  const [userData, setUserData] = useState<ProfileType | null>(null);
+  const { profile, isLoading, error, updateProfile } = useProfile();
   const [editedProfile, setEditedProfile] = useState<EditedProfile>({
     isEdited: false,
-    editedName: userData?.name || "",
+    editedName: "",
     editedAddress: {
-      street: userData?.address?.street || "",
-      ward: userData?.address?.ward || "",
-      district: userData?.address?.district || "",
-      city: userData?.address?.city || "",
-      country: userData?.address?.country || "Vietnam",
+      street: "",
+      ward: "",
+      district: "",
+      city: "",
+      country: "Vietnam",
     },
-    editedPhoneNumber: userData?.phoneNumber || "",
+    editedPhoneNumber: "",
   });
 
   useEffect(() => {
-    if (userData) {
+    if (profile) {
       setEditedProfile({
         isEdited: false,
-        editedName: userData.name || "",
+        editedName: profile.name || "",
         editedAddress: {
-          street: userData.address?.street || "",
-          ward: userData.address?.ward || "",
-          district: userData.address?.district || "",
-          city: userData.address?.city || "",
-          country: userData.address?.country || "Vietnam",
+          street: profile.address?.street || "",
+          ward: profile.address?.ward || "",
+          district: profile.address?.district || "",
+          city: profile.address?.city || "",
+          country: profile.address?.country || "Vietnam",
         },
-        editedPhoneNumber: userData.phoneNumber || "",
+        editedPhoneNumber: profile.phoneNumber || "",
       });
     }
-  }, [userData]);
-
-  useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const response = await getProfile();
-        setUserData(response.data);
-
-        setEditedProfile((prev) => ({
-          ...prev,
-          editedName: response.data.name || "",
-          editedAddress: {
-            street: response.data.address?.street || "",
-            ward: response.data.address?.ward || "",
-            district: response.data.address?.district || "",
-            city: response.data.address?.city || "",
-            country: response.data.address?.country || "Vietnam",
-          },
-          editedPhoneNumber: response.data.phoneNumber || "",
-        }));
-      } catch (error) {
-        toast({
-          title: "Đã xảy ra lỗi!",
-          description: (error as ErrorType).response.data.message,
-          variant: "destructive",
-        });
-      }
-    };
-
-    fetchUserData();
-  }, [toast]);
+  }, [profile]);
 
   const handleUpdateProfile = async () => {
     if (!validatePhoneNumber(editedProfile.editedPhoneNumber)) {
@@ -131,201 +81,129 @@ const UserProfile = () => {
         });
       }
       setEditedProfile((prev) => ({ ...prev, isEdited: false }));
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: "Đã xảy ra lỗi!",
-        description: (error as ErrorType).response.data.message,
+        description: error.response?.data?.message || "Something went wrong!",
         variant: "destructive",
       });
     }
   };
 
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error.message}</div>;
+  }
+
   return (
-    <div className="container mx-auto bg-gray-50 min-h-screen">
-      <Card className="w-full max-w-4xl mx-auto shadow-lg">
-        <CardHeader>
-          <div className="flex items-center space-x-4">
-            <Avatar className="w-10 h-10 md:w-16 md:h-16 border-4 border-white">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white py-8 px-4">
+      <Card className="w-full max-w-4xl mx-auto shadow-xl rounded-xl overflow-hidden border-0">
+        <CardHeader className="bg-black text-white p-6">
+          <div className="flex items-center space-x-6">
+            <Avatar className="w-20 h-20 border-4 border-white/50 shadow-lg">
               <AvatarImage
-                src={`https://api.dicebear.com/6.x/initials/svg?seed=${userData?.name}`}
+                src={`https://api.dicebear.com/6.x/initials/svg?seed=${profile?.name}`}
               />
-              <AvatarFallback>
-                {userData?.name?.charAt(0) || "U"}
+              <AvatarFallback className="bg-blue-500 text-xl">
+                {profile?.name?.charAt(0) || "U"}
               </AvatarFallback>
             </Avatar>
-            <div>
-              <CardTitle className="text-xl font-bold">
-                {userData?.name}
+            <div className="space-y-1">
+              <CardTitle className="text-2xl font-bold">
+                {profile?.name}
               </CardTitle>
-              <CardDescription className="text-gray-200">
-                {userData?.role} | {userData?.active ? "Active" : "Inactive"}
+              <CardDescription className="text-blue-100 flex items-center space-x-2">
+                <Shield className="w-4 h-4" />
+                <span>{profile?.role}</span>
+                <span className="w-1.5 h-1.5 rounded-full bg-blue-100"></span>
+                <span>
+                  {profile?.active ? "Đang hoạt động" : "Không hoạt động"}
+                </span>
               </CardDescription>
             </div>
           </div>
         </CardHeader>
-        <CardContent className="mt-4">
-          <Tabs defaultValue="profile" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="profile" className="text-xs md:text-lg">
-                <User className="w-4 h-4 md:w-5 md:h-5 mr-2" />
-                Thông tin
-              </TabsTrigger>
-              <TabsTrigger value="orders" className="text-xs md:text-lg">
-                <Package className="w-4 h-4 md:w-5 md:h-5 mr-2" />
-                Lịch sử đặt hàng
-              </TabsTrigger>
-            </TabsList>
-            <TabsContent value="profile" className="mt-4">
-              <div className="space-y-4 md:space-y-6">
-                <div className="flex items-center space-x-2 md:space-x-4">
-                  <User className="w-4 h-4 md:w-6 md:h-6 text-gray-500" />
-                  <div className="flex-grow">
-                    <Label
-                      htmlFor="name"
-                      className="text-sm font-medium text-gray-500"
-                    >
-                      Tên
-                    </Label>
-                    {editedProfile.isEdited ? (
-                      <Input
-                        id="name"
-                        value={editedProfile.editedName}
-                        maxLength={50}
-                        onChange={(e) =>
-                          setEditedProfile((prev) => ({
-                            ...prev,
-                            editedName: e.target.value,
-                          }))
-                        }
-                        className="md:mt-1"
-                      />
-                    ) : (
-                      <div className=" md:mt-1 text-sm md:text-lg">
-                        {editedProfile.editedName}
-                      </div>
-                    )}
+
+        <CardContent className="p-6">
+          <div className="space-y-6">
+            <div className="grid gap-6 p-6 bg-gray-50 rounded-lg">
+              <div className="space-y-2">
+                <Label className="text-sm font-medium text-gray-500 flex items-center">
+                  <User className="w-4 h-4 mr-2" />
+                  Họ và tên
+                </Label>
+                {editedProfile.isEdited ? (
+                  <Input
+                    value={editedProfile.editedName}
+                    maxLength={50}
+                    onChange={(e) =>
+                      setEditedProfile((prev) => ({
+                        ...prev,
+                        editedName: e.target.value,
+                      }))
+                    }
+                    className="border-gray-200 focus:border-blue-500"
+                  />
+                ) : (
+                  <div className="text-base font-medium text-gray-900">
+                    {editedProfile.editedName || "Chưa cập nhật"}
                   </div>
-                </div>
-                <div className="flex items-center space-x-2 md:space-x-4">
-                  <Phone className="w-4 h-4 md:w-6 md:h-6 text-gray-500" />
-                  <div className="flex-grow">
-                    <Label
-                      htmlFor="phoneNumber"
-                      className="text-sm font-medium text-gray-500"
-                    >
-                      Số điện thoại
-                    </Label>
-                    {editedProfile.isEdited ? (
-                      <Input
-                        id="phoneNumber"
-                        value={editedProfile.editedPhoneNumber}
-                        onChange={(e) =>
-                          setEditedProfile((prev) => ({
-                            ...prev,
-                            editedPhoneNumber: e.target.value,
-                          }))
-                        }
-                        className="md:mt-1"
-                      />
-                    ) : (
-                      <div className=" md:mt-1 text-sm">
-                        {userData && userData.phoneNumber
-                          ? userData.phoneNumber
-                          : "Vui lòng thêm số điện thoại"}
-                      </div>
-                    )}
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-sm font-medium text-gray-500 flex items-center">
+                  <Phone className="w-4 h-4 mr-2" />
+                  Số điện thoại
+                </Label>
+                {editedProfile.isEdited ? (
+                  <Input
+                    value={editedProfile.editedPhoneNumber}
+                    onChange={(e) =>
+                      setEditedProfile((prev) => ({
+                        ...prev,
+                        editedPhoneNumber: e.target.value,
+                      }))
+                    }
+                    className="border-gray-200 focus:border-blue-500"
+                  />
+                ) : (
+                  <div className="text-base text-gray-900">
+                    {profile?.phoneNumber || "Chưa cập nhật số điện thoại"}
                   </div>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-sm font-medium text-gray-500 flex items-center">
+                  <Mail className="w-4 h-4 mr-2" />
+                  Email
+                </Label>
+                <div className="text-base text-gray-900">
+                  {profile?.email || "Chưa cập nhật email"}
                 </div>
+              </div>
+              <div className=" bg-gray-50 rounded-lg">
                 <AddressSection
-                  userData={userData}
+                  userData={profile as ProfileType}
                   setEditedProfile={setEditedProfile}
                   editedProfile={editedProfile}
                 />
               </div>
-            </TabsContent>
-            <TabsContent value="orders" className="mt-6">
-              <Accordion type="single" collapsible className="w-full">
-                {userData &&
-                  userData.orderHistory.map((order, index) => (
-                    <AccordionItem key={order._id} value={`item-${index}`}>
-                      <AccordionTrigger className="hover:no-underline">
-                        <div className="flex justify-between w-full items-center">
-                          <span className="font-medium">
-                            Đơn hàng #{order._id.slice(-6)}
-                          </span>
-                          <Badge
-                            variant={
-                              order.status === "pending"
-                                ? "default"
-                                : order.status === "processing"
-                                ? "secondary"
-                                : "outline"
-                            }
-                          >
-                            {order.status}
-                          </Badge>
-                        </div>
-                      </AccordionTrigger>
-                      <AccordionContent>
-                        <div className="space-y-4 p-4 bg-gray-50 rounded-lg">
-                          <div className="flex items-center space-x-2">
-                            <Calendar className="w-5 h-5 text-gray-500" />
-                            <span className="font-medium">Ngày:</span>{" "}
-                            {formatDate(order.createdAt)}
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <CreditCard className="w-5 h-5 text-gray-500" />
-                            <span className="font-medium">Tổng tiền:</span>{" "}
-                            {formatCurrency(order.totalAmount)}
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <MapPin className="w-5 h-5 text-gray-500" />
-                            <span className="font-medium">
-                              Địa chỉ giao hàng:
-                            </span>{" "}
-                            {order.shippingAddress}
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <CreditCard className="w-5 h-5 text-gray-500" />
-                            <span className="font-medium">
-                              Phương thức thanh toán:
-                            </span>{" "}
-                            {order.paymentMethod}
-                          </div>
-                          <div>
-                            <span className="font-medium">Sản phẩm:</span>
-                            <ul className="list-disc pl-5 mt-2 space-y-2">
-                              {order.productVariants &&
-                                order.productVariants
-                                  .filter(
-                                    (item) => item.productVariant !== null
-                                  )
-                                  .map((item, itemIndex) => (
-                                    <li key={itemIndex} className="text-sm">
-                                      {item.productVariant.name} -{" "}
-                                      {item.productVariant.color.colorName} (
-                                      {item.productVariant.storage}) x{" "}
-                                      {item.quantity} -{" "}
-                                      {formatCurrency(
-                                        item.productVariant.price *
-                                          item.quantity
-                                      )}
-                                    </li>
-                                  ))}
-                            </ul>
-                          </div>
-                        </div>
-                      </AccordionContent>
-                    </AccordionItem>
-                  ))}
-              </Accordion>
-            </TabsContent>
-          </Tabs>
+            </div>
+          </div>
         </CardContent>
-        <CardFooter className="flex justify-end space-x-4 mt-6">
+
+        <CardFooter className="flex justify-end gap-4 p-6 bg-gray-50">
           {editedProfile.isEdited ? (
             <>
-              <Button onClick={handleUpdateProfile} variant={"default"}>
+              <Button
+                onClick={handleUpdateProfile}
+                className=" text-white px-6"
+              >
                 Lưu thay đổi
               </Button>
               <Button
@@ -333,6 +211,7 @@ const UserProfile = () => {
                 onClick={() =>
                   setEditedProfile((prev) => ({ ...prev, isEdited: false }))
                 }
+                className="border-gray-300 hover:bg-gray-100"
               >
                 Hủy
               </Button>
@@ -342,7 +221,7 @@ const UserProfile = () => {
               onClick={() =>
                 setEditedProfile((prev) => ({ ...prev, isEdited: true }))
               }
-              variant={"default"}
+              className=" text-white px-6"
             >
               Chỉnh sửa thông tin
             </Button>
@@ -353,4 +232,4 @@ const UserProfile = () => {
   );
 };
 
-export default withAuth(UserProfile);
+export default UserProfile;

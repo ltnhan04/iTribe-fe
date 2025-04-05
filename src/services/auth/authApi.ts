@@ -55,8 +55,9 @@ export const resentOTP = async (email: string) => {
   return await axiosInstance.post(`/api/v1/auth/resent-otp`, { email });
 };
 
-export const getProfile = async () => {
-  return await axiosInstance.get<ProfileType>(`/api/v1/auth/profile`);
+export const getProfile = async (): Promise<ProfileType> => {
+  const response = await axiosInstance.get<ProfileType>("/api/v1/auth/profile");
+  return response.data;
 };
 
 export const updateProfile = async ({

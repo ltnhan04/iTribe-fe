@@ -1,4 +1,3 @@
-"use client";
 import React from "react";
 import { Badge } from "@/components/ui/badge";
 import { formatPrice } from "@/lib/utils";
@@ -12,12 +11,11 @@ interface ProductInfoProps {
 
 const ProductInfo: React.FC<ProductInfoProps> = ({ variant }) => {
   const sanitizedDescription = DOMPurify.sanitize(variant.description || "");
-
   return (
     <div className="space-y-4">
       <div>
         <h1 className="text-3xl font-bold text-gray-900 mb-2">
-          {variant.name}
+          {variant.name} {variant.storage}
         </h1>
         <div className="flex items-center gap-2">
           <div className="flex items-center">
@@ -43,9 +41,9 @@ const ProductInfo: React.FC<ProductInfoProps> = ({ variant }) => {
             </span>
           )}
         </div>
-        {variant.stock_quantity > 0 ? (
+        {variant.stock > 0 ? (
           <Badge variant="secondary" className="bg-green-100 text-green-800">
-            Còn hàng ({variant.stock_quantity})
+            Còn hàng ({variant.stock})
           </Badge>
         ) : (
           <Badge variant="destructive">Hết hàng</Badge>

@@ -1,5 +1,6 @@
 import { axiosInstance } from "@/config/axiosInstance";
 import type { PaymentType } from "@/services/payment/type";
+import axios from "axios";
 
 export const createCheckoutSession = async ({
   variants,
@@ -22,4 +23,23 @@ export const updateOrderPayment = async ({
     sessionId,
     orderId,
   });
+};
+
+export const createMomoPayment = async (data: {
+  orderId: string;
+  amount: string;
+  orderInfo: string;
+}) => {
+  const response = await axiosInstance.post(
+    `/api/v1/payment/momo/create`,
+    data
+  );
+  return response;
+};
+export const updateMomoPaymentStatus = async (orderId: string) => {
+  const response = await axiosInstance.post(
+    `/api/v1/payment/momo/transaction-status`,
+    { orderId }
+  );
+  return response;
 };

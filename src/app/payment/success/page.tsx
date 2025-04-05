@@ -24,7 +24,7 @@ import { Separator } from "@/components/ui/separator";
 import { useAppDispatch } from "@/lib/hooks";
 import { toast } from "@/hooks/use-toast";
 import { clearCart } from "@/lib/features/cart/cartSlice";
-import { updateOrderPayment } from "@/api/services/payment/paymentApi";
+import { updateOrderPayment, updateMomoPaymentStatus } from "@/services/payment/paymentApi";
 import { ErrorResponse } from "@/app/payment/type";
 import { formatCurrency } from "@/utils/format-currency";
 import { formatDate } from "@/utils/format-day";
@@ -49,19 +49,25 @@ export default function SuccessPage() {
   useEffect(() => {
     const updatePayment = async () => {
       try {
-        const response = await updateOrderPayment({ sessionId, orderId });
-        if (response.status === 200) {
+        let response;
+        if (sessionId) {
+          response = await updateOrderPayment({ sessionId, orderId });
+        } else if (orderId) {
+          response = await updateMomoPaymentStatus(orderId);
+        }
+
+        if (response?.status === 200) {
           toast({
-            title: "Success",
+            title: "Thành công",
             description: response.data.message,
             variant: "default",
           });
-          setOrder(response.data.order);
+          setOrder(response.data.data);
           dispatch(clearCart());
         }
       } catch (error: unknown) {
         toast({
-          title: "Error",
+          title: "Lỗi",
           description: (error as ErrorResponse).response.data.message,
           variant: "destructive",
         });
@@ -158,9 +164,9 @@ export default function SuccessPage() {
                         Phương thức thanh toán
                       </span>
                       <span className="text-gray-800 capitalize">
-                        {order.paymentMethod === "stripe"
-                          ? "Stripe"
-                          : "Pointer Wallet"}
+                        {order.paymentMethod === "stripe" ? "Stripe" : 
+                         order.paymentMethod === "momo" ? "MoMo" : 
+                         "Thanh toán khi nhận hàng"}
                       </span>
                     </div>
                   </div>

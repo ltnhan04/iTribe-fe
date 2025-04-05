@@ -38,7 +38,6 @@ const ProductImages: React.FC<ProductImagesProps> = ({ images, name }) => {
 
   return (
     <div className="sticky top-24 space-y-6">
-      {/* Container ảnh chính */}
       <div className="relative h-[500px] bg-white rounded-xl overflow-hidden shadow-sm">
         <div
           className={cn(
@@ -94,7 +93,6 @@ const ProductImages: React.FC<ProductImagesProps> = ({ images, name }) => {
         )}
       </div>
 
-      {/* Container thumbnails */}
       {images.length > 1 && (
         <div className="relative">
           <div className="flex gap-3 justify-center">
@@ -123,7 +121,6 @@ const ProductImages: React.FC<ProductImagesProps> = ({ images, name }) => {
         </div>
       )}
 
-      {/* Chỉ số ảnh */}
       <div className="text-center text-sm text-gray-500">
         {currentImageIndex + 1} / {images.length}
       </div>

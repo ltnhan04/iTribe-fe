@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -22,6 +22,12 @@ const SubCategoryFilter: React.FC<SubCategoryFilterProps> = ({
   selectedSubCategory,
   onSelectSubCategory,
 }) => {
+  useEffect(() => {
+    if (!selectedSubCategory && subCategories.length > 0) {
+      onSelectSubCategory(subCategories[0]._id);
+    }
+  }, [selectedSubCategory, subCategories, onSelectSubCategory]);
+
   return (
     <div className="flex flex-wrap gap-2 mb-6">
       {subCategories.map((category) => (

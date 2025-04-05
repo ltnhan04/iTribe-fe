@@ -49,7 +49,7 @@ export default function CartPage() {
       const updatedCart = cartArray.filter((item: CartType) => item.id !== id);
       dispatch(updateCart(updatedCart));
       setIsDeleting(false);
-    }, 1000);
+    }, 2000);
   };
 
   const calculateTotal = () => {

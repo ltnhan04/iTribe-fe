@@ -1,40 +1,30 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
-import {
-  message,
-  Spin,
-  Input,
-  Button,
-  Card,
-  Layout,
-  Space,
-  Typography,
-  Avatar,
-} from "antd";
-import { UserOutlined } from "@ant-design/icons";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { useToast } from "@/hooks/use-toast";
 import { useAppSelector } from "@/lib/hooks";
 import { jwtDecode } from "jwt-decode";
+import { Loader2, MessageCircle, Send } from "lucide-react";
 import {
-  sendMessageSocket,
-  onNewMessage,
-  offNewMessage,
-  sendMessageApi,
-  getMessages,
-} from "../../api/services/chatApi/chatApi";
-import { Message } from "postcss";
-const { Content } = Layout;
-const { TextArea } = Input;
-const { Title } = Typography;
+  createChatSession,
+  sendMessage,
+  getChatHistory,
+  Message,
+} from "@/services/chatbot/chatbotApi";
 
 const UserPage = () => {
   const [newMessage, setNewMessage] = useState<string>("");
   const [messages, setMessages] = useState<Message[]>([]);
-  const [loadingMessages, setLoadingMessages] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [sessionId, setSessionId] = useState<string>("");
   const { name: userName, accessToken } = useAppSelector((state) => state.auth);
+  const { toast } = useToast();
 
   const decodeToken = (accessToken: string) => {
     try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const decoded: any = jwtDecode(accessToken);
       return decoded.userId;
     } catch (error) {
@@ -46,185 +36,150 @@ const UserPage = () => {
   const userId = accessToken ? decodeToken(accessToken) : null;
 
   const fetchMessages = useCallback(async () => {
-    setLoadingMessages(true);
+    if (!sessionId) return;
+    setIsLoading(true);
     try {
-      const fetchedMessages = await getMessages();
-      const sortedMessages = fetchedMessages.sort(
-        (a: Message, b: Message) =>
-          new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
-      );
-      setMessages(sortedMessages);
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const response = await getChatHistory(sessionId);
+      if (response.status === "success") {
+        setMessages(response.data.messages);
+      }
     } catch (error) {
-      message.error("Failed to load messages!");
+      toast({
+        title: "Lỗi",
+        description: "Không thể tải tin nhắn. Vui lòng thử lại!",
+        variant: "destructive",
+      });
       setMessages([]);
     } finally {
-      setLoadingMessages(false);
+      setIsLoading(false);
     }
-  }, []);
+  }, [sessionId, toast]);
 
   useEffect(() => {
-    fetchMessages();
-    const messageListener = (messageData: Message) => {
-      if (messageData.sender !== "user") {
-        setMessages((prevMessages) => {
-          if (
-            !prevMessages.find((msg) => msg.timestamp === messageData.timestamp)
-          ) {
-            return [...prevMessages, messageData];
-          }
-          return prevMessages;
+    const initChat = async () => {
+      try {
+        const response = await createChatSession();
+        if (response.status === "success") {
+          setSessionId(response.data.sessionId);
+          // Gửi tin nhắn chào mừng
+          await sendMessage(response.data.sessionId, "Hello");
+          fetchMessages();
+        }
+      } catch (error) {
+        toast({
+          title: "Lỗi",
+          description: "Không thể khởi tạo phiên chat. Vui lòng thử lại!",
+          variant: "destructive",
         });
       }
     };
-    onNewMessage(messageListener);
-    return () => {
-      offNewMessage(messageListener);
-    };
-  }, [userName, fetchMessages]);
+
+    if (userId && !sessionId) {
+      initChat();
+    }
+  }, [userId, sessionId, fetchMessages, toast]);
 
   const handleSendMessage = async () => {
-    if (newMessage.trim() && userId) {
-      sendMessageSocket({ user: userName, message: newMessage });
+    if (newMessage.trim() && sessionId) {
       try {
-        await sendMessageApi(userId, newMessage);
-        setMessages((prevMessages) => [
-          ...prevMessages,
-          {
-            sender: "user",
-            message: newMessage,
-            timestamp: new Date().toISOString(),
-          } as unknown as Message,
-        ]);
-        setNewMessage("");
-        message.success("Message sent successfully!");
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        setIsLoading(true);
+        const response = await sendMessage(sessionId, newMessage.trim());
+        if (response.status === "success") {
+          setNewMessage("");
+          await fetchMessages();
+          toast({
+            title: "Thành công",
+            description: "Đã gửi tin nhắn!",
+            variant: "default",
+          });
+        }
       } catch (error) {
-        message.error("Failed to send message, please try again!");
+        toast({
+          title: "Lỗi",
+          description: "Không thể gửi tin nhắn. Vui lòng thử lại!",
+          variant: "destructive",
+        });
+      } finally {
+        setIsLoading(false);
       }
     }
   };
 
   return (
-    <Layout
-      style={{
-        height: "100vh",
-        background: "linear-gradient(to bottom right, #f0f4f8, #d1e8e2)",
-        padding: "24px",
-      }}
-    >
-      <Content
-        style={{
-          width: "100%",
-          padding: "24px",
-          borderRadius: "16px",
-          backgroundColor: "#fff",
-          boxShadow: "0 8px 24px rgba(0, 0, 0, 0.1)",
-        }}
-      >
-        <Space direction="vertical" style={{ width: "100%" }} size="large">
-          <Title level={3} style={{ textAlign: "center", color: "#1890ff" }}>
+    <div className="container mx-auto px-4 py-6">
+      <Card className="max-w-4xl mx-auto">
+        <CardHeader>
+          <CardTitle className="text-center text-2xl text-primary flex items-center justify-center gap-2">
+            <MessageCircle className="h-6 w-6" />
             Hộp thoại chat - {userName}
-          </Title>
-
-          {loadingMessages ? (
-            <Spin size="large" style={{ display: "block", margin: "auto" }} />
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {isLoading ? (
+            <div className="flex justify-center py-8">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            </div>
           ) : (
-            <Card
-              style={{
-                height: "calc(100vh - 320px)",
-                overflowY: "auto",
-                padding: "16px",
-                backgroundColor: "#fafafa",
-                borderRadius: "16px",
-                border: "1px solid #e6e6e6",
-              }}
-            >
-              {messages.length > 0 ? (
-                messages.map((msg, index) => (
-                  <div
-                    key={index}
-                    style={{
-                      display: "flex",
-                      justifyContent:
-                        msg.sender === "user" ? "flex-end" : "flex-start",
-                      alignItems: "center",
-                      marginBottom: "12px",
-                    }}
-                  >
-                    {msg.sender !== "user" && (
-                      <Avatar
-                        icon={<UserOutlined />}
-                        style={{
-                          marginRight: "8px",
-                          backgroundColor: "#87d068",
-                        }}
-                      />
-                    )}
+            <ScrollArea className="h-[calc(100vh-400px)] pr-4">
+              <div className="space-y-4">
+                {messages.length > 0 ? (
+                  messages.map((msg) => (
                     <div
-                      style={{
-                        background:
-                          msg.sender === "user"
-                            ? "linear-gradient(135deg, #1890ff, #40a9ff)"
-                            : "#f0f0f0",
-                        color: msg.sender === "user" ? "#fff" : "#000",
-                        padding: "12px 16px",
-                        borderRadius:
-                          msg.sender === "user"
-                            ? "12px 12px 0 12px"
-                            : "12px 12px 12px 0",
-                        maxWidth: "80%",
-                        wordBreak: "break-word",
-                        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-                      }}
+                      key={msg._id}
+                      className={`flex ${
+                        msg.role === "user" ? "justify-end" : "justify-start"
+                      }`}
                     >
-                      <Typography.Text
-                        style={{
-                          fontWeight: "bold",
-                          color: msg.sender === "user" ? "#fff" : "#1890ff",
-                        }}
+                      <div
+                        className={`max-w-[80%] rounded-lg p-3 ${
+                          msg.role === "user"
+                            ? "bg-primary text-primary-foreground"
+                            : "bg-muted"
+                        }`}
                       >
-                        {msg.sender === "user" ? "You" : "Admin"}
-                      </Typography.Text>
-                      <div>{msg.message}</div>
+                        <p className="text-sm font-medium mb-1">
+                          {msg.role === "user" ? "Bạn" : "Bot"}
+                        </p>
+                        <p className="whitespace-pre-line">{msg.content}</p>
+                      </div>
                     </div>
-                  </div>
-                ))
-              ) : (
-                <Typography.Text type="secondary">
-                  Hiện chưa có bất kỳ tin nhắn nào.
-                </Typography.Text>
-              )}
-            </Card>
+                  ))
+                ) : (
+                  <p className="text-center text-muted-foreground">
+                    Chưa có tin nhắn nào.
+                  </p>
+                )}
+              </div>
+            </ScrollArea>
           )}
 
-          <TextArea
-            rows={4}
-            value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
-            placeholder="Type your message..."
-            style={{
-              resize: "none",
-              borderRadius: "8px",
-              marginBottom: "16px",
-            }}
-          />
-          <Button
-            type="primary"
-            onClick={handleSendMessage}
-            block
-            style={{
-              borderRadius: "8px",
-              background: "#1890ff",
-              borderColor: "#1890ff",
-              fontWeight: "bold",
-            }}
-          >
-            Gửi tin nhắn
-          </Button>
-        </Space>
-      </Content>
-    </Layout>
+          <div className="flex gap-2">
+            <Input
+              value={newMessage}
+              onChange={(e) => setNewMessage(e.target.value)}
+              onKeyPress={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  handleSendMessage();
+                }
+              }}
+              placeholder="Nhập tin nhắn..."
+              className="flex-1"
+            />
+            <Button
+              onClick={handleSendMessage}
+              disabled={!newMessage.trim() || isLoading}
+            >
+              {isLoading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Send className="h-4 w-4" />
+              )}
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
   );
 };
 

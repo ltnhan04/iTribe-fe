@@ -1,19 +1,22 @@
 import { axiosInstance } from "@/config/axiosInstance";
-import { ProvinceType, DistrictType } from "@/api/services/profile/profileType";
+import { ProvinceType, DistrictType } from "@/services/profile/profileType";
 
 export const getProvinces = async () => {
-  return await axiosInstance.get<ProvinceType[]>(
-    `${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/provinces`
+  const res = await axiosInstance.get<ProvinceType[]>(
+    `${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/v1/provinces`
   );
+  return res.data;
 };
 export const getDistricts = async (code: number) => {
-  return await axiosInstance.get<ProvinceType>(
-    `${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/districts/${code}`
+  const res = await axiosInstance.get<ProvinceType>(
+    `${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/v1/districts/${code}`
   );
+  return res.data.districts;
 };
 
 export const getWards = async (code: number) => {
-  return await axiosInstance.get<DistrictType>(
-    `${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/wards/${code}`
+  const res = await axiosInstance.get<DistrictType>(
+    `${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/v1/wards/${code}`
   );
+  return res.data.wards;
 };

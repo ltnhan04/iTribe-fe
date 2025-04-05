@@ -36,7 +36,6 @@ const ProductCard = ({ variant, productName }: ProductCardProps) => {
       description: "Sản phẩm đã được thêm vào giỏ hàng của bạn",
     });
   };
-
   const isOutOfStock = variant.stock_quantity === 0;
 
   return (

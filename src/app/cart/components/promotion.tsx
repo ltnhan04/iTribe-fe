@@ -3,11 +3,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-
 import { TicketPercent } from "lucide-react";
-
-import { applyPromotion } from "@/api/services/promotions/promotionApi";
-
+import { applyPromotion } from "@/services/promotions/promotionApi";
 import type { ErrorType } from "../checkout/type";
 
 interface LoadingState {
@@ -19,7 +16,7 @@ interface PromotionProps {
   setLoadingState: React.Dispatch<React.SetStateAction<LoadingState>>;
   setCheckoutData: React.Dispatch<
     React.SetStateAction<{
-      productVariants: { productVariant: string; quantity: number }[];
+      variants: { variant: string; quantity: number }[];
       totalAmount: number;
       shippingAddress: string;
       paymentMethod: string;
