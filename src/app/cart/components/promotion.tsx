@@ -3,10 +3,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { TicketPercent } from "lucide-react";
-import { applyPromotion } from "@/services/promotions/promotionApi";
-import type { ErrorType } from "../checkout/type";
-
+import { ErrorType } from "@/types/common";
+import {
+  useApplyVoucher,
+  useUpdateVoucherAsUsed,
+} from "@/hooks/useExchangeVoucher";
 interface LoadingState {
   [key: string]: "isConfirming" | "isApplying" | null;
 }
@@ -23,6 +24,7 @@ interface PromotionProps {
     }>
   >;
   totalAmount: number;
+  setDiscountedTotal: React.Dispatch<React.SetStateAction<number | null>>;
 }
 
 const PromotionSection: React.FC<PromotionProps> = ({
@@ -30,25 +32,36 @@ const PromotionSection: React.FC<PromotionProps> = ({
   setCheckoutData,
   totalAmount,
   loadingState,
+  setDiscountedTotal,
 }) => {
   const { toast } = useToast();
   const [promoCode, setPromoCode] = useState("");
+  const { mutateAsync: applyVoucher } = useApplyVoucher();
+  const { mutateAsync: updateVoucherAsUsed } = useUpdateVoucherAsUsed();
 
   const applyAPromotion = async () => {
     setLoadingState((prev) => ({ ...prev, ["apply"]: "isApplying" }));
     try {
-      const response = await applyPromotion({
-        code: promoCode,
-        totalAmount: totalAmount,
+      const response = await applyVoucher({
+        voucherCode: promoCode,
+        orderTotal: totalAmount,
       });
-      const data = response.data;
+
+      await updateVoucherAsUsed({
+        voucherId: response.data.voucherId,
+        orderId: response.data.orderId,
+      });
+
+      const newTotal = response.data.discountedTotal;
+      setDiscountedTotal(newTotal);
       setCheckoutData((prev) => ({
         ...prev,
-        totalAmount: data.discountedAmount,
+        totalAmount: newTotal,
       }));
+
       toast({
         title: "Sử dụng khuyến mãi thành công",
-        description: `Giảm giá còn ${data.discountAmount} VND cho đơn hàng.`,
+        description: `Giảm giá còn ${response.data.discountAmount} VND cho đơn hàng.`,
         variant: "default",
       });
     } catch (error: unknown) {
@@ -62,14 +75,16 @@ const PromotionSection: React.FC<PromotionProps> = ({
     }
   };
   return (
-    <Card className="mt-6 md:mt-8">
-      <CardHeader>
-        <CardTitle className="text-lg md:text-xl flex items-center">
-          <TicketPercent className="mr-2 h-6 w-6 text-primary" />
+    <Card className="shadow-lg border-0 bg-white/90 backdrop-blur-md">
+      <CardHeader className="pb-2 border-b">
+        <CardTitle className="text-lg md:text-xl flex items-center gap-3 font-semibold text-gray-800">
+          <span className="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-primary-foreground font-bold shadow">
+            4
+          </span>
           Khuyến mãi
         </CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="pt-4">
         <div className="flex items-center space-x-2">
           <Input
             placeholder="Nhập mã khuyến mãi"
@@ -77,7 +92,7 @@ const PromotionSection: React.FC<PromotionProps> = ({
             value={promoCode}
             maxLength={20}
             onChange={(e) => setPromoCode(e.target.value)}
-            className="flex-1 text-sm md:text-base"
+            className="flex-1 text-sm md:text-base bg-gray-50 border rounded-xl px-3 py-2 focus:border-primary focus:ring-1 focus:ring-primary"
           />
           <Button
             variant={"default"}
@@ -85,7 +100,7 @@ const PromotionSection: React.FC<PromotionProps> = ({
               loadingState["apply"] === "isApplying" || promoCode.length === 0
             }
             onClick={applyAPromotion}
-            className="text-sm md:text-base"
+            className="text-sm md:text-base h-10 rounded-xl px-5"
           >
             Sử dụng
           </Button>

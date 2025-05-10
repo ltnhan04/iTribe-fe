@@ -1,5 +1,5 @@
 import { axiosInstance } from "@/config/axiosInstance";
-import { ProvinceType, DistrictType } from "@/services/profile/profileType";
+import { ProvinceType, DistrictType } from "@/types/profile";
 
 export const getProvinces = async () => {
   const res = await axiosInstance.get<ProvinceType[]>(

@@ -32,7 +32,7 @@ import { APPLE_CATEGORIES } from "@/constants/categories";
 import { logout } from "@/services/auth/authApi";
 import { clearAccessToken } from "@/lib/features/authentication/authSlice";
 
-import type { ErrorType } from "@/app/type";
+import { ErrorType } from "@/types/common";
 
 const Navbar = ({ isFixed }: { isFixed?: boolean }) => {
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
@@ -166,9 +166,9 @@ const Navbar = ({ isFixed }: { isFixed?: boolean }) => {
                               Đơn hàng
                             </DropdownMenuItem>
                           </Link>
-                          <Link href={"/chatbox"}>
+                          <Link href={"/exchange-voucher"}>
                             <DropdownMenuItem className="cursor-pointer">
-                              Hỗ trợ
+                              Điểm tích lũy
                             </DropdownMenuItem>
                           </Link>
                           <DropdownMenuItem

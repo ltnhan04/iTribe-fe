@@ -53,10 +53,11 @@ export default function CartPage() {
   };
 
   const calculateTotal = () => {
-    return cartArray.reduce(
+    const total = cartArray.reduce(
       (total, item) => total + item.price * item.quantity,
       0
     );
+    return total;
   };
 
   const handleCheckout = () => {
@@ -85,7 +86,7 @@ export default function CartPage() {
           <p className="text-gray-600 mb-8">
             Chưa có sản phẩm nào trong giỏ hàng hết bạn ơi !
           </p>
-          <Button onClick={() => router.push("/apple/iphone")}>
+          <Button onClick={() => router.push("/iphone")}>
             Tiếp tục mua sắm nhé!
           </Button>
         </div>
@@ -102,7 +103,7 @@ export default function CartPage() {
                         alt={item.name}
                         fill
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 200px"
-                        className=" object-contain rounded-md"
+                        className="object-contain rounded-md"
                       />
                     </div>
                     <div className="ml-4 flex-grow">

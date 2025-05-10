@@ -24,19 +24,14 @@ import { Separator } from "@/components/ui/separator";
 import { useAppDispatch } from "@/lib/hooks";
 import { toast } from "@/hooks/use-toast";
 import { clearCart } from "@/lib/features/cart/cartSlice";
-import { updateOrderPayment, updateMomoPaymentStatus } from "@/services/payment/paymentApi";
-import { ErrorResponse } from "@/app/payment/type";
+import {
+  updateOrderPayment,
+  updateMomoPaymentStatus,
+} from "@/services/payment/paymentApi";
+import { ErrorType as ErrorResponse } from "@/types/common";
 import { formatCurrency } from "@/utils/format-currency";
 import { formatDate } from "@/utils/format-day";
-
-interface OrderDetails {
-  _id: string;
-  totalAmount: number;
-  status: string;
-  shippingAddress: string;
-  paymentMethod: string;
-  createdAt: string;
-}
+import { OrderDetails } from "@/types/order";
 
 export default function SuccessPage() {
   const [order, setOrder] = useState<OrderDetails | null>(null);
@@ -164,9 +159,11 @@ export default function SuccessPage() {
                         Phương thức thanh toán
                       </span>
                       <span className="text-gray-800 capitalize">
-                        {order.paymentMethod === "stripe" ? "Stripe" : 
-                         order.paymentMethod === "momo" ? "MoMo" : 
-                         "Thanh toán khi nhận hàng"}
+                        {order.paymentMethod === "stripe"
+                          ? "Stripe"
+                          : order.paymentMethod === "momo"
+                          ? "MoMo"
+                          : "Thanh toán khi nhận hàng"}
                       </span>
                     </div>
                   </div>

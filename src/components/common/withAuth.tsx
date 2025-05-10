@@ -5,7 +5,7 @@ import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAppSelector } from "@/lib/hooks";
 import { jwtDecode } from "jwt-decode";
-import { JwtPayload } from "@/app/type";
+import { JwtPayload } from "@/types/common";
 
 const withAuth = (WrappedComponent: React.ComponentType) => {
   return (props: any) => {

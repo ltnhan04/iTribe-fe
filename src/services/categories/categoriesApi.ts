@@ -1,5 +1,5 @@
 import { axiosInstance } from "@/config/axiosInstance";
-import { Category } from "@/services/categories/types";
+import { Category } from "@/types/category";
 
 export const getCategories = async (): Promise<Category[]> => {
   const res = await axiosInstance.get<{ categories: Category[] }>(
@@ -9,6 +9,8 @@ export const getCategories = async (): Promise<Category[]> => {
 };
 
 export const getSubCategories = async (parentCategoryId: string) => {
-  const res = await axiosInstance.get(`/api/v1/admin/categories/${parentCategoryId}`);
+  const res = await axiosInstance.get(
+    `/api/v1/admin/categories/${parentCategoryId}`
+  );
   return res.data;
 };

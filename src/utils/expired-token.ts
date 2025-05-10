@@ -1,7 +1,7 @@
 "use client";
 import store from "@/lib/store";
 import { jwtDecode } from "jwt-decode";
-import { JwtPayload } from "@/app/type";
+import { JwtPayload } from "@/types/common";
 
 export const useAccessTokenExpired = (): boolean => {
   const accessToken = store.getState().auth.accessToken;

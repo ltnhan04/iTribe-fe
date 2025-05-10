@@ -4,9 +4,9 @@ import { axiosInstance } from "@/config/axiosInstance";
 import {
   SignUpType,
   LoginType,
-  VerifySignUpType,
   ProfileType,
-} from "@/services/auth/type";
+  VerifySignUpType,
+} from "@/types/auth";
 
 export const login = async ({ email, password }: LoginType) => {
   return await axios.post(
@@ -45,9 +45,7 @@ export const verifySignUp = async ({ email, otp }: VerifySignUpType) => {
 };
 
 export const logout = async () => {
-  const response = await axiosInstance.post(
-    `${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/v1/auth/logout`
-  );
+  const response = await axiosInstance.post(`/api/v1/auth/logout`);
   return response;
 };
 

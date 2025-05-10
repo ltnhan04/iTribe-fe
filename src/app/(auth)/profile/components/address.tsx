@@ -11,7 +11,7 @@ import {
 import { MapPin } from "lucide-react";
 import { useProvinces, useDistricts, useWards } from "@/hooks/useLocation";
 
-import type { EditedProfile, ProfileType } from "@/app/(auth)/profile/type";
+import { EditedProfile, ProfileType } from "@/types/profile";
 
 interface AddressProps {
   setEditedProfile: React.Dispatch<React.SetStateAction<EditedProfile>>;

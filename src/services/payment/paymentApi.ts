@@ -1,6 +1,5 @@
 import { axiosInstance } from "@/config/axiosInstance";
-import type { PaymentType } from "@/services/payment/type";
-import axios from "axios";
+import { PaymentType } from "@/types/payment";
 
 export const createCheckoutSession = async ({
   variants,

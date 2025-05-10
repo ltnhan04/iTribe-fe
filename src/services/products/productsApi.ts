@@ -6,6 +6,7 @@ export const getProductsByCategory = async (categoryId: string) => {
   );
   return res.data;
 };
+
 export const getProducts = async () => {
   return await axios.get(
     `${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/v1/products/`

@@ -1,21 +1,15 @@
 import { axiosInstance } from "@/config/axiosInstance";
-import type { OrderType } from "@/services/orders/type";
+import { OrderType, Orders } from "@/types/order";
 
 export const createOrder = async (checkoutData: OrderType) => {
-  return await axiosInstance.post(
-    `${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/v1/orders/`,
-    checkoutData
-  );
+  return await axiosInstance.post(`/api/v1/orders/`, checkoutData);
 };
 
 export const cancelOrder = async (orderId: string) => {
-  return await axiosInstance.put(
-    `${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/v1/orders/${orderId}`
-  );
+  return await axiosInstance.put(`/api/v1/orders/${orderId}`);
 };
 
-export const getOrders = async () => {
-  return await axiosInstance.get(
-    `${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/v1/orders/`
-  );
+export const getOrders = async (): Promise<Orders> => {
+  const res = await axiosInstance.get(`/api/v1/orders/`);
+  return res.data;
 };

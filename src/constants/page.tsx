@@ -89,35 +89,4 @@ export const carousel = [
   "/assets/images/img3.png",
 ];
 
-export const categories = [
-  {
-    category: "Tất cả",
-    url: "",
-  },
-  {
-    category: "iPhone 16",
-    url: "iphone-16",
-  },
-  {
-    category: "iPhone 15",
-    url: "iphone-15",
-  },
-  {
-    category: "iPhone 14",
-    url: "iphone-14",
-  },
-  {
-    category: "iPhone 13",
-    url: "iphone-13",
-  },
-  {
-    category: "iPhone 12",
-    url: "iphone-12",
-  },
-  {
-    category: "iPhone 11",
-    url: "iphone-11",
-  },
-];
-
-export const COLORS = ["#FCD34D", "#60A5FA", "#34D399", "#EF4444"];
+export const COLORS = ["#FFB020", "#14B8A6", "#10B981"];

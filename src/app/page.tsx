@@ -11,7 +11,6 @@ import { useSearchParams } from "next/navigation";
 import { useAppDispatch } from "@/lib/hooks";
 import { updateGoogleAuth } from "@/lib/features/authentication/authSlice";
 import { useToast } from "@/hooks/use-toast";
-import Chatbot from "@/components/chatbot/Chatbot";
 
 export default function Home() {
   const searchParams = useSearchParams();
@@ -43,7 +42,6 @@ export default function Home() {
       <Features />
       <Camera />
       <Chip />
-      <Chatbot />
     </>
   );
 }

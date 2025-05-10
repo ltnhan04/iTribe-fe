@@ -18,17 +18,10 @@ import { AlertCircle } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { resetPassword } from "@/services/auth/authApi";
 import { ReloadIcon } from "@radix-ui/react-icons";
+import { ErrorType } from "@/types/common";
 
 interface ResetPasswordPageProps {
   params: { token: string };
-}
-
-interface ErrorType {
-  response: {
-    data: {
-      message: string;
-    };
-  };
 }
 
 const ResetPasswordPage: React.FC<ResetPasswordPageProps> = ({ params }) => {

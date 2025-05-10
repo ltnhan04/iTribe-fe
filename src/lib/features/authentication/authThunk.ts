@@ -1,7 +1,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { login, signUp, verifySignUp } from "@/services/auth/authApi";
 import { LoginType, SignUpType, VerifySignUpType } from "@/services/auth/type";
-import { ErrorResponse } from "@/app/(auth)/type";
+import { ErrorType as ErrorResponse } from "@/types/common";
 
 export const loginThunk = createAsyncThunk(
   "auth/login",
@@ -15,7 +15,7 @@ export const loginThunk = createAsyncThunk(
     try {
       const response = await login(user);
       if (response.status === 200) {
-        router.push("/apple/iphone");
+        router.push("/iphone");
         return response.data;
       } else {
         return rejectWithValue(response.data.message);
@@ -71,7 +71,7 @@ export const verifySignUpThunk = createAsyncThunk(
     try {
       const response = await verifySignUp(verify);
       if (response.status === 200) {
-        router.push("/apple/iphone");
+        router.push("/iphone");
         return response.data;
       } else {
         return rejectWithValue(response.data.message);

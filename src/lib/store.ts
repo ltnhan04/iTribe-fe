@@ -1,10 +1,9 @@
-// store.ts
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/es/storage";
-import authSlice from "@/lib/features/authentication/authSlice";
-import cartSlice from "@/lib/features/cart/cartSlice";
-import wishlistsSlice from "@/lib/features/wishlists/wistlistSlice";
+import authReducer from "@/lib/features/authentication/authSlice";
+import cartReducer from "@/lib/features/cart/cartSlice";
+import wishlistReducer from "@/lib/features/wishlists/wistlistSlice";
 
 const persistConfig = {
   key: "persist",
@@ -12,9 +11,9 @@ const persistConfig = {
 };
 
 const rootReducer = combineReducers({
-  auth: authSlice,
-  cart: cartSlice,
-  wishlist: wishlistsSlice,
+  auth: authReducer,
+  cart: cartReducer,
+  wishlist: wishlistReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

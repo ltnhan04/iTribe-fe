@@ -1,13 +1,29 @@
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import {
   getProductsByCategory,
   getProductBySlug,
 } from "@/services/products/productsApi";
+import { Product } from "@/services/products/types";
+
+interface ProductsResponse {
+  data: Product[];
+}
+
+const ITEMS_PER_PAGE = 10;
 
 export const useGetProductByCategory = (categoryId: string) => {
-  return useQuery({
+  return useInfiniteQuery<ProductsResponse>({
     queryKey: ["product", categoryId],
     queryFn: () => getProductsByCategory(categoryId),
+    getNextPageParam: (lastPage, allPages) => {
+      const allVariants = lastPage.data.flatMap(p => p.variants);
+      const currentPage = allPages.length;
+      const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+      const endIndex = startIndex + ITEMS_PER_PAGE;
+      
+      return endIndex < allVariants.length ? currentPage + 1 : undefined;
+    },
+    initialPageParam: 1,
     staleTime: 1000 * 60 * 5,
     gcTime: 1000 * 60 * 10,
     retry: 1,

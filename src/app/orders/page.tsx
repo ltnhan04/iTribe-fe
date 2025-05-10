@@ -1,389 +1,131 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Image from "next/image";
-import {
-  getOrders,
-  cancelOrder as cancelOrderAPI,
-} from "@/api/services/orders/orderApi";
-import type { Order, ErrorType } from "@/app/orders/type";
 import { toast } from "@/hooks/use-toast";
 import withAuth from "@/components/common/withAuth";
-import Loading from "@/app/loading";
-import {
-  PieChart,
-  Pie,
-  Cell,
-  ResponsiveContainer,
-  Tooltip,
-  Legend,
-} from "recharts";
-import { cva } from "class-variance-authority";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
-import { Progress } from "@/components/ui/progress";
-import { Separator } from "@/components/ui/separator";
-import {
-  AlertCircle,
-  CheckCircle,
-  Clock,
-  Package,
-  XCircle,
-  DollarSign,
-  MapPin,
-  Calendar,
-} from "lucide-react";
+
+import { useOrders } from "@/hooks/useOrders";
+import OrderStats from "./components/OrderStats";
+import RecentOrders from "./components/RecentOrders";
+import OrderList from "./components/OrderList";
 
 const noOrder = "/assets/images/no-order.jpg";
 
 const OrderTracker = () => {
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState("all");
-
-  useEffect(() => {
-    const fetchOrders = async () => {
-      setLoading(true);
-      try {
-        const response = await getOrders();
-        if (response.status === 200) {
-          setOrders(response.data.orders);
-        }
-      } catch (err) {
-        toast({
-          title: "Đã xảy ra lỗi",
-          description: (err as ErrorType).response.data.message,
-          variant: "destructive",
-        });
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchOrders();
-  }, []);
+  const [activeFilter, setActiveFilter] = useState("all");
+  const { orders: ordersData, isLoading, error, cancelOrder } = useOrders();
+  const orders = ordersData?.orders || [];
 
   const handleCancelOrder = async (orderId: string) => {
     try {
-      const response = await cancelOrderAPI(orderId);
-      if (response.status === 200) {
-        toast({
-          title: "Success",
-          description: response.data.message,
-          variant: "default",
-        });
-        setOrders(
-          orders.map((order) =>
-            order._id === orderId ? { ...order, status: "cancelled" } : order
-          )
-        );
-      }
+      await cancelOrder(orderId);
+      toast({
+        title: "Đã hủy đơn hàng thành công",
+        variant: "default",
+      });
     } catch (error) {
       toast({
-        title: "Đã xảy ra lỗi",
-        description: (error as ErrorType).response.data.message,
+        title: "Không thể hủy đơn hàng",
         variant: "destructive",
       });
     }
   };
 
-  const getStatusIcon = (status: Order["status"]) => {
-    switch (status) {
-      case "pending":
-        return <Clock className="h-5 w-5 text-yellow-500" />;
-      case "processing":
-        return <Package className="h-5 w-5 text-blue" />;
-      case "delivered":
-        return <CheckCircle className="h-5 w-5 text-green-500" />;
-      case "cancelled":
-        return <XCircle className="h-5 w-5 text-red-500" />;
-      default:
-        return <AlertCircle className="h-5 w-5 text-gray-500" />;
-    }
-  };
-  const progressColors = cva("", {
-    variants: {
-      status: {
-        pending: "bg-[#FFBB28]",
-        processing: "bg-blue",
-        shipped: "bg-[#00C49F]",
-        delivered: "bg-[#00C50F]",
-        cancelled: "bg-[#FF8042]",
-      },
-    },
-  });
-
-  const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884D8"];
-
-  const getStatusProgress = (status: Order["status"]) => {
-    switch (status) {
-      case "pending":
-        return 25;
-      case "processing":
-        return 50;
-      case "delivered":
-        return 100;
-      case "cancelled":
-        return 0;
-      default:
-        return 0;
-    }
-  };
-
-  if (loading) {
-    return <Loading />;
-  }
-
-  if (orders.length === 0) {
+  if (isLoading) {
     return (
-      <div className="container mx-auto p-4 flex flex-col justify-center">
-        <div className="w-[300px] h-[300px] relative">
-          <Image
-            src={noOrder}
-            alt="no order"
-            fill={true}
-            sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 300px"
-          />
+      <div className="min-h-screen bg-gray-50 p-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="animate-pulse">
+            <div className="h-8 bg-gray-200 rounded w-1/4 mb-6"></div>
+            <div className="grid grid-cols-12 gap-6">
+              <div className="col-span-8">
+                <div className="h-96 bg-white rounded-lg shadow-sm"></div>
+              </div>
+              <div className="col-span-4">
+                <div className="h-96 bg-white rounded-lg shadow-sm"></div>
+              </div>
+            </div>
+          </div>
         </div>
-        <div>No orders found.</div>
       </div>
     );
   }
 
-  const orderStatusCounts = orders.reduce((acc, order) => {
-    acc[order.status] = (acc[order.status] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 p-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+            <p className="text-red-600">Đã xảy ra lỗi khi tải đơn hàng</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
-  const pieChartData = Object.entries(orderStatusCounts).map(
-    ([status, count]) => ({
-      name: status,
-      value: count,
-    })
-  );
-
-  const filteredOrders = orders.filter(
-    (order) => activeTab === "all" || order.status === activeTab
-  );
+  if (orders.length === 0) {
+    return (
+      <div className="min-h-screen bg-gray-50 p-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex flex-col items-center justify-center min-h-[60vh]">
+            <div className="w-[300px] h-[300px] relative">
+              <Image
+                src={noOrder}
+                alt="no order"
+                fill
+                className="object-contain"
+              />
+            </div>
+            <h2 className="text-2xl font-semibold text-gray-900 mt-6">
+              Không có đơn hàng nào
+            </h2>
+            <p className="text-gray-500 mt-2">
+              Bạn chưa có đơn hàng nào trong hệ thống
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="container mx-auto p-4 space-y-8">
-      <h1 className="text-4xl font-bold mb-6 text-center">Theo dõi đơn hàng</h1>
+    <div className="min-h-screen bg-gray-50 p-6">
+      <div className="max-w-7xl mx-auto">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900">
+            Theo dõi đơn hàng
+          </h1>
+          <p className="text-gray-600 mt-2">
+            Quản lý và theo dõi trạng thái đơn hàng của bạn
+          </p>
+        </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <Card className="col-span-2 shadow-lg">
-          <CardHeader>
-            <CardTitle className="text-2xl">Tổng quan đơn hàng</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <PieChart>
-                <Pie
-                  data={pieChartData}
-                  cx="50%"
-                  cy="50%"
-                  labelLine={false}
-                  outerRadius={100}
-                  fill="#8884d8"
-                  dataKey="value"
-                >
-                  {pieChartData.map((_, index) => (
-                    <Cell
-                      key={`cell-${index}`}
-                      fill={COLORS[index % COLORS.length]}
-                    />
-                  ))}
-                </Pie>
-                <Tooltip />
-                <Legend />
-              </PieChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
+        <div className="grid grid-cols-12 gap-8">
+          <div className="col-span-8 space-y-8">
+            <div className="bg-white rounded-xl shadow-sm p-6">
+              <h2 className="text-xl font-semibold text-gray-900 mb-6">
+                Thống kê đơn hàng
+              </h2>
+              <OrderStats orders={orders || []} />
+            </div>
 
-        <Card className="shadow-lg">
-          <CardHeader>
-            <CardTitle className="text-2xl">Đơn hàng gần đây</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ul className="space-y-4">
-              {orders.slice(0, 5).map((order) => (
-                <li
-                  key={order._id}
-                  className="flex items-center justify-between bg-white rounded-md transition-all hover:bg-gray-50"
-                >
-                  <div className="flex items-center space-x-3">
-                    {getStatusIcon(order.status)}
-                    <span className="font-medium">
-                      <div className="text-xs max-w-44 truncate">
-                        Đơn hàng #
-                        {order.productVariants.map(
-                          (p) => p.productVariant.name
-                        )}
-                      </div>
-                    </span>
-                  </div>
-                  <Badge variant="outline" className="capitalize">
-                    {order.status}
-                  </Badge>
-                </li>
-              ))}
-            </ul>
-          </CardContent>
-        </Card>
-      </div>
-
-      <Tabs defaultValue="all" className="w-full" onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-5 rounded-xl bg-muted p-1">
-          {["all", "pending", "processing", "delivered", "cancel"].map(
-            (tab) => (
-              <TabsTrigger
-                key={tab}
-                value={tab}
-                className="rounded-lg data-[state=active]:bg-background"
-              >
-                {tab.charAt(0).toUpperCase() + tab.slice(1)}
-              </TabsTrigger>
-            )
-          )}
-        </TabsList>
-        <TabsContent value={activeTab} className="mt-6">
-          <div className="space-y-4">
-            {filteredOrders.map((order) => (
-              <Accordion key={order._id} type="single" collapsible>
-                <AccordionItem
-                  value={order._id}
-                  className="border rounded-lg shadow-md overflow-hidden"
-                >
-                  <AccordionTrigger className="px-6 py-4 hover:no-underline hover:bg-gray-50">
-                    <div className="flex items-center justify-between w-full">
-                      <div className="flex items-center space-x-4">
-                        {getStatusIcon(order.status)}
-                        <span className="font-medium text-sm max-w-56 truncate">
-                          Đơn hàng #
-                          {order.productVariants.map(
-                            (p) => p.productVariant.name
-                          )}
-                        </span>
-                      </div>
-                      <Badge variant="outline" className="capitalize text-sm">
-                        {order.status}
-                      </Badge>
-                    </div>
-                  </AccordionTrigger>
-                  <AccordionContent>
-                    <div className="px-6 py-4 space-y-6">
-                      <Progress
-                        value={getStatusProgress(order.status)}
-                        className={`w-full h-2 ${progressColors({
-                          status: order.status,
-                        })}`}
-                      />
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <Card>
-                          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">
-                              Tổng tiền
-                            </CardTitle>
-                            <DollarSign className="h-4 w-4 text-green-500" />
-                          </CardHeader>
-                          <CardContent>
-                            <div className="text-2xl font-bold">
-                              {order.totalAmount.toLocaleString()} VND
-                            </div>
-                          </CardContent>
-                        </Card>
-                        <Card>
-                          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">
-                              Địa chỉ nhận hàng
-                            </CardTitle>
-                            <MapPin className="h-4 w-4 text-blue-500" />
-                          </CardHeader>
-                          <CardContent>
-                            <div className="text-sm font-medium truncate">
-                              {order.shippingAddress}
-                            </div>
-                          </CardContent>
-                        </Card>
-                        <Card>
-                          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">
-                              Ngày đặt
-                            </CardTitle>
-                            <Calendar className="h-4 w-4 text-purple-500" />
-                          </CardHeader>
-                          <CardContent>
-                            <div className="text-sm font-medium">
-                              {new Date(order.createdAt).toLocaleDateString()}
-                            </div>
-                          </CardContent>
-                        </Card>
-                      </div>
-                      <Separator />
-                      <div>
-                        <h3 className="font-medium text-lg mb-3 flex items-center">
-                          <Package className="h-5 w-5 mr-2 text-orange-500" />
-                          Sản phẩm
-                        </h3>
-                        <ul className="space-y-4">
-                          {order.productVariants.map((product) => (
-                            <li
-                              key={product._id}
-                              className="flex items-center space-x-4 bg-secondary p-4 rounded-lg"
-                            >
-                              <Image
-                                src={product.productVariant.images[0]}
-                                alt={product.productVariant.name}
-                                width={80}
-                                height={80}
-                                className="rounded-md object-cover"
-                              />
-                              <div className="flex-1">
-                                <p className="font-medium">
-                                  {product.productVariant.name}
-                                </p>
-                                <div className="flex items-center space-x-2 mt-1">
-                                  <Badge variant="outline">
-                                    {product.productVariant.color.colorName}
-                                  </Badge>
-                                  <Badge variant="default">
-                                    {product.productVariant.storage}
-                                  </Badge>
-                                </div>
-                                <p className="text-sm text-muted-foreground mt-1">
-                                  Số lượng: {product.quantity}
-                                </p>
-                              </div>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                      {order.status === "pending" && (
-                        <Button
-                          onClick={() => handleCancelOrder(order._id)}
-                          variant="destructive"
-                          className="w-full"
-                        >
-                          Hủy đơn hàng
-                        </Button>
-                      )}
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
-              </Accordion>
-            ))}
+            <OrderList
+              orders={orders}
+              activeFilter={activeFilter}
+              setActiveFilter={setActiveFilter}
+              handleCancelOrder={handleCancelOrder}
+            />
           </div>
-        </TabsContent>
-      </Tabs>
+
+          <div className="col-span-4">
+            <div className="sticky top-6">
+              <RecentOrders orders={orders || []} />
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

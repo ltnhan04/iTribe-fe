@@ -9,7 +9,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { MapPin, MapPinHouse } from "lucide-react";
+import { MapPinHouse } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface AddressProps {
@@ -47,18 +47,21 @@ const AddressSection: React.FC<AddressProps> = ({ setCheckoutData }) => {
   }, [profile, setCheckoutData, toast]);
 
   return (
-    <Card className="mt-6 md:mt-8">
-      <CardHeader>
-        <CardTitle className="text-lg md:text-xl flex items-center justify-between">
-          <div className="flex items-center ">
-            <MapPin className="mr-2 h-6 w-6 text-primary" />
+    <Card className="shadow-lg border-0 bg-white/90 backdrop-blur-md">
+      <CardHeader className="pb-2 border-b">
+        <CardTitle className="text-lg md:text-xl flex items-center justify-between gap-3 font-semibold text-gray-800">
+          <div className="flex items-center gap-x-2">
+            <span className="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-primary-foreground font-bold shadow">
+              1
+            </span>
             Địa chỉ giao hàng
           </div>
+
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger>
                 <Link href={"/profile"}>
-                  <MapPinHouse className=" h-6 w-6 text-primary cursor-pointer" />
+                  <MapPinHouse className="h-6 w-6 text-primary cursor-pointer ml-2" />
                 </Link>
               </TooltipTrigger>
               <TooltipContent>
@@ -68,7 +71,7 @@ const AddressSection: React.FC<AddressProps> = ({ setCheckoutData }) => {
           </TooltipProvider>
         </CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="pt-4">
         <p className="text-sm md:text-base text-gray-600">
           {isLoading
             ? "Đang tải..."

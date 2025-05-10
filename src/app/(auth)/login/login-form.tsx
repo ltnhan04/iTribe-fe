@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -36,7 +37,6 @@ export default function LoginForm() {
   const { message } = loginState;
 
   const [showPassword, setShowPassword] = useState(false);
-  const [isProcessingAuth, setIsProcessingAuth] = useState(false);
 
   const searchParams = useSearchParams();
 
@@ -70,7 +70,6 @@ export default function LoginForm() {
     const email = searchParams.get("email");
 
     if (accessToken && name && email) {
-      setIsProcessingAuth(true);
       try {
         dispatch(updateGoogleAuth({ accessToken, name, email }));
         toast({
@@ -85,7 +84,6 @@ export default function LoginForm() {
           variant: "destructive",
         });
       } finally {
-        setIsProcessingAuth(false);
         window.history.replaceState({}, "", "/");
       }
     }

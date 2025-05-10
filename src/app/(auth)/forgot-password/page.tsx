@@ -21,14 +21,7 @@ import { AlertCircle, ArrowLeft } from "lucide-react";
 import { forgotPassword } from "@/services/auth/authApi";
 import { toast } from "@/hooks/use-toast";
 import { ReloadIcon } from "@radix-ui/react-icons";
-
-interface ErrorType {
-  response: {
-    data: {
-      message: string;
-    };
-  };
-}
+import { ErrorType } from "@/types/common";
 
 const validateEmail = (email: string): boolean => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
