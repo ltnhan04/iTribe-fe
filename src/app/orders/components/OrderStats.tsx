@@ -1,4 +1,4 @@
-import { Order } from "@/services/orders/type";
+import { Order } from "@/types/order";
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 import { COLORS } from "@/constants/page";
 

@@ -1,7 +1,7 @@
 export interface Product {
   _id: string;
   name: string;
-  variants: Variant[];
+  variants: ProductVariant[];
 }
 
 export interface Category {
@@ -11,15 +11,15 @@ export interface Category {
 }
 
 export interface Color {
-  name: string;
-  code: string;
+  colorName: string;
+  colorCode: string;
 }
 
 export type ProductStatus = "out of stock" | "in stock";
 
 export interface ProductVariant {
-  id: number;
-  product_id: number;
+  _id: string;
+  product: string;
   storage: string;
   price: number;
   stock_quantity: number;

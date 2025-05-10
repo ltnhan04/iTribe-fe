@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import Loading from "@/app/loading";
 import { ProductFilters } from "./components/product-filter";
 import ProductCard from "./components/product-card";
-import { Variant } from "@/services/products/types";
+import { ProductVariant } from "@/types/product";
 import { APPLE_CATEGORIES } from "@/constants/categories";
 import SubCategoryFilter from "./components/sub-category-filter";
 import ProductNotFound from "@/components/common/product-not-found";
@@ -19,7 +19,9 @@ import { Product } from "@/types/product";
 
 const CategoryPage = ({ params }: { params: { category: string } }) => {
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
-  const [filteredVariants, setFilteredVariants] = useState<Variant[]>([]);
+  const [filteredVariants, setFilteredVariants] = useState<ProductVariant[]>(
+    []
+  );
   const [selectedSubCategory, setSelectedSubCategory] = useState<string | null>(
     null
   );
@@ -67,7 +69,7 @@ const CategoryPage = ({ params }: { params: { category: string } }) => {
   const colors = Array.from(
     new Set(
       allProducts.flatMap((p: Product) =>
-        p.variants.map((v: Variant) => v.color.colorName)
+        p.variants.map((v: ProductVariant) => v.color.colorName)
       )
     )
   ) as string[];
@@ -75,7 +77,7 @@ const CategoryPage = ({ params }: { params: { category: string } }) => {
   const storageOptions = Array.from(
     new Set(
       allProducts.flatMap((p: Product) =>
-        p.variants.map((v: Variant) => v.storage)
+        p.variants.map((v: ProductVariant) => v.storage)
       )
     )
   ) as string[];
@@ -83,12 +85,12 @@ const CategoryPage = ({ params }: { params: { category: string } }) => {
   const priceRange = {
     min: Math.min(
       ...allProducts.flatMap((p: Product) =>
-        p.variants.map((v: Variant) => v.price)
+        p.variants.map((v: ProductVariant) => v.price)
       )
     ),
     max: Math.max(
       ...allProducts.flatMap((p: Product) =>
-        p.variants.map((v: Variant) => v.price)
+        p.variants.map((v: ProductVariant) => v.price)
       )
     ),
   };
@@ -99,7 +101,7 @@ const CategoryPage = ({ params }: { params: { category: string } }) => {
     priceRange: [number, number];
   }) => {
     const filtered = allProducts.flatMap((product: Product) =>
-      product.variants.filter((variant: Variant) => {
+      product.variants.filter((variant: ProductVariant) => {
         if (
           filters.colors.length > 0 &&
           !filters.colors.includes(variant.color.colorName)
@@ -205,7 +207,7 @@ const CategoryPage = ({ params }: { params: { category: string } }) => {
             ) : (
               <>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {displayVariants.map((variant: Variant) => (
+                  {displayVariants.map((variant: ProductVariant) => (
                     <ProductCard
                       key={variant._id}
                       variant={variant}

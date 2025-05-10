@@ -22,7 +22,7 @@ import BreadCrumb from "@/app/wishlists/components/bread-crumb";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { removeFromWishlist } from "@/lib/features/wishlists/wistlistSlice";
 import { addToCart } from "@/lib/features/cart/cartSlice";
-import type { WishlistType } from "@/lib/features/wishlists/wishlistsType";
+import { WishlistType } from "@/types/wishlist";
 const wishlistImage = "/assets/images/wishlist.png";
 
 export default function WishlistPage() {

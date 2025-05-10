@@ -1,8 +1,7 @@
-
 import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { CheckCircle2, XCircle, Copy, Loader2 } from "lucide-react";
-import { IVoucherList } from "@/services/promotions/type";
+import { IVoucherList } from "@/types/promotion";
 import { formatCurrency } from "@/utils/format-currency";
 import { toast } from "@/hooks/use-toast";
 
@@ -116,4 +115,4 @@ export function VoucherList({ vouchers, isLoading }: VoucherListProps) {
       </ScrollArea>
     </Card>
   );
-} 
+}

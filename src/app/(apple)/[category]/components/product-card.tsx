@@ -2,7 +2,7 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Variant } from "@/services/products/types";
+import { ProductVariant } from "@/types/product";
 import { Button } from "@/components/ui/button";
 import { useDispatch } from "react-redux";
 import { addToCart } from "@/lib/features/cart/cartSlice";
@@ -10,7 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { ShoppingCart } from "lucide-react";
 
 interface ProductCardProps {
-  variant: Variant;
+  variant: ProductVariant;
   productName: string;
 }
 

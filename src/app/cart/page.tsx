@@ -21,7 +21,7 @@ import { LoaderCircle, Minus, Plus, Trash2 } from "lucide-react";
 
 import { useAppSelector, useAppDispatch } from "@/lib/hooks";
 import { updateCart } from "@/lib/features/cart/cartSlice";
-import type { CartType } from "@/lib/features/cart/cartType";
+import { CartType } from "@/types/cart";
 import BreadCrumb from "@/app/cart/components/bread-crumb";
 const emptyCart = "/assets/images/empt-cart.jpg";
 

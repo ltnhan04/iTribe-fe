@@ -10,8 +10,8 @@ import {
   removeFromWishlist,
 } from "@/lib/features/wishlists/wistlistSlice";
 import { useToast } from "@/hooks/use-toast";
-import { CartType } from "@/lib/features/cart/cartType";
-import type { WishlistType } from "@/lib/features/wishlists/wishlistsType";
+import { CartType } from "@/types/cart";
+import { WishlistType } from "@/types/wishlist";
 
 interface ProductActionsProps {
   variant: ProductResponse;

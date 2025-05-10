@@ -1,4 +1,4 @@
-import { Order } from "@/services/orders/type";
+import { Order } from "@/types/order";
 import Image from "next/image";
 import Link from "next/link";
 

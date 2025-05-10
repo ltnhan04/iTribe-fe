@@ -3,7 +3,7 @@ import {
   getProductsByCategory,
   getProductBySlug,
 } from "@/services/products/productsApi";
-import { Product } from "@/services/products/types";
+import { Product } from "@/types/product";
 
 interface ProductsResponse {
   data: Product[];
@@ -16,11 +16,11 @@ export const useGetProductByCategory = (categoryId: string) => {
     queryKey: ["product", categoryId],
     queryFn: () => getProductsByCategory(categoryId),
     getNextPageParam: (lastPage, allPages) => {
-      const allVariants = lastPage.data.flatMap(p => p.variants);
+      const allVariants = lastPage.data.flatMap((p) => p.variants);
       const currentPage = allPages.length;
       const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
       const endIndex = startIndex + ITEMS_PER_PAGE;
-      
+
       return endIndex < allVariants.length ? currentPage + 1 : undefined;
     },
     initialPageParam: 1,

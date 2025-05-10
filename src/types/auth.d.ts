@@ -1,3 +1,18 @@
+export interface SignUpState {
+  email: string;
+  message: string;
+}
+
+export interface LoginState {
+  message: string;
+  accessToken: string;
+  name: string;
+}
+export interface VerifySignUpState {
+  message: string;
+  accessToken: string;
+  name: string;
+}
 export interface SignUpType {
   email: string;
   name: string;

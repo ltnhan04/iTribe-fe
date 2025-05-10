@@ -6,7 +6,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import OrderTimeline from "./OrderTimeline";
-import type { Order } from "@/services/orders/type";
+import { Order } from "@/types/order";
 import { useState } from "react";
 import ReviewModal from "./ReviewModal";
 import { Button } from "@/components/ui/button";

@@ -4,7 +4,7 @@ import {
   cancelOrder,
   getOrders,
 } from "@/services/orders/orderApi";
-import type { OrderType } from "@/services/orders/type";
+import { OrderType } from "@/types/order";
 
 export const useOrders = () => {
   const queryClient = useQueryClient();

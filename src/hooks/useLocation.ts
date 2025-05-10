@@ -4,11 +4,7 @@ import {
   getDistricts,
   getWards,
 } from "@/services/profile/profileApi";
-import type {
-  ProvinceType,
-  DistrictType,
-  WardType,
-} from "@/services/profile/profileType";
+import { ProvinceType, DistrictType, WardType } from "@/types/profile";
 
 export const useProvinces = () => {
   return useQuery<ProvinceType[]>({
