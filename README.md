@@ -1,42 +1,74 @@
-### [Frontend for an iPhone Sales Website](https://i-tribe.vercel.app/)
-- **Technologies & Libraries:**  
-  <p align="left">
-    <a href="https://threejs.org/" target="_blank" rel="noreferrer">
-      <img src="https://custom-icon-badges.herokuapp.com/badge/Three.js-000000.svg?logo=three.js&logoColor=white" alt="Three.js"/>
-    </a>
-    <a href="https://www.typescriptlang.org/" target="_blank" rel="noreferrer">
-      <img src="https://custom-icon-badges.herokuapp.com/badge/TypeScript-3178C6.svg?logo=typescript&logoColor=white" alt="TypeScript"/>
-    </a>
-    <a href="https://nextjs.org/" target="_blank" rel="noreferrer">
-      <img src="https://custom-icon-badges.herokuapp.com/badge/Next.js-000000.svg?logo=nextdotjs&logoColor=white" alt="Next.js"/>
-    </a>
-    <a href="https://greensock.com/gsap/" target="_blank" rel="noreferrer">
-      <img src="https://custom-icon-badges.herokuapp.com/badge/GSAP-88CE02.svg?logo=greensock&logoColor=white" alt="GSAP"/>
-    </a>
-    <a href="https://redux-toolkit.js.org/" target="_blank" rel="noreferrer">
-      <img src="https://custom-icon-badges.herokuapp.com/badge/Redux-764ABC.svg?logo=redux&logoColor=white" alt="Redux Toolkit"/>
-    </a>
-    <a href="https://react-redux.js.org/introduction/getting-started" target="_blank" rel="noreferrer">
-      <img src="https://custom-icon-badges.herokuapp.com/badge/RTK Query-764ABC.svg?logo=redux&logoColor=white" alt="RTK Query"/>
-    </a>
-    <a href="https://ui.shadcn.dev/" target="_blank" rel="noreferrer">
-      <img src="https://custom-icon-badges.herokuapp.com/badge/Shadcn UI-6200EA.svg?logo=shadcn&logoColor=white" alt="Shadcn UI"/>
-    </a>
-    <a href="https://zod.dev/" target="_blank" rel="noreferrer">
-      <img src="https://custom-icon-badges.herokuapp.com/badge/Zod-3178C6.svg?logo=zod&logoColor=white" alt="Zod"/>
-    </a>
-    <a href="https://jwt.io/" target="_blank" rel="noreferrer">
-      <img src="https://custom-icon-badges.herokuapp.com/badge/JWT-000000.svg?logo=jsonwebtokens&logoColor=white" alt="JWT"/>
-    </a>
-  </p>
+# 🎨 iTribe Frontend
 
-- **Description:** iTribe is an e-commerce platform specializing in iPhones, with a modern landing page featuring sleek animations and 3D iPhone models.
-  - 🔐 **Enhanced Account Management**: Secure user accounts using JWT with access and refresh tokens, and 2FA via OTP.
-  - ☁️ **Cloud Storage**: Uses Cloudinary for efficient image and video storage.
-  - 🔍 **Advanced Product Search & Filter**: Find iPhones by multiple criteria.
-  - 🕑 **Order History and Tracking**: View detailed order and transaction history with timestamps and status.
-  - ⭐ **Product Reviews & Responses**: Users can leave reviews; admins can respond for better buyer insights.
-  - 🔔 **Real-Time Notifications**: Sends updates on orders, status, and offers via email or in-app.
-  - 🛒 **Shopping Functionalities**: Provides carts, wishlists, and purchase tracking.
-  - 💳 **Payments**: Supports transactions via Stripe and Pointer Wallet.
-  - 💬 **Real-Time Support Chat**: Enables live chat with admin for customer support.
+<div align="center">
+
+<img src="https://skillicons.dev/icons?i=nextjs,react,typescript,redux,tailwind,threejs" alt="tech stack" />
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
+
+</div>
+
+## 📝 Overview
+iTribe Frontend is a modern e-commerce web application built with Next.js and React, providing an intuitive and responsive user interface for the iTribe platform. It offers seamless shopping experience with real-time updates and interactive features.
+
+## 🛠️ Tech Stack
+- ⚡ **Framework**: Next.js 14
+- 🎯 **Language**: TypeScript
+- 💅 **Styling**: Tailwind CSS
+- 🔄 **State Management**: Redux Toolkit + Redux Persist
+- 📱 **UI Components**: Shadcn/ui (Radix UI)
+- 📊 **Charts**: Recharts
+- 🎨 **Icons**: Lucide Icons + React Icons
+- 🔄 **Data Fetching**: TanStack Query (React Query)
+- 📝 **Form Handling**: React Hook Form + Zod
+- 🎭 **Animation**: GSAP + React Three Fiber
+- 🔌 **Real-time**: Socket.io Client
+- 🎮 **3D**: Three.js + React Three Drei
+- 🔍 **Code Quality**:
+  - ESLint
+  - Husky
+  - Commitlint
+  - Lint-staged
+
+## ✨ Features
+
+### 🎯 Core Features
+- 🎨 Modern UI with animations, 3D visualization & interactive carousels
+- 🔄 Real-time updates & live chat support
+- 🔍 Advanced search & filtering system
+- 📦 Complete shopping experience (cart, checkout, order tracking)
+- 💳 Multi-payment integration (Stripe, MoMo)
+- 🔒 Secure authentication (JWT, OAuth) with persistent sessions
+
+### 🛠️ Technical Features
+- 🔐 Security: XSS prevention, CSRF protection, input validation
+- 📱 UX: Lazy loading, smooth transitions, typewriter effects
+- 🔄 State: Persistent data management with Redux
+- 📝 Forms: Validation with Zod & React Hook Form
+- 🎮 3D: Product visualization with Three.js
+- 📊 Data: Real-time updates with Socket.io
+- 🎨 UI: Component library with Shadcn/ui
+- 🔍 SEO: Optimized for search engines
+- 🔄 API: Axios instance with automatic token refresh & interceptors
+
+### 👥 User Features
+- 👤 Profile & address management
+- 📦 Order history & tracking
+- 💬 Live chat support
+- 📧 Email notifications
+- 🎯 Personalized recommendations
+- 🔄 Real-time order updates
+
+### 🛠️ Development Features
+- 📝 TypeScript & ESLint configuration
+- 🐶 Git hooks with Husky
+- 📦 Bundle analysis & optimization
+
+## 📄 License
+This project is licensed under the MIT License
+
+---
+
+<div align="center">
+Made with ❤️ by the iTribe Team
+</div>
