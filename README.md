@@ -1,10 +1,11 @@
 # 🚀 iTribe - Modern E-commerce Platform
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
 
-<p align="left">
-  <img src="https://skillicons.dev/icons?i=nextjs,react,typescript,babel,tailwind,redux,threejs,nodejs,express,mongodb,redis,vite,docker,nginx,git,postman" alt="Tech Stack Icons" />
-</p>
+<div align="center">
+  <img src="https://skillicons.dev/icons?i=nextjs,react,typescript,tailwind,redux,threejs,nodejs,express,mongodb,redis,vite,docker,nginx,git,postman" alt="Tech Stack Icons" />
+  
+  [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
+</div>
 
 ## 📋 Overview
 
