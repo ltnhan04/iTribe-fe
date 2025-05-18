@@ -1,0 +1,56 @@
+services:
+  frontend:
+    image: itribe-fe
+    container_name: itribe-fe
+    pull_policy: never
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - 3000:3000
+    env_file:
+      - ./frontend/.env.local
+    depends_on:
+      - backend
+    networks:
+      - app-networks
+  admin:
+    image: itribe-admin
+    container_name: itribe-admin
+    pull_policy: never
+    build:
+      context: ./admin
+      dockerfile: Dockerfile
+    ports:
+      - 5173:80
+    env_file:
+      - ./admin/.env
+    depends_on:
+      - backend
+    networks:
+      - app-networks
+  backend:
+    image: itribe-be
+    pull_policy: never
+    container_name: itribe-be
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - 8000:8000
+    depends_on:
+      - mongodb
+    env_file:
+      - ./backend/.env.production
+    networks:
+      - app-networks
+  mongodb:
+    image: mongo:7.0.12-jammy
+    container_name: itribe-mongodb
+    volumes:
+      - mongodb-data:/data/db
+volumes:
+  mongodb-data:
+networks:
+  app-networks:
+    driver: bridge
