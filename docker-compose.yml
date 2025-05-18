@@ -41,7 +41,7 @@ services:
     depends_on:
       - mongodb
     env_file:
-      - ./backend/.env.production
+      - ./backend/.env
     networks:
       - app-networks
   mongodb:
