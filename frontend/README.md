@@ -2,7 +2,7 @@
 
 <div align="center">
 
-<img src="https://skillicons.dev/icons?i=nextjs,react,typescript,redux,tailwind,threejs" alt="tech stack" />
+<img src="https://skillicons.dev/icons?i=nextjs,react,typescript,tailwind" alt="tech stack" />
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
 
@@ -22,8 +22,16 @@ iTribe Frontend is a modern e-commerce web application built with Next.js and Re
 - 🔄 **Data Fetching**: TanStack Query (React Query)
 - 📝 **Form Handling**: React Hook Form + Zod
 - 🎭 **Animation**: GSAP + React Three Fiber
+- 🎥 **Carousel**: Embla Carousel
 - 🔌 **Real-time**: Socket.io Client
 - 🎮 **3D**: Three.js + React Three Drei
+- 🔒 **Security**: DOMPurify
+- 📱 **UI Utilities**: 
+  - Class Variance Authority
+  - Tailwind Merge
+  - Tailwind Animate
+  - React Intersection Observer
+  - React Simple Typewriter
 - 🔍 **Code Quality**:
   - ESLint
   - Husky
@@ -33,12 +41,14 @@ iTribe Frontend is a modern e-commerce web application built with Next.js and Re
 ## ✨ Features
 
 ### 🎯 Core Features
+- 📱 Responsive & mobile-first design with dark/light mode
 - 🎨 Modern UI with animations, 3D visualization & interactive carousels
 - 🔄 Real-time updates & live chat support
 - 🔍 Advanced search & filtering system
 - 📦 Complete shopping experience (cart, checkout, order tracking)
 - 💳 Multi-payment integration (Stripe, MoMo)
 - 🔒 Secure authentication (JWT, OAuth) with persistent sessions
+- 📊 Analytics & performance monitoring
 
 ### 🛠️ Technical Features
 - 🔐 Security: XSS prevention, CSRF protection, input validation
@@ -63,6 +73,9 @@ iTribe Frontend is a modern e-commerce web application built with Next.js and Re
 - 📝 TypeScript & ESLint configuration
 - 🐶 Git hooks with Husky
 - 📦 Bundle analysis & optimization
+- 🧪 Testing setup
+- 🔄 Hot reloading
+- 📱 Responsive development tools
 
 ## 📄 License
 This project is licensed under the MIT License
