@@ -8,8 +8,8 @@ services:
       dockerfile: Dockerfile
     ports:
       - 3000:3000
-    env_file:
-      - ./frontend/.env.local
+    environment:
+      - NEXT_PUBLIC_API_ENDPOINT=http://localhost:8000
     depends_on:
       - backend
     networks:
@@ -23,8 +23,8 @@ services:
       dockerfile: Dockerfile
     ports:
       - 5173:80
-    env_file:
-      - ./admin/.env
+    environment:
+      - VITE_API_URL=http://localhost:8000
     depends_on:
       - backend
     networks:
@@ -49,6 +49,8 @@ services:
     container_name: itribe-mongodb
     volumes:
       - mongodb-data:/data/db
+    networks:
+      - app-networks
 volumes:
   mongodb-data:
 networks:

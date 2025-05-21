@@ -1,6 +1,6 @@
 import { io, Socket } from "socket.io-client";
 
-const socket: Socket = io(process.env.NEXT_PUBLIC_API_ENDPOINT as string, {
+const socket: Socket = io({
   transports: ["websocket"],
 });
 
