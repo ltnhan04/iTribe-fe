@@ -9,7 +9,6 @@ RUN npm run build
 
 FROM nginx:alpine AS runner
 COPY --from=builder /app/dist /usr/share/nginx/html
-COPY --from=builder /app/.env ./.env
 COPY ./default.conf /etc/nginx/conf.d
 
 EXPOSE 80

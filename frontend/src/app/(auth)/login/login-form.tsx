@@ -201,9 +201,7 @@ export default function LoginForm() {
       <Button
         variant="outline"
         type="button"
-        onClick={() =>
-          (window.location.href = `${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/v1/auth/login-google`)
-        }
+        onClick={() => (window.location.href = `/api/v1/auth/login-google`)}
         className="w-full"
       >
         <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">

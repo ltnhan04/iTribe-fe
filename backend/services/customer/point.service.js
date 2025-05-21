@@ -1,5 +1,6 @@
 const Point = require("../../models/point.model");
 const PointVoucher = require("../../models/pointVoucher.model");
+const Order = require("../../models/order.model");
 const AppError = require("../../helpers/appError.helper");
 
 class PointService {
@@ -182,6 +183,35 @@ class PointService {
       voucherId: voucher._id,
       discountAmount: voucher.discountAmount,
     };
+  };
+  static createFirstOrderFreeShipPromotion = async (userId) => {
+    try {
+      const existingOrders = await Order.find({ user: userId });
+      if (existingOrders.length > 0) {
+        return null;
+      }
+
+      const code = `FREESHIP_${Math.random()
+        .toString(36)
+        .substring(2, 8)
+        .toUpperCase()}`;
+
+      const voucher = new PointVoucher({
+        customer: userId,
+        code,
+        discountAmount: 30000, // Giảm 30k tiền ship
+        validFrom: new Date(),
+        validTo: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+        pointsUsed: 0,
+        status: "unused",
+      });
+
+      await voucher.save();
+      return voucher;
+    } catch (error) {
+      console.error("Error creating first order free ship promotion:", error);
+      throw error;
+    }
   };
 }
 

@@ -1,4 +1,3 @@
-const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 const CustomerService = require("../customer.service");
 const RedisHelper = require("../../helpers/redis.helper");
@@ -10,16 +9,8 @@ const {
   generateNewToken,
 } = require("../token.service");
 const { setCookie } = require("../../helpers/cookie.helper");
-const PromotionService = require("./promotion.service");
 const User = require("../../models/user.model");
-const { OAuth2Client } = require("google-auth-library");
-const { sendVerificationEmail } = require("../nodemailer/email.service");
-
-const googleClient = new OAuth2Client(
-  process.env.GOOGLE_CLIENT_ID,
-  process.env.GOOGLE_CLIENT_SECRET,
-  process.env.GOOGLE_REDIRECT_URI
-);
+const PointService = require("./point.service");
 
 class AuthService {
   static signUp = async ({ name, email, password }) => {
@@ -33,42 +24,23 @@ class AuthService {
     return { email, verificationCode };
   };
 
-  static async verifyGoogleToken(token) {
-    try {
-      const ticket = await googleClient.verifyIdToken({
-        idToken: token,
-        audience: process.env.GOOGLE_CLIENT_ID,
-      });
-      return ticket.getPayload();
-    } catch (error) {
-      throw new AppError("Invalid Google token", 401);
-    }
-  }
-
-  //Đăng nhập với google
   static async loginWithGoogle(googleUser) {
     try {
-      // Tìm user theo email
       let user = await User.findOne({ email: googleUser.email });
 
       if (!user) {
-        // Tạo user mới nếu chưa tồn tại
         user = await User.create({
           email: googleUser.email,
           name: googleUser.name,
           avatar: googleUser.picture,
-          isEmailVerified: true, // Email từ Google đã được xác thực
+          isEmailVerified: true,
           googleId: googleUser.sub,
         });
       }
-
-      // Tạo JWT token
-      const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-        expiresIn: process.env.JWT_EXPIRES_IN,
-      });
+      const { accessToken } = generateToken(user._id);
 
       return {
-        token,
+        token: accessToken,
         user: {
           id: user._id,
           name: user.name,
@@ -80,7 +52,6 @@ class AuthService {
       throw new AppError("Error during Google authentication", 500);
     }
   }
-  //Xác nhận tài khoản
   static verifyAccount = async ({ email, otp }) => {
     const { name, password } = await OtpService.verifyOtp(email, otp);
     const customer = await CustomerService.createNewCustomer(
@@ -88,8 +59,7 @@ class AuthService {
       email,
       password
     );
-    // Tạo voucher freeship cho user mới
-    await PromotionService.createFirstOrderFreeShipPromotion(customer._id);
+    await PointService.createFirstOrderFreeShipPromotion(customer._id);
     return customer;
   };
 
