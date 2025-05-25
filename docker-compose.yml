@@ -44,15 +44,6 @@ services:
       - ./backend/.env
     networks:
       - app-networks
-  mongodb:
-    image: mongo:7.0.12-jammy
-    container_name: itribe-mongodb
-    volumes:
-      - mongodb-data:/data/db
-    networks:
-      - app-networks
-volumes:
-  mongodb-data:
 networks:
   app-networks:
     driver: bridge
